@@ -95,20 +95,73 @@ export class SessionService {
       await this.audioRelayService.ingestWebmChunk(sessionId, buffer);
     } catch (error) {
       const relayError = error as Error;
+      
+      // 处理连接断开或 relay 不存在的情况
       if (
         relayError?.message.includes("Relay not found") ||
-        relayError?.message.includes("Relay input closed")
+        relayError?.message.includes("Relay input closed") ||
+        relayError?.message.includes("Tingwu socket not ready") ||
+        relayError?.message.includes("Failed to establish connection")
       ) {
         const session = this.sessions.get(sessionId);
         if (!session) {
           throw relayError;
         }
+        
         this.logger.warn(
-          `Audio relay unavailable for session ${sessionId}, attempting to recreate`
+          `Audio relay unavailable for session ${sessionId}, creating new task and reconnecting...`
         );
-        this.audioRelayService.create(sessionId, session.meetingJoinUrl);
-        await this.audioRelayService.ingestWebmChunk(sessionId, buffer);
-        return;
+        
+        try {
+          // 创建新的通义听悟任务获取新的 meetingJoinUrl
+          const { taskId, meetingJoinUrl } = await this.tingwuService.createRealtimeTask({
+            meetingId: `meeting-${Date.now()}`,
+          });
+          
+          // 更新 session 信息
+          session.taskId = taskId;
+          session.meetingJoinUrl = meetingJoinUrl;
+          this.sessions.set(sessionId, session);
+          
+          // 重新注册轮询
+          this.pollerService.unregisterTask(sessionId);
+          this.pollerService.registerTask(sessionId, taskId, async (payload) => {
+            if (payload.transcription?.length) {
+              const existing = this.transcripts.get(sessionId) ?? [];
+              const map = new Map<string, Transcript>();
+              [...existing, ...payload.transcription].forEach((segment) => {
+                map.set(segment.id, segment);
+              });
+              const merged = Array.from(map.values()).sort(
+                (a, b) => a.startMs - b.startMs
+              );
+              this.transcripts.set(sessionId, merged);
+            }
+            if (payload.summaries?.length) {
+              const existing = this.summaries.get(sessionId) ?? [];
+              const combined = new Map<string, any>();
+              [...existing, ...payload.summaries].forEach((card) => {
+                combined.set(card.id, card);
+              });
+              this.summaries.set(sessionId, Array.from(combined.values()));
+            }
+            if (payload.taskStatus) {
+              this.taskStatuses.set(sessionId, payload.taskStatus);
+            }
+          });
+          
+          // 更新 relay 的 URL 并重新创建
+          this.audioRelayService.updateUrl(sessionId, meetingJoinUrl);
+          
+          this.logger.log(`New task created for session ${sessionId}: ${taskId}`);
+          
+          // 重试发送音频数据
+          await this.audioRelayService.ingestWebmChunk(sessionId, buffer);
+          return;
+        } catch (reconnectError) {
+          this.logger.error(`Failed to reconnect for session ${sessionId}: ${reconnectError}`);
+          throw reconnectError;
+        }
       }
       throw relayError;
     }
@@ -174,12 +227,27 @@ export class SessionService {
   async completeSession(sessionId: string) {
     const session = this.sessions.get(sessionId);
     if (!session) {
-      throw new NotFoundException("Session not found");
+      // 如果 session 不存在，可能已经被清理，返回成功而不是抛错
+      this.logger.warn(`Session ${sessionId} not found during complete, may have been cleaned up`);
+      return { ok: true, message: "Session already completed or not found" };
     }
-    await this.audioRelayService.stop(sessionId);
+    
+    try {
+      await this.audioRelayService.stop(sessionId);
+    } catch (e) {
+      this.logger.warn(`Failed to stop audio relay for ${sessionId}: ${e}`);
+    }
+    
     this.pollerService.unregisterTask(sessionId);
-    await this.tingwuService.stopRealtimeTask(session.taskId);
+    
+    try {
+      await this.tingwuService.stopRealtimeTask(session.taskId);
+    } catch (e) {
+      this.logger.warn(`Failed to stop Tingwu task for ${sessionId}: ${e}`);
+    }
+    
     this.taskStatuses.set(sessionId, "COMPLETED");
+    // 注意：不删除 session 数据，以便用户仍可以查看转写结果和生成可视化
     return { ok: true };
   }
 

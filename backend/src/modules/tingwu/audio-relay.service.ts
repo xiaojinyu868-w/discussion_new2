@@ -15,6 +15,7 @@ type RelaySession = {
   meetingJoinUrl: string;
   isConnected: boolean;
   isStarted: boolean;
+  isStopping: boolean; // 标记是否正在停止
   ffmpegProcess: ChildProcess | null;
   pcmBuffer: Buffer[]; // 已转码的 PCM 待发送队列
 };
@@ -40,6 +41,7 @@ export class AudioRelayService {
       meetingJoinUrl,
       isConnected: false,
       isStarted: false,
+      isStopping: false,
       ffmpegProcess: null,
       pcmBuffer: [],
     };
@@ -323,16 +325,68 @@ export class AudioRelayService {
     if (!relay) {
       throw new Error(`Relay not found for session ${sessionId}`);
     }
-    await this.waitForConnection(relay);
+    
+    // 检查 relay 是否正在停止
+    if (relay.isStopping) {
+      this.logger.warn(`[${sessionId}] Relay is stopping, ignoring chunk`);
+      return;
+    }
+    
+    // 检查 WebSocket 连接状态，如果断开则需要重新连接
+    if (!relay.isConnected || !relay.socket || relay.socket.readyState !== WS.OPEN) {
+      this.logger.warn(`[${sessionId}] WebSocket disconnected, attempting to reconnect...`);
+      
+      // 清理旧的 ffmpeg 进程（因为需要重新开始新的流）
+      if (relay.ffmpegProcess) {
+        try {
+          relay.ffmpegProcess.stdin?.end();
+          relay.ffmpegProcess.kill('SIGKILL');
+        } catch {}
+        relay.ffmpegProcess = null;
+      }
+      
+      // 重置状态
+      relay.isStarted = false;
+      
+      // 重新连接 WebSocket
+      this.connectToTingwu(sessionId, relay);
+    }
+    
+    // 等待连接就绪
+    try {
+      await this.waitForConnection(relay);
+    } catch (err) {
+      this.logger.error(`[${sessionId}] Failed to establish connection: ${err}`);
+      throw err;
+    }
+    
+    // 启动新的 ffmpeg 流（如果需要）
     this.startFfmpegStream(sessionId, relay);
 
     if (!relay.ffmpegProcess || !relay.ffmpegProcess.stdin) {
       throw new Error(`ffmpeg stream not ready for session ${sessionId}`);
     }
 
+    // 检查 stdin 是否可写
+    if (relay.ffmpegProcess.stdin.destroyed || relay.ffmpegProcess.stdin.writableEnded) {
+      this.logger.warn(`[${sessionId}] ffmpeg stdin already closed, restarting ffmpeg...`);
+      // 重启 ffmpeg
+      relay.ffmpegProcess = null;
+      this.startFfmpegStream(sessionId, relay);
+      
+      if (!relay.ffmpegProcess || !relay.ffmpegProcess.stdin) {
+        throw new Error(`Failed to restart ffmpeg for session ${sessionId}`);
+      }
+    }
+
     return new Promise<void>((resolve, reject) => {
       relay.ffmpegProcess!.stdin!.write(webmChunk, (err) => {
         if (err) {
+          // 忽略 "write after end" 错误，因为这是竞态条件导致的
+          if (err.message.includes('write after end')) {
+            this.logger.warn(`[${sessionId}] ffmpeg stdin write after end, ignoring`);
+            return resolve();
+          }
           this.logger.error(`[${sessionId}] ffmpeg stdin write failed: ${err.message}`);
           return reject(err);
         }
@@ -454,13 +508,36 @@ export class AudioRelayService {
   updateUrl(sessionId: string, meetingJoinUrl: string) {
     const relay = this.sessions.get(sessionId);
     if (relay) {
-      relay.meetingJoinUrl = meetingJoinUrl;
-      this.logger.log(`Updated meetingJoinUrl for session ${sessionId}`);
-      
-      // 如果已断开，重新连接
-      if (!relay.isConnected) {
-        this.connectToTingwu(sessionId, relay);
+      // 关闭旧的连接和 ffmpeg 进程
+      if (relay.socket) {
+        try {
+          relay.socket.close();
+        } catch {}
+        relay.socket = null;
       }
+      
+      if (relay.ffmpegProcess) {
+        try {
+          relay.ffmpegProcess.stdin?.end();
+          relay.ffmpegProcess.kill('SIGKILL');
+        } catch {}
+        relay.ffmpegProcess = null;
+      }
+      
+      // 重置状态
+      relay.meetingJoinUrl = meetingJoinUrl;
+      relay.isConnected = false;
+      relay.isStarted = false;
+      relay.isStopping = false;
+      
+      this.logger.log(`Updated meetingJoinUrl for session ${sessionId}, reconnecting...`);
+      
+      // 重新连接
+      this.connectToTingwu(sessionId, relay);
+    } else {
+      // 如果 relay 不存在，创建新的
+      this.logger.log(`Relay not found for session ${sessionId}, creating new one`);
+      this.create(sessionId, meetingJoinUrl);
     }
   }
 
@@ -477,7 +554,19 @@ export class AudioRelayService {
 
   async stop(sessionId: string) {
     const relay = this.sessions.get(sessionId);
-    if (!relay) return;
+    if (!relay) {
+      this.logger.warn(`[${sessionId}] Relay not found during stop, may have been cleaned up`);
+      return;
+    }
+    
+    // 如果已经在停止中，避免重复操作
+    if (relay.isStopping) {
+      this.logger.warn(`[${sessionId}] Relay already stopping, skipping`);
+      return;
+    }
+    
+    // 标记为正在停止，防止新的数据写入
+    relay.isStopping = true;
     this.logger.log(`Stopping relay for session ${sessionId}`);
 
     // 停止定时发送

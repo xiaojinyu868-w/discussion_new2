@@ -1862,6 +1862,7 @@
       autoPushInterval: null,
       activeSkills: [], // 用户激活的技能列表
       mediaRecorder: null,
+      mediaStream: null, // 保存 MediaStream 以便暂停后恢复
       apiBaseUrl: localStorage.getItem('apiBaseUrl') || 'http://localhost:4000',
       currentVisualizationType: 'chart',
       currentChartType: 'radar',
@@ -2075,13 +2076,16 @@
         const stream = await navigator.mediaDevices.getUserMedia({ 
           audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true }
         });
+        
+        // 保存 stream 以便暂停后恢复
+        state.mediaStream = stream;
 
         state.mediaRecorder = new MediaRecorder(stream, { 
           mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm' 
         });
 
         state.mediaRecorder.ondataavailable = async (event) => {
-          if (event.data.size > 0 && state.sessionId) {
+          if (event.data.size > 0 && state.sessionId && !state.isPaused) {
             try {
               const base64 = await blobToBase64(event.data);
               await apiCall('POST', `/sessions/${state.sessionId}/audio`, { chunk: base64 });
@@ -2115,10 +2119,18 @@
     }
 
     async function stopRecording() {
+      // 保存当前 sessionId，用于后续处理
+      const currentSessionId = state.sessionId;
+      
       if (state.mediaRecorder) {
         state.mediaRecorder.stop();
-        state.mediaRecorder.stream.getTracks().forEach(track => track.stop());
         state.mediaRecorder = null;
+      }
+      
+      // 停止并清理 MediaStream
+      if (state.mediaStream) {
+        state.mediaStream.getTracks().forEach(track => track.stop());
+        state.mediaStream = null;
       }
 
       state.isRecording = false;
@@ -2130,16 +2142,16 @@
       stopPolling();
       updateRecordingUI();
 
-      if (state.sessionId) {
+      if (currentSessionId) {
         try {
           showToast('正在处理音频...', 'info');
-          await apiCall('POST', `/sessions/${state.sessionId}/process`);
+          await apiCall('POST', `/sessions/${currentSessionId}/process`);
           
           let pollCount = 0;
           const pollForResults = async () => {
-            // 检查是否已被取消（用户开始了新录音）
-            if (!state.sessionId || state.isRecording) {
-              console.log('录音后轮询被取消');
+            // 检查是否已被取消（用户开始了新录音，sessionId 会变化）
+            if (state.sessionId !== currentSessionId || state.isRecording) {
+              console.log('录音后轮询被取消（新录音已开始）');
               return;
             }
             
@@ -2167,7 +2179,7 @@
         }
         
         try {
-          await apiCall('POST', `/sessions/${state.sessionId}/complete`);
+          await apiCall('POST', `/sessions/${currentSessionId}/complete`);
         } catch (e) { console.warn('Complete session failed:', e); }
       }
     }
@@ -2176,11 +2188,32 @@
       if (!state.isRecording) return;
       state.isPaused = !state.isPaused;
       if (state.isPaused) {
-        state.mediaRecorder?.pause();
+        // 暂停时：停止当前 MediaRecorder 但保留 stream
+        if (state.mediaRecorder && state.mediaRecorder.state === 'recording') {
+          state.mediaRecorder.stop();
+        }
         stopWaveformAnimation();
+        console.log('[Pause] Recording paused, MediaRecorder stopped');
       } else {
-        state.mediaRecorder?.resume();
-        startWaveformAnimation();
+        // 恢复时：创建新的 MediaRecorder（确保 WebM 流完整）
+        if (state.mediaStream) {
+          state.mediaRecorder = new MediaRecorder(state.mediaStream, { 
+            mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm' 
+          });
+          
+          state.mediaRecorder.ondataavailable = async (event) => {
+            if (event.data.size > 0 && state.sessionId && !state.isPaused) {
+              try {
+                const base64 = await blobToBase64(event.data);
+                await apiCall('POST', `/sessions/${state.sessionId}/audio`, { chunk: base64 });
+              } catch (e) { console.warn('Upload chunk failed:', e); }
+            }
+          };
+          
+          state.mediaRecorder.start(1000);
+          startWaveformAnimation();
+          console.log('[Resume] Recording resumed, new MediaRecorder created');
+        }
       }
       updateRecordingUI();
     }
