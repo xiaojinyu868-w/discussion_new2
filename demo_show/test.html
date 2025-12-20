@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会议快照 - Meeting Snapshot | AI 驱动的实时会议洞察</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: rgba(255, 255, 255, 0.03);
+      --bg-card-hover: rgba(255, 255, 255, 0.06);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(99, 102, 241, 0.5);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.4);
+      --accent-primary: #6366f1;
+      --accent-secondary: #8b5cf6;
+      --accent-tertiary: #ec4899;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --gradient-hero: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+      --gradient-card: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+      --shadow-glow: 0 0 60px rgba(99, 102, 241, 0.3);
+      --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Background */
+    .ambient-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .ambient-orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: float 20s ease-in-out infinite; }
+    .orb-1 { width: 600px; height: 600px; background: var(--accent-primary); top: -200px; left: -200px; }
+    .orb-2 { width: 500px; height: 500px; background: var(--accent-secondary); top: 50%; right: -150px; animation-delay: -7s; }
+    .orb-3 { width: 400px; height: 400px; background: var(--accent-tertiary); bottom: -100px; left: 30%; animation-delay: -14s; }
+    @keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.05); } 66% { transform: translate(-20px, 20px) scale(0.95); } }
+
+    .container { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+
+    /* Navigation */
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 0; background: rgba(10, 10, 15, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-subtle); transition: all 0.3s ease; }
+    .nav.scrolled { padding: 12px 0; background: rgba(10, 10, 15, 0.95); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+    .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 700; background: var(--gradient-hero); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .logo-icon { width: 40px; height: 40px; background: var(--gradient-hero); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; -webkit-text-fill-color: white; }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-link { color: var(--text-secondary); text-decoration: none; font-weight: 500; transition: color 0.2s ease; }
+    .nav-link:hover { color: var(--text-primary); }
+    .nav-cta { padding: 10px 24px; background: var(--gradient-hero); border: none; border-radius: var(--radius-md); color: white; font-weight: 600; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+
+    /* Hero */
+    .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 120px 24px 80px; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 100px; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 32px; animation: fadeInUp 0.8s ease; }
+    .hero-badge-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
+    .hero-title { font-size: clamp(3rem, 8vw, 5.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 24px; animation: fadeInUp 0.8s ease 0.1s backwards; }
+    .hero-title-gradient { background: var(--gradient-hero); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-subtitle { font-size: clamp(1.125rem, 2vw, 1.5rem); color: var(--text-secondary); max-width: 600px; margin-bottom: 48px; animation: fadeInUp 0.8s ease 0.2s backwards; }
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; animation: fadeInUp 0.8s ease 0.3s backwards; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: var(--radius-md); font-size: 1rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.3s ease; border: none; }
+    .btn-primary { background: var(--gradient-hero); color: white; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4); }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5); }
+    .btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .btn-secondary:hover { background: var(--bg-card-hover); border-color: var(--border-active); }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Alert Banner */
+    .alert-banner { background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(245, 158, 11, 0.2)); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-lg); padding: 20px 28px; margin-bottom: 32px; display: none; }
+    .alert-banner.show { display: block; animation: fadeInUp 0.5s ease; }
+    .alert-banner-title { font-weight: 600; color: #fca5a5; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .alert-banner-content { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.7; }
+    .alert-banner-content code { background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 4px; font-family: 'SF Mono', monospace; font-size: 0.875rem; }
+    .alert-banner-content a { color: var(--accent-primary); }
+
+    /* Demo Section */
+    .demo-section { padding: 100px 0; }
+    .section-header { text-align: center; margin-bottom: 60px; }
+    .section-label { display: inline-block; padding: 6px 14px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 100px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-primary); margin-bottom: 16px; }
+    .section-title { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; margin-bottom: 16px; }
+    .section-desc { color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
+
+    /* Demo Container */
+    .demo-container { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-card); }
+    .demo-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; background: rgba(0, 0, 0, 0.3); border-bottom: 1px solid var(--border-subtle); }
+    .demo-toolbar-dots { display: flex; gap: 8px; }
+    .demo-toolbar-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red { background: #ff5f57; } .dot-yellow { background: #febc2e; } .dot-green { background: #28c840; }
+    .demo-toolbar-title { font-size: 0.875rem; color: var(--text-muted); }
+    .demo-toolbar-status { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; }
+    .status-indicator { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); }
+    .status-indicator.connected { background: var(--success); animation: pulse 2s ease-in-out infinite; }
+    .status-indicator.error { background: var(--error); }
+    .demo-content { display: grid; grid-template-columns: 1fr 400px; min-height: 600px; }
+    @media (max-width: 1024px) { .demo-content { grid-template-columns: 1fr; } }
+
+    /* Main Panel */
+    .main-panel { padding: 32px; display: flex; flex-direction: column; gap: 24px; }
+    .recording-card { background: var(--gradient-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 32px; }
+    .recording-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .recording-title { font-size: 1.5rem; font-weight: 700; }
+    .recording-status { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 100px; font-size: 0.875rem; color: var(--success); }
+    .recording-status.idle { background: rgba(255, 255, 255, 0.05); border-color: var(--border-subtle); color: var(--text-muted); }
+    .recording-status.recording { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: var(--error); }
+    .recording-timer { font-size: 4rem; font-weight: 300; font-variant-numeric: tabular-nums; margin-bottom: 8px; }
+    .recording-hint { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 24px; }
+    .waveform-container { height: 80px; background: rgba(0, 0, 0, 0.2); border-radius: var(--radius-md); margin-bottom: 24px; overflow: hidden; position: relative; }
+    .waveform { display: flex; align-items: center; justify-content: center; height: 100%; gap: 3px; padding: 0 20px; }
+    .waveform-bar { width: 4px; background: var(--accent-primary); border-radius: 2px; transition: height 0.1s ease; }
+    .recording-controls { display: flex; gap: 16px; }
+    .record-btn { flex: 1; padding: 18px 32px; border: none; border-radius: var(--radius-md); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .record-btn-primary { background: var(--gradient-hero); color: white; }
+    .record-btn-primary:hover { transform: scale(1.02); box-shadow: var(--shadow-glow); }
+    .record-btn-primary.recording { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+    .record-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .record-btn-secondary { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-subtle); }
+    .record-btn-secondary:hover { background: var(--bg-card-hover); }
+    .record-btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Upload Card */
+    .upload-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px 24px; margin-top: 20px; }
+    .upload-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .upload-title { font-size: 1.1rem; font-weight: 700; }
+    .upload-hint { color: var(--text-muted); font-size: 0.9rem; margin-top: 6px; }
+    .upload-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .upload-input { flex: 1; min-width: 220px; color: var(--text-primary); }
+    .upload-meeting { flex: 1; min-width: 200px; padding: 10px 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-subtle); border-radius: 10px; color: var(--text-primary); }
+    .upload-status { padding: 6px 12px; border-radius: 999px; font-size: 0.9rem; border: 1px solid var(--border-subtle); color: var(--text-muted); }
+    .upload-status.loading { color: var(--warning); border-color: var(--warning); }
+    .upload-status.success { color: var(--success); border-color: var(--success); }
+    .upload-status.error { color: var(--error); border-color: var(--error); }
+
+    /* Transcription Panel */
+    .transcription-panel { flex: 1; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden; min-height: 300px; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border-subtle); }
+    .panel-tabs { display: flex; gap: 4px; background: rgba(0, 0, 0, 0.2); padding: 4px; border-radius: var(--radius-md); }
+    .panel-tab { padding: 10px 20px; border: none; background: transparent; color: var(--text-muted); font-size: 0.875rem; font-weight: 500; cursor: pointer; border-radius: var(--radius-sm); transition: all 0.2s ease; }
+    .panel-tab.active { background: var(--accent-primary); color: white; }
+    .panel-tab:hover:not(.active) { color: var(--text-primary); }
+    .panel-content { flex: 1; overflow-y: auto; padding: 20px 24px; }
+    .transcript-item { padding: 16px; background: rgba(0, 0, 0, 0.2); border-radius: var(--radius-md); margin-bottom: 12px; border-left: 3px solid var(--accent-primary); }
+    .transcript-time { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
+    .transcript-text { color: var(--text-primary); line-height: 1.6; }
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); text-align: center; padding: 40px; }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
+
+    /* Side Panel */
+    .side-panel { background: rgba(0, 0, 0, 0.2); border-left: 1px solid var(--border-subtle); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+    .side-panel-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 8px; }
+    .skills-grid { display: grid; gap: 12px; }
+    .skill-btn { display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s ease; text-align: left; }
+    .skill-btn:hover:not(:disabled) { background: var(--bg-card-hover); border-color: var(--border-active); transform: translateX(4px); }
+    .skill-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .skill-btn.loading { border-color: var(--accent-primary); }
+    .skill-icon { width: 44px; height: 44px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+    .skill-icon.inner-os { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+    .skill-icon.brainstorm { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+    .skill-icon.stop-talking { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+    .skill-info { flex: 1; }
+    .skill-name { font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+    .skill-desc { font-size: 0.75rem; color: var(--text-muted); }
+    .skill-status { font-size: 0.875rem; }
+
+    /* Auto Push */
+    .auto-push-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px; }
+    .auto-push-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .auto-push-title { font-weight: 600; }
+    .toggle-switch { position: relative; width: 52px; height: 28px; background: rgba(255, 255, 255, 0.1); border-radius: 100px; cursor: pointer; transition: background 0.3s ease; }
+    .toggle-switch.active { background: var(--accent-primary); }
+    .toggle-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: white; border-radius: 50%; transition: transform 0.3s ease; }
+    .toggle-switch.active::after { transform: translateX(24px); }
+    .auto-push-desc { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* QA Section */
+    .qa-section { flex: 1; display: flex; flex-direction: column; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; min-height: 200px; }
+    .qa-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .qa-message { max-width: 85%; padding: 12px 16px; border-radius: var(--radius-md); font-size: 0.875rem; line-height: 1.5; }
+    .qa-message.user { align-self: flex-end; background: var(--accent-primary); color: white; border-bottom-right-radius: 4px; }
+    .qa-message.assistant { align-self: flex-start; background: rgba(255, 255, 255, 0.05); color: var(--text-primary); border-bottom-left-radius: 4px; }
+    .qa-input-container { display: flex; gap: 10px; padding: 16px; border-top: 1px solid var(--border-subtle); }
+    .qa-input { flex: 1; padding: 12px 16px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.875rem; outline: none; transition: border-color 0.2s ease; }
+    .qa-input:focus { border-color: var(--accent-primary); }
+    .qa-input::placeholder { color: var(--text-muted); }
+    .qa-send-btn { padding: 12px 20px; background: var(--accent-primary); border: none; border-radius: var(--radius-md); color: white; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+    .qa-send-btn:hover { background: var(--accent-secondary); }
+    .qa-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Visualization Card (V2) */
+    .visualization-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px; margin-bottom: 20px; }
+    .visualization-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .visualization-title { font-weight: 600; font-size: 1.125rem; }
+    .visualization-badge { padding: 4px 10px; background: var(--accent-secondary); border-radius: 100px; font-size: 0.75rem; font-weight: 600; }
+    .visualization-type-selector { display: flex; gap: 8px; margin-bottom: 12px; }
+    .vis-type-btn { flex: 1; padding: 10px 12px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 0.875rem; cursor: pointer; transition: all 0.2s ease; }
+    .vis-type-btn:hover { background: var(--bg-card-hover); border-color: var(--border-active); }
+    .vis-type-btn.active { background: var(--accent-primary); color: white; border-color: var(--accent-primary); }
+    .chart-type-selector { margin-bottom: 12px; }
+    .chart-type-select { width: 100%; padding: 10px 12px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.875rem; outline: none; }
+    .vis-generate-btn { width: 100%; padding: 14px 20px; background: var(--gradient-hero); border: none; border-radius: var(--radius-md); color: white; font-weight: 600; font-size: 0.9375rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .vis-generate-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+    .vis-generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    .vis-options { margin-bottom: 12px; }
+    .vis-options-title { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+    .vis-option-grid { display: grid; gap: 10px; }
+    .vis-option-card { padding: 12px 14px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: rgba(0, 0, 0, 0.2); cursor: pointer; transition: all 0.2s ease; }
+    .vis-option-card:hover { background: var(--bg-card-hover); border-color: var(--border-active); }
+    .vis-option-card.active { border-color: var(--accent-primary); background: rgba(99, 102, 241, 0.18); }
+    .vis-option-title { font-weight: 600; margin-bottom: 4px; }
+    .vis-option-summary { font-size: 0.8rem; color: var(--text-muted); }
+.vis-status { margin-top: 12px; padding: 12px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: var(--radius-sm); font-size: 0.875rem; color: var(--accent-primary); }
+    .vis-status-error { color: var(--error); border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.1); }
+    .visualization-item { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; }
+    .visualization-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .visualization-item-type { padding: 4px 10px; background: var(--bg-card-hover); border-radius: 100px; font-size: 0.75rem; color: var(--text-secondary); }
+    .visualization-item-actions { display: flex; gap: 8px; }
+    .vis-action-btn { padding: 6px 12px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 0.75rem; cursor: pointer; transition: all 0.2s ease; }
+    .vis-action-btn:hover { background: var(--bg-card-hover); border-color: var(--border-active); }
+    .visualization-image { width: 100%; border-radius: var(--radius-md); margin-bottom: 12px; cursor: pointer; transition: transform 0.2s ease; }
+    .visualization-image:hover { transform: scale(1.02); }
+    .visualization-metadata { font-size: 0.75rem; color: var(--text-muted); }
+    .vis-modal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 40px; }
+    .vis-modal.show { display: flex; }
+    .vis-modal-content { max-width: 90vw; max-height: 90vh; position: relative; }
+    .vis-modal-image { width: 100%; height: auto; border-radius: var(--radius-lg); }
+    .vis-modal-close { position: absolute; top: -40px; right: 0; padding: 8px 16px; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); cursor: pointer; }
+
+    /* Config Section */
+    .config-section { padding: 100px 0; }
+    .config-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; }
+    .config-header { padding: 24px 32px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; }
+    .config-title { font-size: 1.25rem; font-weight: 600; }
+    .config-status { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; }
+    .config-body { padding: 32px; }
+    .config-group { margin-bottom: 24px; }
+    .config-group:last-child { margin-bottom: 0; }
+    .config-label { display: block; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; }
+    .config-input { width: 100%; padding: 14px 18px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.9375rem; font-family: 'SF Mono', 'Fira Code', monospace; outline: none; transition: border-color 0.2s ease; }
+    .config-input:focus { border-color: var(--accent-primary); }
+    .config-input::placeholder { color: var(--text-muted); }
+    .config-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; }
+    .config-hint a { color: var(--accent-primary); text-decoration: none; }
+    .config-hint a:hover { text-decoration: underline; }
+    .config-actions { display: flex; gap: 12px; margin-top: 32px; }
+
+    /* Features */
+    .features-section { padding: 100px 0; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+    @media (max-width: 1024px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .features-grid { grid-template-columns: 1fr; } }
+    .feature-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 32px; transition: all 0.3s ease; }
+    .feature-card:hover { transform: translateY(-8px); border-color: var(--border-active); }
+    .feature-icon { width: 56px; height: 56px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 20px; background: var(--gradient-hero); }
+    .feature-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .feature-desc { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.7; }
+
+    /* Footer */
+    .footer { padding: 60px 0; border-top: 1px solid var(--border-subtle); text-align: center; }
+    .footer-text { color: var(--text-muted); font-size: 0.875rem; }
+    .footer-text a { color: var(--accent-primary); text-decoration: none; }
+
+    /* Toast */
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 12px; }
+    .toast { padding: 16px 24px; background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-card); display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s ease; max-width: 400px; }
+    .toast.success { border-left: 3px solid var(--success); }
+    .toast.error { border-left: 3px solid var(--error); }
+    .toast.info { border-left: 3px solid var(--accent-primary); }
+    .toast.warning { border-left: 3px solid var(--warning); }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+    .spinner { width: 20px; height: 20px; border: 2px solid rgba(255, 255, 255, 0.2); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+  </style>
+</head>
+<body>
+  <div class="ambient-bg">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <div class="logo">
+        <div class="logo-icon">📸</div>
+        <span>会议快照</span>
+      </div>
+      <div class="nav-links">
+        <a href="#demo" class="nav-link">Demo</a>
+        <a href="#features" class="nav-link">功能</a>
+        <a href="#config" class="nav-link">配置</a>
+      </div>
+      <button class="nav-cta" onclick="scrollToDemo()">开始体验</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      <span>AI 驱动 · 实时洞察</span>
+    </div>
+    <h1 class="hero-title">
+      让每一次会议<br>
+      <span class="hero-title-gradient">都有清晰复盘</span>
+    </h1>
+    <p class="hero-subtitle">
+      基于通义听悟 + Qwen3-Max 的智能会议助手，实时转写、深度分析、一键洞察
+    </p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" onclick="scrollToDemo()">
+        <span>🎙️</span>
+        <span>立即体验</span>
+      </button>
+      <a href="#features" class="btn btn-secondary">
+        <span>了解更多</span>
+        <span>→</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="demo-section" id="demo">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Live Demo</span>
+        <h2 class="section-title">实时演示</h2>
+        <p class="section-desc">体验完整的会议快照功能，从录音到 AI 分析一气呵成</p>
+      </div>
+
+      <!-- Alert Banner -->
+      <div class="alert-banner" id="alertBanner">
+        <div class="alert-banner-title">
+          <span>⚠️</span>
+          <span id="alertTitle">需要启动后端服务</span>
+        </div>
+        <div class="alert-banner-content" id="alertContent">
+          请先启动后端服务：<br><br>
+          <code>cd backend && npm run start:dev</code><br><br>
+          服务启动后，刷新此页面或点击下方"测试连接"按钮。
+        </div>
+      </div>
+
+      <div class="demo-container">
+        <div class="demo-toolbar">
+          <div class="demo-toolbar-dots">
+            <div class="demo-toolbar-dot dot-red"></div>
+            <div class="demo-toolbar-dot dot-yellow"></div>
+            <div class="demo-toolbar-dot dot-green"></div>
+          </div>
+          <div class="demo-toolbar-title">Meeting Snapshot v1.0</div>
+          <div class="demo-toolbar-status">
+            <div class="status-indicator" id="connectionStatus"></div>
+            <span id="connectionText">检测中...</span>
+          </div>
+        </div>
+
+        <div class="demo-content">
+          <div class="main-panel">
+            <div class="recording-card">
+              <div class="recording-header">
+                <h3 class="recording-title">会议录制</h3>
+                <div class="recording-status idle" id="recordingStatus">
+                  <span>●</span>
+                  <span id="recordingStatusText">准备就绪</span>
+                </div>
+              </div>
+              <div class="recording-timer" id="recordingTimer">00:00</div>
+              <div class="recording-hint" id="recordingHint">点击开始录音，实时转写会议内容</div>
+
+                
+                  
+
+              
+              <div class="waveform-container">
+                <div class="waveform" id="waveform"></div>
+              </div>
+
+              <div class="recording-controls">
+                <button class="record-btn record-btn-secondary" id="pauseBtn" disabled>暂停</button>
+                <button class="record-btn record-btn-primary" id="recordBtn" disabled>
+                  <span>🎙️</span>
+                  <span id="recordBtnText">开始录音</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="upload-card">
+              <div class="upload-header">
+                <div>
+                  <h4 class="upload-title">文件转写测试</h4>
+                  <p class="upload-hint">直接上传 mp3/wav/m4a/webm，由后端转码推流到听悟</p>
+                </div>
+                <span class="upload-status" id="uploadStatus">待上传</span>
+              </div>
+              <div class="upload-actions">
+                <input type="file" id="uploadInput" accept="audio/*" class="upload-input" />
+                <input type="text" id="meetingIdInput" class="upload-meeting" placeholder="可选：meetingId（不填自动生成）" />
+                <button class="record-btn record-btn-primary" id="uploadBtn">
+                  <span>⬆️</span>
+                  <span>上传并转写</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="transcription-panel">
+              <div class="panel-header">
+                <div class="panel-tabs">
+                  <button class="panel-tab active" data-tab="transcription">实时转写</button>
+                  <button class="panel-tab" data-tab="summary">AI 总结</button>
+                </div>
+              </div>
+              <div class="panel-content" id="panelContent">
+                <div class="empty-state" id="emptyState">
+                  <div class="empty-state-icon">🎤</div>
+                  <p>开始录音后，转写内容将实时显示在这里</p>
+                </div>
+                <div id="transcriptionList" style="display: none;"></div>
+                <div id="summaryList" style="display: none;">
+                  <div id="visualizationList"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="side-panel">
+            <div>
+              <h4 class="side-panel-title">AI 技能</h4>
+              <div class="skills-grid">
+                <button class="skill-btn" id="skillInnerOS" onclick="triggerSkill('inner_os')" disabled>
+                  <div class="skill-icon inner-os">🧠</div>
+                  <div class="skill-info">
+                    <div class="skill-name">内心 OS</div>
+                    <div class="skill-desc">洞察会议潜台词</div>
+                  </div>
+                  <span class="skill-status" id="skillInnerOSStatus"></span>
+                </button>
+                <button class="skill-btn" id="skillBrainstorm" onclick="triggerSkill('brainstorm')" disabled>
+                  <div class="skill-icon brainstorm">💡</div>
+                  <div class="skill-info">
+                    <div class="skill-name">头脑风暴</div>
+                    <div class="skill-desc">乔布斯式创意激发</div>
+                  </div>
+                  <span class="skill-status" id="skillBrainstormStatus"></span>
+                </button>
+                <button class="skill-btn" id="skillStopTalking" onclick="triggerSkill('stop_talking')" disabled>
+                  <div class="skill-icon stop-talking">🛑</div>
+                  <div class="skill-info">
+                    <div class="skill-name">别再说了</div>
+                    <div class="skill-desc">纠偏跑题讨论</div>
+                  </div>
+                  <span class="skill-status" id="skillStopTalkingStatus"></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="auto-push-card">
+              <div class="auto-push-header">
+                <span class="auto-push-title">自动推送分析</span>
+                <div class="toggle-switch" id="autoPushToggle" onclick="toggleAutoPush()"></div>
+              </div>
+              <p class="auto-push-desc">开启后每分钟自动分析会议状态</p>
+            </div>
+
+            <!-- Visualization Card (V2) -->
+            <div class="visualization-card">
+              <div class="visualization-header">
+                <h4 class="visualization-title">视觉化共识</h4>
+                <span class="visualization-badge">V2</span>
+              </div>
+              
+              <div class="vis-options">
+                <div class="vis-options-title">????</div>
+                <div class="vis-option-grid" id="visOptionList"></div>
+              </div>
+              
+              <button class="vis-generate-btn" id="visConfirmBtn" onclick="confirmVisualizationOption()" disabled>
+                <span>?</span>
+                <span>????</span>
+              </button>
+              
+              <div class="vis-status" id="visStatus" style="display: none;"></div>
+              
+              <!-- 图片预览区域 -->
+              <div class="vis-preview" id="visPreview" style="display: none; margin-top: 16px;">
+                <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">生成结果：</div>
+                <img id="visPreviewImage" src="" alt="视觉化预览" style="width: 100%; border-radius: var(--radius-md); cursor: pointer;" onclick="viewVisualizationFromPreview()">
+                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                  <button class="vis-action-btn" onclick="downloadVisualizationFromPreview()">下载</button>
+                  <button class="vis-action-btn" onclick="shareVisualizationFromPreview()">分享</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="qa-section">
+              <div class="panel-header" style="padding: 16px;">
+                <span style="font-weight: 600;">会议问答</span>
+              </div>
+              <div class="qa-messages" id="qaMessages">
+                <div class="qa-message assistant">
+                  👋 你好！我是会议助手，可以回答关于当前会议内容的任何问题。
+                </div>
+              </div>
+              <div class="qa-input-container">
+                <input type="text" class="qa-input" id="qaInput" placeholder="输入问题..." onkeypress="handleQAKeypress(event)">
+                <button class="qa-send-btn" id="qaSendBtn" onclick="askQuestion()" disabled>发送</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Features</span>
+        <h2 class="section-title">核心功能</h2>
+        <p class="section-desc">强大的 AI 能力，让会议更高效</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎙️</div>
+          <h3 class="feature-title">实时语音转写</h3>
+          <p class="feature-desc">基于通义听悟，毫秒级延迟，支持中英文混合识别，准确率高达 98%</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <h3 class="feature-title">深度语义分析</h3>
+          <p class="feature-desc">Qwen3-Max 大模型驱动，理解上下文语义，洞察会议潜台词</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3 class="feature-title">一键技能触发</h3>
+          <p class="feature-desc">内心 OS、头脑风暴、纠偏提醒，三大技能随时调用</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔄</div>
+          <h3 class="feature-title">自动推送洞察</h3>
+          <p class="feature-desc">每分钟自动分析会议状态，主动推送关键信息和盲点提醒</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3 class="feature-title">智能问答</h3>
+          <p class="feature-desc">基于会议内容的自由问答，快速获取特定信息</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3 class="feature-title">跨平台支持</h3>
+          <p class="feature-desc">Web + React Native 双端支持，随时随地参与会议</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="config-section" id="config">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Configuration</span>
+        <h2 class="section-title">服务配置</h2>
+        <p class="section-desc">配置后端服务地址</p>
+      </div>
+      <div class="config-card">
+        <div class="config-header">
+          <h3 class="config-title">连接设置</h3>
+          <div class="config-status">
+            <div class="status-indicator" id="configStatus"></div>
+            <span id="configStatusText">未连接</span>
+          </div>
+        </div>
+        <div class="config-body">
+          <div class="config-group">
+            <label class="config-label">后端服务地址</label>
+            <input type="text" class="config-input" id="apiBaseUrl" value="http://localhost:4000" placeholder="http://localhost:4000">
+            <p class="config-hint">默认为本地开发服务器 (端口 4000)</p>
+          </div>
+          <div class="config-actions">
+            <button class="btn btn-primary" onclick="testConnection()">测试连接</button>
+            <button class="btn btn-secondary" onclick="saveConfig()">保存配置</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-text">
+        Built with ❤️ using <a href="#">通义听悟</a> + <a href="#">Qwen3-Max</a> | © 2024 Meeting Snapshot
+      </p>
+    </div>
+  </footer>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // ========== State ==========
+    const state = {
+      sessionId: null,
+      taskId: null,
+      isRecording: false,
+      isPaused: false,
+      isConnected: false,
+      recordingStartTime: null,
+      transcription: [],
+      summaries: [],
+      autoPushEnabled: false,
+      activeTab: 'transcription',
+      mediaRecorder: null,
+      apiBaseUrl: localStorage.getItem('apiBaseUrl') || 'http://localhost:4000',
+      currentVisualizationType: 'chart',
+      currentChartType: 'radar',
+    };
+
+    // ========== DOM Elements ==========
+    const $ = id => document.getElementById(id);
+    const elements = {
+      nav: $('nav'),
+      connectionStatus: $('connectionStatus'),
+      connectionText: $('connectionText'),
+      recordingStatus: $('recordingStatus'),
+      recordingStatusText: $('recordingStatusText'),
+      recordingTimer: $('recordingTimer'),
+      recordingHint: $('recordingHint'),
+      waveform: $('waveform'),
+      recordBtn: $('recordBtn'),
+      recordBtnText: $('recordBtnText'),
+      pauseBtn: $('pauseBtn'),
+      emptyState: $('emptyState'),
+      transcriptionList: $('transcriptionList'),
+      summaryList: $('summaryList'),
+      autoPushToggle: $('autoPushToggle'),
+      qaMessages: $('qaMessages'),
+      qaInput: $('qaInput'),
+      qaSendBtn: $('qaSendBtn'),
+      configStatus: $('configStatus'),
+      configStatusText: $('configStatusText'),
+      apiBaseUrl: $('apiBaseUrl'),
+      toastContainer: $('toastContainer'),
+      alertBanner: $('alertBanner'),
+      alertTitle: $('alertTitle'),
+      alertContent: $('alertContent'),
+      uploadInput: $('uploadInput'),
+      meetingIdInput: $('meetingIdInput'),
+      uploadBtn: $('uploadBtn'),
+      uploadStatus: $('uploadStatus'),
+      visConfirmBtn: $('visConfirmBtn'),
+      visStatus: $('visStatus'),
+      visOptionList: $('visOptionList'),
+      chartTypeSelector: $('chartTypeSelector'),
+      chartTypeSelect: $('chartTypeSelect'),
+      visualizationList: $('visualizationList'),
+    };
+
+    // ========== Initialize ==========
+    function init() {
+      elements.apiBaseUrl.value = state.apiBaseUrl;
+      setupNavScroll();
+      setupTabs();
+      setupWaveform();
+      testConnection();
+    }
+
+    function setupNavScroll() {
+      window.addEventListener('scroll', () => {
+        elements.nav.classList.toggle('scrolled', window.scrollY > 50);
+      });
+    }
+
+    function scrollToDemo() {
+      $('demo').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function setupTabs() {
+      document.querySelectorAll('.panel-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          state.activeTab = tab.dataset.tab;
+          document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          updatePanelContent();
+        });
+      });
+    }
+
+    function updatePanelContent() {
+      // 检查是否有内容：转写内容、AI总结、或视觉化内容
+      const hasTranscription = state.transcription.length > 0;
+      const hasSummaries = state.summaries.length > 0;
+      const hasVisualizations = elements.visualizationList && elements.visualizationList.children.length > 0;
+      
+      const hasContent = state.activeTab === 'transcription' 
+        ? hasTranscription 
+        : (hasSummaries || hasVisualizations);
+      
+      elements.emptyState.style.display = hasContent ? 'none' : 'flex';
+      elements.transcriptionList.style.display = state.activeTab === 'transcription' && hasTranscription ? 'block' : 'none';
+      elements.summaryList.style.display = state.activeTab === 'summary' ? 'block' : 'none';
+    }
+
+    // ========== Waveform ==========
+    function setupWaveform() {
+      for (let i = 0; i < 40; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'waveform-bar';
+        bar.style.height = '10%';
+        elements.waveform.appendChild(bar);
+      }
+    }
+
+    let waveformInterval = null;
+    function startWaveformAnimation() {
+      if (waveformInterval) return;
+      waveformInterval = setInterval(() => {
+        elements.waveform.querySelectorAll('.waveform-bar').forEach((bar, i) => {
+          const h = 10 + Math.sin(Date.now() / 200 + i * 0.5) * 20 + (state.isRecording ? 30 : 0) + Math.random() * 10;
+          bar.style.height = `${h}%`;
+        });
+      }, 100);
+    }
+
+    function stopWaveformAnimation() {
+      if (waveformInterval) { clearInterval(waveformInterval); waveformInterval = null; }
+      elements.waveform.querySelectorAll('.waveform-bar').forEach(bar => bar.style.height = '10%');
+    }
+
+    // ========== Connection ==========
+    async function testConnection() {
+      const baseUrl = elements.apiBaseUrl.value.trim();
+      state.apiBaseUrl = baseUrl;
+      
+      updateConnectionStatus('testing');
+      
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        const response = await fetch(`${baseUrl}/sessions/health`, {
+          method: 'GET',
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          state.isConnected = true;
+          updateConnectionStatus('connected');
+          hideAlert();
+          enableControls(true);
+          showToast('后端连接成功！', 'success');
+        } else {
+          throw new Error(`HTTP ${response.status}`);
+        }
+      } catch (error) {
+        state.isConnected = false;
+        updateConnectionStatus('error');
+        enableControls(false);
+        
+        if (error.name === 'AbortError') {
+          showAlert('连接超时', '无法连接到后端服务，请确保：<br><br>1. 后端服务已启动：<code>cd backend && npm run start:dev</code><br><br>2. 服务地址正确（默认 http://localhost:4000）');
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          showAlert('无法连接后端服务', '请先启动后端服务：<br><br><code>cd backend && npm run start:dev</code><br><br>启动后刷新页面或点击"测试连接"按钮。<br><br><strong>提示：</strong>如果使用 file:// 协议打开此页面，可能会遇到跨域问题。建议使用本地服务器打开。');
+        } else {
+          showAlert('连接失败', `错误信息：${error.message}`);
+        }
+      }
+    }
+
+    function updateConnectionStatus(status) {
+      const statusMap = {
+        testing: { class: '', text: '检测中...' },
+        connected: { class: 'connected', text: '已连接' },
+        error: { class: 'error', text: '未连接' }
+      };
+      const s = statusMap[status] || statusMap.error;
+      elements.connectionStatus.className = `status-indicator ${s.class}`;
+      elements.connectionText.textContent = s.text;
+      elements.configStatus.className = `status-indicator ${s.class}`;
+      elements.configStatusText.textContent = s.text;
+    }
+
+    function enableControls(enabled) {
+      elements.recordBtn.disabled = !enabled;
+      $('skillInnerOS').disabled = !enabled;
+      $('skillBrainstorm').disabled = !enabled;
+      $('skillStopTalking').disabled = !enabled;
+      elements.qaSendBtn.disabled = !enabled;
+      if (elements.uploadBtn) elements.uploadBtn.disabled = !enabled;
+      updateVisualizationButtonState();
+    }
+
+    function showAlert(title, content) {
+      elements.alertTitle.textContent = title;
+      elements.alertContent.innerHTML = content;
+      elements.alertBanner.classList.add('show');
+    }
+
+    function hideAlert() {
+      elements.alertBanner.classList.remove('show');
+    }
+
+    function saveConfig() {
+      localStorage.setItem('apiBaseUrl', elements.apiBaseUrl.value.trim());
+      state.apiBaseUrl = elements.apiBaseUrl.value.trim();
+      showToast('配置已保存', 'success');
+    }
+
+    // ========== Recording ==========
+    async function toggleRecording() {
+      if (state.isRecording) {
+        await stopRecording();
+      } else {
+        await startRecording();
+      }
+    }
+
+
+        async function startRecording() {
+      if (!state.isConnected) {
+        showToast('请先连接后端服务', 'error');
+        return;
+      }
+
+      // 检查是否支持 mediaDevices API
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showToast('当前环境不支持麦克风访问', 'error');
+        showAlert('不支持麦克风', 
+          '您的浏览器或当前环境不支持麦克风访问。<br><br>' +
+          '<strong>可能的原因：</strong><br>' +
+          '1. 使用了非 HTTPS 连接（非 localhost）<br>' +
+          '2. 浏览器版本过旧<br><br>' +
+          '<strong>解决方案：</strong><br>' +
+          '• 请使用 <code>http://localhost:3001</code> 访问<br>' +
+          '• 或使用 HTTPS 部署'
+        );
+        return;
+      }
+
+      try {
+        // 每次录音都创建全新会话，避免复用已完成的任务
+        showToast('正在创建会话...', 'info');
+        state.sessionId = null;
+        state.taskId = null;
+        state.transcription = [];
+        state.summaries = [];
+        renderTranscription();
+        renderSummaries();
+        updatePanelContent();
+
+        const response = await apiCall('POST', '/sessions', { meetingId: `meeting-${Date.now()}` });
+        state.sessionId = response.sessionId;
+        state.taskId = response.taskId;
+        showToast('会话创建成功', 'success');
+
+        // Request microphone
+        showToast('正在请求麦克风权限...', 'info');
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true }
+        });
+
+        state.mediaRecorder = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm' });
+
+        state.mediaRecorder.ondataavailable = async (event) => {
+          if (event.data.size > 0 && state.sessionId) {
+            try {
+              const base64 = await blobToBase64(event.data);
+              await apiCall('POST', `/sessions/${state.sessionId}/audio`, { chunk: base64 });
+            } catch (e) { console.warn('Upload chunk failed:', e); }
+          }
+        };
+
+        state.mediaRecorder.start(1000);
+        state.isRecording = true;
+        state.recordingStartTime = Date.now();
+        
+        updateRecordingUI();
+        startWaveformAnimation();
+        startTimerUpdate();
+        startPolling();
+        
+        showToast('🎙️ 录音已开始', 'success');
+      } catch (error) {
+        console.error('Start recording failed:', error);
+        
+        if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+          showToast('麦克风权限被拒绝，请在浏览器设置中允许访问麦克风', 'error');
+          showAlert('需要麦克风权限', '请点击浏览器地址栏左侧的锁图标，允许访问麦克风后重试。');
+        } else if (error.name === 'NotFoundError') {
+          showToast('未找到麦克风设备', 'error');
+        } else {
+          showToast('录音启动失败: ' + error.message, 'error');
+        }
+      }
+    }
+
+    async function stopRecording() {
+      if (state.mediaRecorder) {
+        state.mediaRecorder.stop();
+        state.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        state.mediaRecorder = null;
+      }
+
+      state.isRecording = false;
+      state.isPaused = false;
+      
+      stopWaveformAnimation();
+      stopTimerUpdate();
+      updateRecordingUI();
+
+      if (state.sessionId) {
+        try {
+          showToast('正在处理音频并发送到通义听悟...', 'info');
+          // 先处理音频发送到通义听悟
+          await apiCall('POST', `/sessions/${state.sessionId}/process`);
+          showToast('音频处理完成，正在等待转写结果...', 'success');
+          
+          // 继续轮询一段时间以获取转写结果
+          let pollCount = 0;
+          const maxPolls = 30; // 最多轮询30次（30秒）
+          const pollForResults = async () => {
+            if (pollCount >= maxPolls) {
+              stopPolling();
+              showToast('转写完成', 'success');
+              return;
+            }
+            pollCount++;
+            await pollUpdates();
+            setTimeout(pollForResults, 1000);
+          };
+          pollForResults();
+          
+        } catch (e) { 
+          console.warn('Process audio failed:', e); 
+          showToast('音频处理失败: ' + e.message, 'error');
+        }
+        
+        try {
+          await apiCall('POST', `/sessions/${state.sessionId}/complete`);
+        } catch (e) { console.warn('Complete session failed:', e); }
+      }
+    }
+
+    function togglePause() {
+      if (!state.isRecording) return;
+      state.isPaused = !state.isPaused;
+      if (state.isPaused) {
+        state.mediaRecorder?.pause();
+        stopWaveformAnimation();
+      } else {
+        state.mediaRecorder?.resume();
+        startWaveformAnimation();
+      }
+      updateRecordingUI();
+    }
+
+    function updateRecordingUI() {
+      if (state.isRecording) {
+        elements.recordingStatus.className = 'recording-status recording';
+        elements.recordingStatusText.textContent = state.isPaused ? '已暂停' : '录制中';
+        elements.recordBtnText.textContent = '停止录音';
+        elements.recordBtn.classList.add('recording');
+        elements.pauseBtn.disabled = false;
+        elements.pauseBtn.textContent = state.isPaused ? '继续' : '暂停';
+        elements.recordingHint.textContent = state.isPaused ? '录音已暂停' : '正在录制并实时转写...';
+      } else {
+        elements.recordingStatus.className = 'recording-status idle';
+        elements.recordingStatusText.textContent = '准备就绪';
+        elements.recordBtnText.textContent = '开始录音';
+        elements.recordBtn.classList.remove('recording');
+        elements.pauseBtn.disabled = true;
+        elements.pauseBtn.textContent = '暂停';
+        elements.recordingHint.textContent = '点击开始录音，实时转写会议内容';
+      }
+    }
+
+    // ========== Timer ==========
+    let timerInterval = null;
+    function startTimerUpdate() {
+      if (timerInterval) return;
+      timerInterval = setInterval(() => {
+        if (!state.recordingStartTime) return;
+        const elapsed = Date.now() - state.recordingStartTime;
+        const m = Math.floor(elapsed / 60000).toString().padStart(2, '0');
+        const s = Math.floor((elapsed % 60000) / 1000).toString().padStart(2, '0');
+        elements.recordingTimer.textContent = `${m}:${s}`;
+      }, 1000);
+    }
+
+    function stopTimerUpdate() {
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    }
+
+    // ========== Polling ==========
+    let pollingInterval = null;
+    function startPolling() {
+      if (pollingInterval) return;
+      pollUpdates(); // 立即执行一次
+      pollingInterval = setInterval(pollUpdates, 2000); // 改为 2 秒
+    }
+
+    function stopPolling() {
+      if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+    }
+
+    async function pollUpdates() {
+      if (!state.sessionId) return;
+      try {
+        const [transcripts, summaries] = await Promise.all([
+          apiCall('GET', `/sessions/${state.sessionId}/transcripts`),
+          apiCall('GET', `/sessions/${state.sessionId}/summaries`)
+        ]);
+        console.log('Poll result:', { transcripts, summaries }); // 调试日志
+        if (transcripts.transcription && transcripts.transcription.length > 0) { 
+          state.transcription = transcripts.transcription; 
+          renderTranscription(); 
+          updateVisualizationButtonState();
+        }
+        if (summaries.summaries) { state.summaries = summaries.summaries; renderSummaries(); }
+        
+        // 轮询视觉化内容 (V2)
+        try {
+          const visResponse = await apiCall('GET', `/sessions/${state.sessionId}/visualizations`);
+          if (visResponse.visualizations && visResponse.visualizations.length > 0) {
+            renderVisualizations(visResponse.visualizations);
+          }
+        } catch (e) {
+          // 忽略视觉化轮询错误（可能API还未实现）
+        }
+        
+        updatePanelContent();
+      } catch (e) { console.warn('Poll failed:', e); }
+    }
+
+    // ========== Render ==========
+    function renderTranscription() {
+      if (state.transcription.length === 0) {
+        elements.transcriptionList.innerHTML = '<div class="empty-hint">等待转写结果...</div>';
+        return;
+      }
+      elements.transcriptionList.innerHTML = state.transcription.map(item => `
+        <div class="transcript-item">
+          <div class="transcript-time">${formatTime(item.startMs)}</div>
+          <div class="transcript-text">${escapeHtml(item.text)}</div>
+        </div>
+      `).join('');
+      elements.transcriptionList.scrollTop = elements.transcriptionList.scrollHeight;
+    }
+
+    function renderSummaries() {
+      const colors = { inner_os: '#6366f1', brainstorm: '#f59e0b', stop_talking: '#ec4899', auto_analysis: '#10b981' };
+      let html = state.summaries.map(card => `
+        <div class="transcript-item" style="border-left-color: ${colors[card.type] || '#6366f1'}">
+          <div class="transcript-time">${card.title || card.type}</div>
+          <div class="transcript-text">${formatContent(card.content)}</div>
+        </div>
+      `).join('');
+      
+      // 保存现有的视觉化内容
+      const existingVisContent = elements.visualizationList ? elements.visualizationList.innerHTML : '';
+      
+      // 更新 summaryList 内容，保留 visualizationList 容器
+      elements.summaryList.innerHTML = html + '<div id="visualizationList"></div>';
+      elements.visualizationList = document.getElementById('visualizationList');
+      
+      // 恢复视觉化内容
+      if (existingVisContent && elements.visualizationList) {
+        elements.visualizationList.innerHTML = existingVisContent;
+      }
+    }
+
+    function renderVisualizations(visualizations) {
+      if (!elements.visualizationList) {
+        const summaryList = document.getElementById('summaryList');
+        if (summaryList) {
+          const visList = document.createElement('div');
+          visList.id = 'visualizationList';
+          summaryList.appendChild(visList);
+          elements.visualizationList = visList;
+        }
+      }
+      
+      if (!elements.visualizationList) return;
+      
+      // 清除现有内容并重新渲染
+      elements.visualizationList.innerHTML = '';
+      
+      const typeLabels = {
+        chart: '科研图表',
+        creative: '创意图像',
+        poster: '逻辑海报',
+      };
+      
+      visualizations.forEach(result => {
+        const card = document.createElement('div');
+        card.className = 'visualization-item';
+        card.dataset.visId = result.id;
+        
+        const imageSrc = result.imageUrl || (result.imageBase64 ? `data:${result.metadata?.mimeType || 'image/png'};base64,${result.imageBase64}` : '');
+        
+        card.innerHTML = `
+          <div class="visualization-item-header">
+            <span class="visualization-item-type">${typeLabels[result.type] || result.type}</span>
+            <div class="visualization-item-actions">
+              <button class="vis-action-btn" onclick="viewVisualization('${result.id}')">查看</button>
+              <button class="vis-action-btn" onclick="downloadVisualization('${result.id}')">下载</button>
+              <button class="vis-action-btn" onclick="shareVisualization('${result.id}')">分享</button>
+            </div>
+          </div>
+          ${imageSrc ? `<img src="${imageSrc}" alt="视觉化内容" class="visualization-image" onclick="viewVisualization('${result.id}')">` : ''}
+          <div class="visualization-metadata">
+            生成时间: ${new Date(result.createdAt).toLocaleString('zh-CN')}
+          </div>
+        `;
+        
+        elements.visualizationList.appendChild(card);
+      });
+    }
+
+    function formatContent(content) {
+      if (typeof content === 'string') return escapeHtml(content);
+      if (Array.isArray(content)) return content.map(escapeHtml).join('<br>');
+      if (typeof content === 'object') return Object.entries(content).map(([k, v]) => `<strong>${k}:</strong> ${escapeHtml(String(v))}`).join('<br>');
+      return String(content);
+    }
+
+    // ========== Skills ==========
+    async function triggerSkill(skill) {
+      if (!state.sessionId) { showToast('请先开始录音', 'error'); return; }
+
+      const names = { inner_os: 'InnerOS', brainstorm: 'Brainstorm', stop_talking: 'StopTalking' };
+      const displayNames = { inner_os: '内心 OS', brainstorm: '头脑风暴', stop_talking: '别再说了' };
+      const statusEl = $(`skill${names[skill]}Status`);
+      const btnEl = $(`skill${names[skill]}`);
+      
+      btnEl.disabled = true;
+      btnEl.classList.add('loading');
+      statusEl.innerHTML = '<div class="spinner"></div>';
+
+      try {
+        const response = await apiCall('POST', `/sessions/${state.sessionId}/skills/${skill}`);
+        if (response.cards?.length) {
+          state.summaries = [...state.summaries, ...response.cards];
+          renderSummaries();
+          document.querySelector('[data-tab="summary"]').click();
+        }
+        statusEl.textContent = '✓';
+        showToast(`${displayNames[skill]} 分析完成`, 'success');
+      } catch (error) {
+        statusEl.textContent = '⚠️';
+        showToast(`${displayNames[skill]} 失败: ${error.message}`, 'error');
+      } finally {
+        btnEl.disabled = false;
+        btnEl.classList.remove('loading');
+        setTimeout(() => { statusEl.textContent = ''; }, 2000);
+      }
+    }
+
+    // ========== Auto Push ==========
+    async function toggleAutoPush() {
+      if (!state.sessionId) { showToast('请先开始录音', 'error'); return; }
+
+      state.autoPushEnabled = !state.autoPushEnabled;
+      elements.autoPushToggle.classList.toggle('active', state.autoPushEnabled);
+
+      try {
+        if (state.autoPushEnabled) {
+          await apiCall('POST', `/sessions/${state.sessionId}/auto-push/start`);
+          showToast('自动推送已开启', 'success');
+        } else {
+          await apiCall('POST', `/sessions/${state.sessionId}/auto-push/stop`);
+          showToast('自动推送已关闭', 'info');
+        }
+      } catch (error) {
+        state.autoPushEnabled = !state.autoPushEnabled;
+        elements.autoPushToggle.classList.toggle('active', state.autoPushEnabled);
+        showToast('切换失败: ' + error.message, 'error');
+      }
+    }
+
+    // ========== File Upload ==========
+    function setUploadStatus(text, status = 'idle') {
+      elements.uploadStatus.textContent = text;
+      elements.uploadStatus.className = `upload-status ${status}`;
+    }
+
+    async function uploadAndTranscribe() {
+      if (!state.isConnected) { showToast('请先连接后端服务', 'error'); return; }
+      const file = elements.uploadInput.files?.[0];
+      if (!file) { showToast('请先选择音频文件', 'warning'); return; }
+
+      setUploadStatus('上传中...', 'loading');
+      elements.uploadBtn.disabled = true;
+
+      try {
+        const form = new FormData();
+        form.append('file', file);
+        const meetingId = elements.meetingIdInput.value.trim();
+        if (meetingId) form.append('meetingId', meetingId);
+
+        const response = await fetch(`${state.apiBaseUrl}/sessions/upload`, {
+          method: 'POST',
+          body: form,
+        });
+
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(text || `HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        state.sessionId = data.sessionId;
+        state.taskId = data.taskId;
+        state.transcription = [];
+        state.summaries = [];
+        state.visualizationOptions = [];
+        state.selectedVisualizationOptionId = null;
+        state.isRecording = false;
+        state.isPaused = false;
+        renderTranscription();
+        renderSummaries();
+        renderVisualizationOptions();
+        updatePanelContent();
+        updateVisualizationButtonState();
+        stopPolling();
+        startPolling();
+        setUploadStatus('已上传，转写中', 'success');
+        showToast('文件上传成功，已开始转写', 'success');
+      } catch (error) {
+        console.error('Upload failed:', error);
+        setUploadStatus('上传失败', 'error');
+        showToast('上传失败: ' + error.message, 'error');
+      } finally {
+        elements.uploadBtn.disabled = false;
+      }
+    }
+
+    // ========== QA ==========
+    function handleQAKeypress(event) { if (event.key === 'Enter') askQuestion(); }
+
+    async function askQuestion() {
+      const question = elements.qaInput.value.trim();
+      if (!question) return;
+      if (!state.sessionId) { showToast('请先开始录音', 'error'); return; }
+
+      addQAMessage(question, 'user');
+      elements.qaInput.value = '';
+      elements.qaSendBtn.disabled = true;
+
+      try {
+        const response = await apiCall('POST', `/sessions/${state.sessionId}/qa`, { question });
+        addQAMessage(response.answer, 'assistant');
+      } catch (error) {
+        addQAMessage('抱歉，处理问题时出错了: ' + error.message, 'assistant');
+      } finally {
+        elements.qaSendBtn.disabled = false;
+      }
+    }
+
+    function addQAMessage(content, role) {
+      const el = document.createElement('div');
+      el.className = `qa-message ${role}`;
+      el.textContent = content;
+      elements.qaMessages.appendChild(el);
+      elements.qaMessages.scrollTop = elements.qaMessages.scrollHeight;
+    }
+
+    // ========== API ==========
+    async function apiCall(method, path, body = null) {
+      const options = { method, headers: { 'Content-Type': 'application/json' } };
+      if (body) options.body = JSON.stringify(body);
+      
+      const response = await fetch(`${state.apiBaseUrl}${path}`, options);
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || `HTTP ${response.status}`);
+      }
+      return response.json();
+    }
+
+    // ========== Utilities ==========
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function formatTime(ms) {
+      const m = Math.floor(ms / 60000).toString().padStart(2, '0');
+      const s = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showToast(message, type = 'info') {
+      const icons = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<span>${icons[type] || 'ℹ'}</span><span>${escapeHtml(message)}</span>`;
+      elements.toastContainer.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+
+    async function loadVisualizationOptions() {
+      if (!state.sessionId) return;
+      if (!state.transcription || state.transcription.length === 0) return;
+
+      try {
+        const response = await apiCall('POST', `/sessions/${state.sessionId}/visualization/options`);
+        state.visualizationOptions = response.options || [];
+        state.selectedVisualizationOptionId = null;
+        renderVisualizationOptions();
+        if (elements.visStatus) {
+          elements.visStatus.style.display = 'block';
+          elements.visStatus.className = 'vis-status';
+          elements.visStatus.innerHTML = '<div>AI????????????????</div>';
+        }
+        updateVisualizationButtonState();
+      } catch (error) {
+        console.warn('Load visualization options failed:', error);
+      }
+    }
+
+    function renderVisualizationOptions() {
+      if (!elements.visOptionList) return;
+      const options = state.visualizationOptions || [];
+      if (options.length === 0) {
+        elements.visOptionList.innerHTML = '<div class="vis-option-summary">????????</div>';
+        return;
+      }
+      elements.visOptionList.innerHTML = options.map(option => {
+        const activeClass = option.id === state.selectedVisualizationOptionId ? 'active' : '';
+        return `
+          <div class="vis-option-card ${activeClass}" data-option-id="${option.id}" onclick="selectVisualizationOption('${option.id}')">
+            <div class="vis-option-title">${option.title}</div>
+            <div class="vis-option-summary">${option.summary}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectVisualizationOption(optionId) {
+      state.selectedVisualizationOptionId = optionId;
+      renderVisualizationOptions();
+      updateVisualizationButtonState();
+    }
+
+    function maybeLoadVisualizationOptions() {
+      if (!state.sessionId) return;
+      if (!state.transcription || state.transcription.length === 0) return;
+      if (state.visualizationOptions && state.visualizationOptions.length > 0) return;
+      loadVisualizationOptions();
+    }
+
+    // ========== Visualization (V2) ==========
+    function selectVisualizationType(type) {
+      state.currentVisualizationType = type;
+      
+      // 更新按钮状态
+      document.querySelectorAll('.vis-type-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.type === type) {
+          btn.classList.add('active');
+        }
+      });
+      
+      // 显示/隐藏图表类型选择器
+      if (type === 'chart') {
+        elements.chartTypeSelector.style.display = 'block';
+      } else {
+        elements.chartTypeSelector.style.display = 'none';
+      }
+      
+      // 更新生成按钮状态
+      updateVisualizationButtonState();
+    }
+
+    function updateVisualizationButtonState() {
+      const hasSession = !!state.sessionId;
+      const hasTranscription = state.transcription && state.transcription.length > 0;
+      const hasOption = !!state.selectedVisualizationOptionId;
+      if (elements.visConfirmBtn) {
+        elements.visConfirmBtn.disabled = !hasSession || !hasTranscription || !hasOption;
+      }
+    }
+
+        async function confirmVisualizationOption() {
+      if (!state.sessionId) {
+        showToast('?????????????', 'error');
+        return;
+      }
+      if (!state.selectedVisualizationOptionId) {
+        showToast('????????', 'warning');
+        return;
+      }
+
+      if (elements.visConfirmBtn) {
+        elements.visConfirmBtn.disabled = true;
+        elements.visConfirmBtn.innerHTML = '<span>?</span><span>???...</span>';
+      }
+      elements.visStatus.style.display = 'block';
+      elements.visStatus.innerHTML = '<div class="vis-status-loading">?????????????...</div>';
+      elements.visStatus.className = 'vis-status';
+
+      try {
+        const response = await apiCall('POST', `/sessions/${state.sessionId}/visualization/confirm`, {
+          optionId: state.selectedVisualizationOptionId,
+        });
+
+        displayVisualization(response);
+        state.selectedVisualizationOptionId = null;
+        renderVisualizationOptions();
+        elements.visStatus.style.display = 'none';
+        showToast('??????????', 'success');
+      } catch (error) {
+        console.error('???????', error);
+        elements.visStatus.innerHTML = '<div class="vis-status-error">??????????</div>';
+        elements.visStatus.className = 'vis-status vis-status-error';
+        showToast('????: ' + error.message, 'error');
+      } finally {
+        if (elements.visConfirmBtn) {
+          elements.visConfirmBtn.innerHTML = '<span>?</span><span>????</span>';
+        }
+        updateVisualizationButtonState();
+      }
+    }
+
+function displayVisualization(result) {
+      console.log('[DEBUG] displayVisualization called with result:', result);
+      
+      const typeLabels = {
+        chart: '科研图表',
+        creative: '创意图像',
+        poster: '逻辑海报',
+      };
+      
+      const imageSrc = result.imageUrl || (result.imageBase64 ? `data:${result.metadata?.mimeType || 'image/png'};base64,${result.imageBase64}` : '');
+      console.log('[DEBUG] Image source:', imageSrc ? `${imageSrc.substring(0, 100)}...` : 'EMPTY');
+      
+      // 1. 在侧边栏的预览区域显示图片（最直接的展示）
+      const visPreview = document.getElementById('visPreview');
+      const visPreviewImage = document.getElementById('visPreviewImage');
+      if (visPreview && visPreviewImage && imageSrc) {
+        visPreviewImage.src = imageSrc;
+        visPreviewImage.dataset.visId = result.id;
+        visPreview.style.display = 'block';
+        console.log('[DEBUG] Image displayed in preview area');
+      }
+      
+      // 2. 同时在 AI 总结 tab 的 visualizationList 中添加记录
+      if (!elements.visualizationList) {
+        const summaryList = document.getElementById('summaryList');
+        if (summaryList) {
+          const visList = document.createElement('div');
+          visList.id = 'visualizationList';
+          summaryList.appendChild(visList);
+          elements.visualizationList = visList;
+        }
+      }
+      
+      if (elements.visualizationList) {
+        const card = document.createElement('div');
+        card.className = 'visualization-item';
+        card.dataset.visId = result.id;
+        
+        card.innerHTML = `
+          <div class="visualization-item-header">
+            <span class="visualization-item-type">${typeLabels[result.type] || result.type}</span>
+            <div class="visualization-item-actions">
+              <button class="vis-action-btn" onclick="viewVisualization('${result.id}')">查看</button>
+              <button class="vis-action-btn" onclick="downloadVisualization('${result.id}')">下载</button>
+              <button class="vis-action-btn" onclick="shareVisualization('${result.id}')">分享</button>
+            </div>
+          </div>
+          ${imageSrc ? `<img src="${imageSrc}" alt="视觉化内容" class="visualization-image" onclick="viewVisualization('${result.id}')">` : '<div style="padding: 20px; color: var(--text-muted);">图像数据为空</div>'}
+          <div class="visualization-metadata">
+            生成时间: ${new Date(result.createdAt).toLocaleString('zh-CN')}
+          </div>
+        `;
+        
+        elements.visualizationList.insertBefore(card, elements.visualizationList.firstChild);
+      }
+        
+      // 切换到 summary tab 并强制显示
+      const summaryTab = document.querySelector('[data-tab="summary"]');
+      if (summaryTab) {
+        summaryTab.click();
+      }
+      
+      // 强制显示 summaryList（即使没有 AI 总结内容）
+      elements.summaryList.style.display = 'block';
+      elements.emptyState.style.display = 'none';
+      
+      console.log('[DEBUG] Visualization card added, summaryList display:', elements.summaryList.style.display);
+    }
+    
+    // 预览区域的辅助函数
+    function viewVisualizationFromPreview() {
+      const img = document.getElementById('visPreviewImage');
+      if (!img || !img.src) return;
+      
+      let modal = document.getElementById('visModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'visModal';
+        modal.className = 'vis-modal';
+        modal.innerHTML = `
+          <div class="vis-modal-content">
+            <button class="vis-modal-close" onclick="closeVisualizationModal()">关闭</button>
+            <img class="vis-modal-image" id="visModalImage" src="" alt="视觉化内容">
+          </div>
+        `;
+        document.body.appendChild(modal);
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeVisualizationModal();
+        });
+      }
+      
+      const modalImg = document.getElementById('visModalImage');
+      if (modalImg) {
+        modalImg.src = img.src;
+        modal.classList.add('show');
+      }
+    }
+    
+    function downloadVisualizationFromPreview() {
+      const img = document.getElementById('visPreviewImage');
+      if (!img || !img.src) return;
+      
+      const link = document.createElement('a');
+      link.href = img.src;
+      link.download = `visualization-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('图像下载成功', 'success');
+    }
+    
+    function shareVisualizationFromPreview() {
+      const img = document.getElementById('visPreviewImage');
+      if (!img || !img.src) return;
+      
+      if (navigator.share) {
+        fetch(img.src)
+          .then(res => res.blob())
+          .then(blob => {
+            const file = new File([blob], `visualization-${Date.now()}.png`, { type: 'image/png' });
+            navigator.share({
+              title: '会议视觉化内容',
+              files: [file]
+            }).then(() => {
+              showToast('分享成功', 'success');
+            }).catch(() => {
+              showToast('分享取消', 'info');
+            });
+          });
+      } else {
+        navigator.clipboard.writeText(img.src).then(() => {
+          showToast('图片链接已复制到剪贴板', 'success');
+        }).catch(() => {
+          showToast('复制失败，请手动保存图片', 'error');
+        });
+      }
+    }
+
+    function viewVisualization(visId) {
+      const card = document.querySelector(`[data-vis-id="${visId}"]`);
+      if (!card) return;
+      
+      const img = card.querySelector('.visualization-image');
+      if (!img) return;
+      
+      // 创建模态框
+      let modal = document.getElementById('visModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'visModal';
+        modal.className = 'vis-modal';
+        modal.innerHTML = `
+          <div class="vis-modal-content">
+            <button class="vis-modal-close" onclick="closeVisualizationModal()">关闭</button>
+            <img class="vis-modal-image" id="visModalImage" src="" alt="视觉化内容">
+          </div>
+        `;
+        document.body.appendChild(modal);
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeVisualizationModal();
+        });
+      }
+      
+      const modalImg = document.getElementById('visModalImage');
+      if (modalImg) {
+        modalImg.src = img.src;
+        modal.classList.add('show');
+      }
+    }
+
+    function closeVisualizationModal() {
+      const modal = document.getElementById('visModal');
+      if (modal) modal.classList.remove('show');
+    }
+
+    function downloadVisualization(visId) {
+      const card = document.querySelector(`[data-vis-id="${visId}"]`);
+      if (!card) return;
+      
+      const img = card.querySelector('.visualization-image');
+      if (!img || !img.src) return;
+      
+      const link = document.createElement('a');
+      link.href = img.src;
+      link.download = `visualization-${visId}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('图像下载成功', 'success');
+    }
+
+    function shareVisualization(visId) {
+      const card = document.querySelector(`[data-vis-id="${visId}"]`);
+      if (!card) return;
+      
+      const img = card.querySelector('.visualization-image');
+      if (!img || !img.src) return;
+      
+      if (navigator.share) {
+        fetch(img.src)
+          .then(res => res.blob())
+          .then(blob => {
+            const file = new File([blob], `visualization-${visId}.png`, { type: 'image/png' });
+            navigator.share({
+              title: '会议视觉化内容',
+              files: [file]
+            }).then(() => {
+              showToast('分享成功', 'success');
+            }).catch(() => {
+              showToast('分享取消', 'info');
+            });
+          });
+      } else {
+        // 降级方案：复制图片URL
+        navigator.clipboard.writeText(img.src).then(() => {
+          showToast('图片链接已复制到剪贴板', 'success');
+        }).catch(() => {
+          showToast('复制失败，请手动保存图片', 'error');
+        });
+      }
+    }
+
+    // 监听图表类型变化
+    if (elements.chartTypeSelect) {
+      elements.chartTypeSelect.addEventListener('change', function() {
+        state.currentChartType = this.value;
+      });
+    }
+
+    // Event bindings
+    elements.recordBtn.addEventListener('click', toggleRecording);
+    elements.pauseBtn.addEventListener('click', togglePause);
+    elements.uploadBtn.addEventListener('click', uploadAndTranscribe);
+    elements.uploadInput.addEventListener('change', () => {
+      const file = elements.uploadInput.files?.[0];
+      if (file) setUploadStatus(file.name);
+    });
+    
+    // 初始化视觉化功能
+    if (elements.chartTypeSelect) {
+      elements.chartTypeSelect.addEventListener('change', function() {
+        state.currentChartType = this.value;
+      });
+    }
+
+    // Initialize
+    init();
+  </script>
+</body>
+</html>

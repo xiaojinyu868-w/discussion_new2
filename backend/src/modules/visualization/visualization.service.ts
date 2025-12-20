@@ -8,6 +8,15 @@ import {
 
 export type VisualizationType = "chart" | "creative" | "poster";
 
+export interface VisualizationOption {
+  id: string;
+  title: string;
+  type: VisualizationType;
+  chartType?: "radar" | "flowchart" | "architecture" | "bar" | "line";
+  summary: string;
+  createdAt: Date;
+}
+
 export interface VisualizationRequest {
   sessionId: string;
   type: VisualizationType;
@@ -33,6 +42,8 @@ export interface VisualizationResult {
 export class VisualizationService {
   private readonly logger = new Logger(VisualizationService.name);
   private visualizations = new Map<string, VisualizationResult[]>();
+  private options = new Map<string, VisualizationOption[]>();
+  private readonly optionsTtlMs = 30 * 60 * 1000;
 
   constructor(
     private readonly contextStore: ContextStoreService,
@@ -122,6 +133,66 @@ export class VisualizationService {
     return result;
   }
 
+  getVisualizationOptions(sessionId: string): VisualizationOption[] {
+    const existing = this.options.get(sessionId);
+    if (existing && !this.isOptionsExpired(existing)) {
+      return existing;
+    }
+
+    const context = this.contextStore.getFullText(sessionId);
+    if (!context || context.trim().length === 0) {
+      throw new NotFoundException(
+        "No transcription content found for this session"
+      );
+    }
+
+    const createdAt = new Date();
+    const options: VisualizationOption[] = [
+      {
+        id: `opt-${Date.now()}-flow`,
+        title: "?????",
+        type: "chart",
+        chartType: "flowchart",
+        summary: "???????????????????",
+        createdAt,
+      },
+      {
+        id: `opt-${Date.now()}-research`,
+        title: "??????",
+        type: "poster",
+        summary: "???????????????",
+        createdAt,
+      },
+      {
+        id: `opt-${Date.now()}-creative`,
+        title: "????????",
+        type: "creative",
+        summary: "??????????????????",
+        createdAt,
+      },
+    ];
+
+    this.options.set(sessionId, options);
+    return options;
+  }
+
+  async confirmVisualizationOption(
+    sessionId: string,
+    optionId: string
+  ): Promise<VisualizationResult> {
+    const options = this.getVisualizationOptions(sessionId);
+    const selected = options.find((option) => option.id === optionId);
+    if (!selected) {
+      throw new NotFoundException("Visualization option not found");
+    }
+
+    return this.generateVisualization({
+      sessionId,
+      type: selected.type,
+      chartType: selected.chartType,
+    });
+  }
+
   getVisualizations(sessionId: string): VisualizationResult[] {
     return this.visualizations.get(sessionId) || [];
   }
@@ -132,6 +203,14 @@ export class VisualizationService {
   ): VisualizationResult | undefined {
     const visualizations = this.visualizations.get(sessionId) || [];
     return visualizations.find((v) => v.id === visId);
+  }
+
+  private isOptionsExpired(options: VisualizationOption[]): boolean {
+    if (options.length === 0) {
+      return true;
+    }
+    const createdAt = options[0].createdAt?.getTime?.() ?? 0;
+    return Date.now() - createdAt > this.optionsTtlMs;
   }
 }
 
