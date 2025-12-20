@@ -183,16 +183,17 @@
       letter-spacing: -0.02em;
     }
     
-    .logo-icon { 
-      width: 36px; 
-      height: 36px; 
-      background: linear-gradient(135deg, var(--aurora-cyan), var(--aurora-mint));
-      border-radius: var(--radius-sm);
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      font-size: 1.1rem;
-      box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+    .logo-svg {
+      filter: drop-shadow(0 4px 12px rgba(168, 85, 247, 0.4));
+    }
+
+    .logo-text {
+      background: linear-gradient(135deg, #c084fc, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
     
     .nav-status { 
@@ -518,6 +519,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr 1.2fr;
       gap: 20px;
+      align-items: stretch;
     }
 
     @media (max-width: 1200px) {
@@ -618,6 +620,88 @@
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-full);
       color: var(--text-muted);
+    }
+
+    .panel__actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 下载按钮下拉菜单 */
+    .download-dropdown {
+      position: relative;
+    }
+
+    .download-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-glass);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .download-btn:hover {
+      background: var(--bg-elevated);
+      border-color: var(--aurora-cyan);
+      color: var(--aurora-cyan);
+      transform: scale(1.05);
+    }
+
+    .download-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 8px;
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: all var(--duration-fast) var(--ease-out);
+      z-index: 100;
+      min-width: 140px;
+    }
+
+    .download-menu.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .download-menu-item {
+      width: 100%;
+      padding: 10px 14px;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--duration-fast);
+      text-align: left;
+    }
+
+    .download-menu-item:hover {
+      background: var(--bg-elevated);
+      color: var(--aurora-cyan);
+    }
+
+    .download-menu-item span {
+      font-size: 1rem;
     }
 
     .panel__content {
@@ -1009,6 +1093,8 @@
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
       padding: 18px;
+      display: flex;
+      flex-direction: column;
     }
 
     .toolbar-section__title {
@@ -1158,6 +1244,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      flex: 1;
     }
 
     .vis-type-row {
@@ -1277,7 +1364,8 @@
     .qa-input-row {
       display: flex;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: auto;
+      padding-top: 10px;
     }
 
     .qa-input {
@@ -1445,20 +1533,45 @@
 
     .chart-type-select {
       width: 100%;
-      padding: 10px 12px;
-      background: var(--bg-glass);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
       color: var(--text-primary);
       font-family: var(--font-body);
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       margin-bottom: 12px;
       display: none;
       outline: none;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b9cc7' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    .chart-type-select:hover {
+      border-color: var(--aurora-cyan);
+      background-color: var(--bg-elevated);
     }
 
     .chart-type-select:focus {
       border-color: var(--aurora-cyan);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
+    }
+
+    .chart-type-select option {
+      background: var(--bg-card-solid);
+      color: var(--text-primary);
+      padding: 12px;
+    }
+
+    .chart-type-select option:hover,
+    .chart-type-select option:checked {
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 200, 0.1));
     }
 
     .vis-status {
@@ -1504,8 +1617,41 @@
   <nav class="nav" id="nav">
     <div class="nav-inner">
       <div class="logo">
-        <div class="logo-icon">⚡</div>
-        <span>遇见会议</span>
+        <svg class="logo-svg" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- M 字母主体 -->
+          <path d="M15 85V30C15 22 20 15 28 15H35L50 45L65 15H72C80 15 85 22 85 30V85" fill="url(#logoGradMain)"/>
+          <!-- 左侧竖条 -->
+          <rect x="15" y="15" width="16" height="70" rx="4" fill="url(#logoGradLeft)"/>
+          <!-- 右侧竖条 -->
+          <rect x="69" y="15" width="16" height="70" rx="4" fill="url(#logoGradRight)"/>
+          <!-- 中间V形 -->
+          <path d="M31 15L50 55L69 15" fill="url(#logoGradCenter)"/>
+          <!-- 顶部高亮 -->
+          <path d="M50 45L38 20H62L50 45Z" fill="url(#logoGradHighlight)" opacity="0.6"/>
+          <defs>
+            <linearGradient id="logoGradMain" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#a855f7"/>
+              <stop offset="1" stop-color="#7c3aed"/>
+            </linearGradient>
+            <linearGradient id="logoGradLeft" x1="15" y1="15" x2="31" y2="85" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#c084fc"/>
+              <stop offset="1" stop-color="#9333ea"/>
+            </linearGradient>
+            <linearGradient id="logoGradRight" x1="69" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#a855f7"/>
+              <stop offset="1" stop-color="#7c3aed"/>
+            </linearGradient>
+            <linearGradient id="logoGradCenter" x1="50" y1="15" x2="50" y2="55" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#e9d5ff"/>
+              <stop offset="1" stop-color="#c084fc"/>
+            </linearGradient>
+            <linearGradient id="logoGradHighlight" x1="50" y1="20" x2="50" y2="45" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#f5d0fe"/>
+              <stop offset="1" stop-color="#d8b4fe"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="logo-text">MeetMind</span>
       </div>
       <div class="nav-status">
         <div class="status-dot" id="connectionStatus"></div>
@@ -1577,6 +1723,21 @@
             实时转写
             <span class="panel__count" id="transcriptCount">0</span>
           </div>
+          <div class="panel__actions">
+            <div class="download-dropdown" id="downloadDropdown" style="display: none;">
+              <button class="download-btn" id="downloadBtn" onclick="toggleDownloadMenu()" title="下载转写内容">
+                <span>⬇️</span>
+              </button>
+              <div class="download-menu" id="downloadMenu">
+                <button class="download-menu-item" onclick="downloadTranscript('word')">
+                  <span>📄</span> Word 文档
+                </button>
+                <button class="download-menu-item" onclick="downloadTranscript('pdf')">
+                  <span>📑</span> PDF 文档
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="panel__content" id="transcriptionList">
           <div class="empty-state" id="transcriptEmptyState">
@@ -1631,7 +1792,7 @@
           
           <div class="auto-push-row">
             <span class="auto-push-label">自动推送分析</span>
-            <div class="toggle-switch" id="autoPushToggle" onclick="toggleAutoPush()"></div>
+            <div class="toggle-switch active" id="autoPushToggle" onclick="toggleAutoPush()"></div>
           </div>
         </div>
 
@@ -1697,7 +1858,9 @@
       recordingStartTime: null,
       transcription: [],
       summaries: [],
-      autoPushEnabled: false,
+      autoPushEnabled: true,
+      autoPushInterval: null,
+      activeSkills: [], // 用户激活的技能列表
       mediaRecorder: null,
       apiBaseUrl: localStorage.getItem('apiBaseUrl') || 'http://localhost:4000',
       currentVisualizationType: 'chart',
@@ -1737,6 +1900,7 @@
       visStatus: $('visStatus'),
       chartTypeSelect: $('chartTypeSelect'),
       visualizationList: $('visualizationList'),
+      downloadDropdown: $('downloadDropdown'),
     };
 
     // ========== Initialize ==========
@@ -1900,12 +2064,9 @@
 
       try {
         showToast('正在创建会话...', 'info');
-        state.sessionId = null;
-        state.taskId = null;
-        state.transcription = [];
-        state.summaries = [];
-        renderTranscription();
-        renderSummaries();
+        
+        // 完全重置所有状态 - 类似页面刷新
+        resetAllState();
 
         const response = await apiCall('POST', '/sessions', { meetingId: `meeting-${Date.now()}` });
         state.sessionId = response.sessionId;
@@ -1937,6 +2098,11 @@
         startTimerUpdate();
         startPolling();
         
+        // 如果自动推送已开启，启动定时推送
+        if (state.autoPushEnabled) {
+          startAutoPush();
+        }
+        
         showToast('🎙️ 录音已开始', 'success');
       } catch (error) {
         console.error('Start recording failed:', error);
@@ -1959,6 +2125,9 @@
       state.isPaused = false;
       stopWaveformAnimation();
       stopTimerUpdate();
+      stopAutoPush(); // 停止自动推送
+      // 停止录音时停止实时轮询，但保留 sessionId 以便后续获取结果
+      stopPolling();
       updateRecordingUI();
 
       if (state.sessionId) {
@@ -1968,10 +2137,29 @@
           
           let pollCount = 0;
           const pollForResults = async () => {
-            if (pollCount >= 30) { stopPolling(); return; }
+            // 检查是否已被取消（用户开始了新录音）
+            if (!state.sessionId || state.isRecording) {
+              console.log('录音后轮询被取消');
+              return;
+            }
+            
+            if (pollCount >= 30) { 
+              // 轮询结束后显示下载按钮（如果有转写内容）
+              if (state.transcription.length > 0) {
+                elements.downloadDropdown.style.display = 'block';
+              }
+              return; 
+            }
             pollCount++;
             await pollUpdates();
-            setTimeout(pollForResults, 1000);
+            
+            // 每次轮询后检查是否有转写内容，有则显示下载按钮
+            if (state.transcription.length > 0) {
+              elements.downloadDropdown.style.display = 'block';
+            }
+            
+            // 使用可取消的 timeout
+            postRecordingPollTimeout = setTimeout(pollForResults, 1000);
           };
           pollForResults();
         } catch (e) { 
@@ -2034,23 +2222,46 @@
 
     // ========== Polling ==========
     let pollingInterval = null;
+    let postRecordingPollTimeout = null; // 用于停止录音后的轮询
+
     function startPolling() {
-      if (pollingInterval) return;
-      pollUpdates();
+      // 确保先停止之前的所有轮询
+      stopPolling();
+      
+      console.log('开始轮询，sessionId:', state.sessionId);
+      pollUpdates(); // 立即执行一次
       pollingInterval = setInterval(pollUpdates, 2000);
     }
 
     function stopPolling() {
-      if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+      if (pollingInterval) { 
+        clearInterval(pollingInterval); 
+        pollingInterval = null; 
+        console.log('轮询已停止');
+      }
+      // 同时停止录音结束后的轮询
+      if (postRecordingPollTimeout) {
+        clearTimeout(postRecordingPollTimeout);
+        postRecordingPollTimeout = null;
+        console.log('录音后轮询已停止');
+      }
     }
 
     async function pollUpdates() {
-      if (!state.sessionId) return;
+      if (!state.sessionId) {
+        console.log('pollUpdates: 没有 sessionId，跳过');
+        return;
+      }
       try {
         const [transcripts, summaries] = await Promise.all([
           apiCall('GET', `/sessions/${state.sessionId}/transcripts`),
           apiCall('GET', `/sessions/${state.sessionId}/summaries`)
         ]);
+        
+        console.log('轮询结果:', { 
+          transcriptsCount: transcripts.transcription?.length || 0, 
+          summariesCount: summaries.summaries?.length || 0 
+        });
         
         if (transcripts.transcription?.length > 0) { 
           state.transcription = transcripts.transcription; 
@@ -2076,11 +2287,15 @@
       elements.transcriptCount.textContent = state.transcription.length;
       
       if (state.transcription.length === 0) {
-        elements.transcriptEmptyState.style.display = 'flex';
+        // 清空转写列表，显示空状态
+        elements.transcriptionList.innerHTML = `
+          <div class="empty-state" id="transcriptEmptyState">
+            <div class="empty-state__icon">🎤</div>
+            <p class="empty-state__text">开始录音后，转写内容将实时显示</p>
+          </div>
+        `;
         return;
       }
-      
-      elements.transcriptEmptyState.style.display = 'none';
       
       const html = state.transcription.map(item => `
         <div class="transcript-item">
@@ -2115,9 +2330,16 @@
       elements.insightCount.textContent = state.summaries.length;
       
       if (state.summaries.length === 0) {
-        elements.insightEmptyState.style.display = 'flex';
-      } else {
-        elements.insightEmptyState.style.display = 'none';
+        // 清空洞察列表，显示空状态
+        elements.summaryList.innerHTML = `
+          <div class="empty-state" id="insightEmptyState">
+            <div class="empty-state__icon">💡</div>
+            <p class="empty-state__text">触发 AI 技能后，洞察将显示在这里</p>
+          </div>
+          <div id="visualizationList"></div>
+        `;
+        elements.visualizationList = $('visualizationList');
+        return;
       }
       
       const html = state.summaries.map(card => {
@@ -2337,7 +2559,12 @@
       const names = { inner_os: 'InnerOS', brainstorm: 'Brainstorm', stop_talking: 'StopTalking' };
       const displayNames = { inner_os: '潜台词', brainstorm: '灵感', stop_talking: '聚焦' };
       const statusEl = $(`skill${names[skill]}Status`);
-      const btnEl = $(`skill${names[skill]}`);;
+      const btnEl = $(`skill${names[skill]}`);
+      
+      // 将用户点击的技能加入激活列表（用于自动推送）
+      if (!state.activeSkills.includes(skill)) {
+        state.activeSkills.push(skill);
+      }
       
       btnEl.disabled = true;
       btnEl.classList.add('loading');
@@ -2362,24 +2589,79 @@
     }
 
     // ========== Auto Push ==========
-    async function toggleAutoPush() {
-      if (!state.sessionId) { showToast('请先开始录音', 'error'); return; }
+    // 启动自动推送（每30秒）
+    function startAutoPush() {
+      if (state.autoPushInterval) return;
+      
+      // 首次延迟30秒后开始推送
+      state.autoPushInterval = setInterval(async () => {
+        if (!state.sessionId || !state.isRecording || state.isPaused) return;
+        if (state.transcription.length === 0) return; // 没有转写内容时不推送
+        
+        await executeAutoPush();
+      }, 30000); // 每30秒执行一次
+      
+      console.log('自动推送已启动，每30秒推送一次');
+    }
 
+    // 停止自动推送
+    function stopAutoPush() {
+      if (state.autoPushInterval) {
+        clearInterval(state.autoPushInterval);
+        state.autoPushInterval = null;
+        console.log('自动推送已停止');
+      }
+    }
+
+    // 执行自动推送分析
+    async function executeAutoPush() {
+      try {
+        // 默认推送 auto_analysis（总结性分析）
+        const skillsToRun = state.activeSkills.length > 0 ? state.activeSkills : ['auto_analysis'];
+        
+        for (const skill of skillsToRun) {
+          try {
+            const response = await apiCall('POST', `/sessions/${state.sessionId}/skills/${skill}`);
+            if (response.cards?.length) {
+              state.summaries = [...state.summaries, ...response.cards];
+              renderSummaries();
+            }
+          } catch (e) {
+            console.warn(`自动推送 ${skill} 失败:`, e);
+          }
+        }
+      } catch (error) {
+        console.warn('自动推送执行失败:', error);
+      }
+    }
+
+    async function toggleAutoPush() {
       state.autoPushEnabled = !state.autoPushEnabled;
       elements.autoPushToggle.classList.toggle('active', state.autoPushEnabled);
 
-      try {
-        if (state.autoPushEnabled) {
-          await apiCall('POST', `/sessions/${state.sessionId}/auto-push/start`);
-          showToast('自动推送已开启', 'success');
-        } else {
-          await apiCall('POST', `/sessions/${state.sessionId}/auto-push/stop`);
-          showToast('自动推送已关闭', 'info');
+      if (state.autoPushEnabled) {
+        // 如果正在录音，立即启动自动推送
+        if (state.isRecording && state.sessionId) {
+          startAutoPush();
         }
-      } catch (error) {
-        state.autoPushEnabled = !state.autoPushEnabled;
-        elements.autoPushToggle.classList.toggle('active', state.autoPushEnabled);
-        showToast('切换失败: ' + error.message, 'error');
+        showToast('自动推送已开启，每30秒自动分析', 'success');
+      } else {
+        stopAutoPush();
+        showToast('自动推送已关闭', 'info');
+      }
+
+      // 尝试通知后端（可选，后端可能没有这个接口）
+      if (state.sessionId) {
+        try {
+          if (state.autoPushEnabled) {
+            await apiCall('POST', `/sessions/${state.sessionId}/auto-push/start`);
+          } else {
+            await apiCall('POST', `/sessions/${state.sessionId}/auto-push/stop`);
+          }
+        } catch (error) {
+          // 后端接口可能不存在，忽略错误
+          console.warn('后端自动推送接口调用失败:', error);
+        }
       }
     }
 
@@ -2584,6 +2866,249 @@
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
+    }
+
+    // ========== 重置所有状态（开始新录音时调用）==========
+    function resetAllState() {
+      // 停止之前的轮询和定时器
+      stopPolling();
+      stopAutoPush();
+      stopTimerUpdate();
+      
+      // 重置核心状态
+      state.sessionId = null;
+      state.taskId = null;
+      state.transcription = [];
+      state.summaries = [];
+      state.activeSkills = [];
+      state.recordingStartTime = null;
+      
+      // 重置计时器显示
+      elements.recordingTimer.textContent = '00:00';
+      
+      // 隐藏下载按钮
+      elements.downloadDropdown.style.display = 'none';
+      
+      // 清空转写列表
+      renderTranscription();
+      
+      // 清空会议洞察列表
+      renderSummaries();
+      
+      // 清空可视化列表
+      if (elements.visualizationList) {
+        elements.visualizationList.innerHTML = '';
+      }
+      
+      // 隐藏可视化预览
+      const visPreview = $('visPreview');
+      if (visPreview) {
+        visPreview.style.display = 'none';
+      }
+      const visPreviewImage = $('visPreviewImage');
+      if (visPreviewImage) {
+        visPreviewImage.src = '';
+      }
+      
+      // 重置可视化状态
+      const visStatus = $('visStatus');
+      if (visStatus) {
+        visStatus.style.display = 'none';
+        visStatus.textContent = '';
+      }
+      
+      // 清空问答消息历史（保留初始欢迎消息）
+      elements.qaMessages.innerHTML = '<div class="qa-message assistant">👋 有问题随时问我，我会基于会议内容为你解答</div>';
+      
+      // 清空问答输入框
+      elements.qaInput.value = '';
+      
+      // 重置技能按钮状态
+      ['InnerOS', 'Brainstorm', 'StopTalking'].forEach(name => {
+        const statusEl = $(`skill${name}Status`);
+        if (statusEl) statusEl.textContent = '';
+      });
+      
+      console.log('所有状态已重置，准备开始新会议');
+    }
+
+    // ========== 下载转写内容 ==========
+    function toggleDownloadMenu() {
+      const menu = $('downloadMenu');
+      menu.classList.toggle('show');
+      
+      // 点击外部关闭菜单
+      if (menu.classList.contains('show')) {
+        setTimeout(() => {
+          document.addEventListener('click', closeDownloadMenuOnClickOutside);
+        }, 0);
+      }
+    }
+
+    function closeDownloadMenuOnClickOutside(e) {
+      const dropdown = $('downloadDropdown');
+      if (!dropdown.contains(e.target)) {
+        $('downloadMenu').classList.remove('show');
+        document.removeEventListener('click', closeDownloadMenuOnClickOutside);
+      }
+    }
+
+    function downloadTranscript(format) {
+      $('downloadMenu').classList.remove('show');
+      
+      if (state.transcription.length === 0) {
+        showToast('没有可下载的转写内容', 'warning');
+        return;
+      }
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('zh-CN').replace(/\//g, '-');
+      const timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }).replace(':', '-');
+      const filename = `会议转写_${dateStr}_${timeStr}`;
+
+      if (format === 'word') {
+        downloadAsWord(filename);
+      } else if (format === 'pdf') {
+        downloadAsPDF(filename);
+      }
+    }
+
+    function downloadAsWord(filename) {
+      // 构建 Word 文档内容（使用 HTML 格式，Word 可以识别）
+      let content = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" 
+              xmlns:w="urn:schemas-microsoft-com:office:word" 
+              xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="utf-8">
+          <title>会议转写记录</title>
+          <style>
+            body { font-family: "Microsoft YaHei", sans-serif; line-height: 1.8; padding: 20px; }
+            h1 { color: #333; border-bottom: 2px solid #00d4ff; padding-bottom: 10px; }
+            .meta { color: #666; font-size: 14px; margin-bottom: 20px; }
+            .item { margin-bottom: 16px; padding: 12px; background: #f8f9fa; border-left: 3px solid #00d4ff; }
+            .time { color: #00d4ff; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
+            .text { color: #333; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <h1>📝 会议转写记录</h1>
+          <div class="meta">
+            <p>生成时间：${new Date().toLocaleString('zh-CN')}</p>
+            <p>转写条数：${state.transcription.length} 条</p>
+          </div>
+      `;
+
+      state.transcription.forEach(item => {
+        content += `
+          <div class="item">
+            <div class="time">${formatTime(item.startMs)}</div>
+            <div class="text">${escapeHtml(item.text)}</div>
+          </div>
+        `;
+      });
+
+      content += '</body></html>';
+
+      const blob = new Blob([content], { type: 'application/msword;charset=utf-8' });
+      downloadBlob(blob, `${filename}.doc`);
+      showToast('Word 文档下载成功', 'success');
+    }
+
+    function downloadAsPDF(filename) {
+      // 创建一个隐藏的 iframe 用于打印
+      const printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>会议转写记录</title>
+          <style>
+            @media print {
+              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            }
+            body { 
+              font-family: "Microsoft YaHei", "PingFang SC", sans-serif; 
+              line-height: 1.8; 
+              padding: 40px; 
+              max-width: 800px; 
+              margin: 0 auto;
+              color: #333;
+            }
+            h1 { 
+              color: #1a1a2e; 
+              border-bottom: 3px solid #00d4ff; 
+              padding-bottom: 12px; 
+              margin-bottom: 8px;
+            }
+            .meta { 
+              color: #666; 
+              font-size: 13px; 
+              margin-bottom: 24px; 
+              padding-bottom: 16px;
+              border-bottom: 1px solid #eee;
+            }
+            .meta p { margin: 4px 0; }
+            .item { 
+              margin-bottom: 14px; 
+              padding: 14px 16px; 
+              background: #f8f9fa; 
+              border-left: 4px solid #00d4ff; 
+              border-radius: 0 8px 8px 0;
+              page-break-inside: avoid;
+            }
+            .time { 
+              color: #0099cc; 
+              font-size: 12px; 
+              font-weight: 600; 
+              margin-bottom: 6px; 
+            }
+            .text { 
+              color: #333; 
+              font-size: 14px; 
+              line-height: 1.7;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>📝 会议转写记录</h1>
+          <div class="meta">
+            <p><strong>生成时间：</strong>${new Date().toLocaleString('zh-CN')}</p>
+            <p><strong>转写条数：</strong>${state.transcription.length} 条</p>
+          </div>
+          ${state.transcription.map(item => `
+            <div class="item">
+              <div class="time">${formatTime(item.startMs)}</div>
+              <div class="text">${escapeHtml(item.text)}</div>
+            </div>
+          `).join('')}
+        </body>
+        </html>
+      `;
+
+      // 创建新窗口进行打印（用户可选择保存为 PDF）
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      
+      // 等待内容加载完成后触发打印
+      printWindow.onload = function() {
+        setTimeout(() => {
+          printWindow.print();
+          showToast('请在打印对话框中选择"保存为 PDF"', 'info');
+        }, 300);
+      };
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     function showToast(message, type = 'info') {
