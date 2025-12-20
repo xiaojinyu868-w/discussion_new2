@@ -1324,68 +1324,6 @@
       cursor: not-allowed;
     }
 
-    /* ========== 配置区域 ========== */
-    .config-section {
-      padding: 60px 0;
-    }
-
-    .config-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-xl);
-      padding: 28px;
-      max-width: 480px;
-      margin: 0 auto;
-      box-shadow: var(--shadow-md);
-    }
-
-    .config-title {
-      font-family: var(--font-display);
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .config-group {
-      margin-bottom: 18px;
-    }
-
-    .config-label {
-      display: block;
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    .config-input {
-      width: 100%;
-      padding: 14px 16px;
-      background: var(--bg-glass);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      color: var(--text-primary);
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      outline: none;
-      transition: all var(--duration-fast) var(--ease-out);
-    }
-
-    .config-input:focus {
-      border-color: var(--aurora-cyan);
-      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
-    }
-
-    .config-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 24px;
-    }
-
     /* ========== Footer ========== */
     .footer {
       padding: 40px 0;
@@ -1675,18 +1613,18 @@
           <div class="toolbar-section__title">AI 技能</div>
           <div class="skills-row">
             <button class="skill-btn" id="skillInnerOS" onclick="triggerSkill('inner_os')" disabled>
-              <div class="skill-btn__icon inner-os">🧠</div>
-              <span class="skill-btn__name">内心OS</span>
+              <div class="skill-btn__icon inner-os">🔮</div>
+              <span class="skill-btn__name">潜台词</span>
               <span class="skill-status" id="skillInnerOSStatus"></span>
             </button>
             <button class="skill-btn" id="skillBrainstorm" onclick="triggerSkill('brainstorm')" disabled>
-              <div class="skill-btn__icon brainstorm">💡</div>
-              <span class="skill-btn__name">头脑风暴</span>
+              <div class="skill-btn__icon brainstorm">⚡</div>
+              <span class="skill-btn__name">灵感</span>
               <span class="skill-status" id="skillBrainstormStatus"></span>
             </button>
             <button class="skill-btn" id="skillStopTalking" onclick="triggerSkill('stop_talking')" disabled>
-              <div class="skill-btn__icon stop-talking">🛑</div>
-              <span class="skill-btn__name">别再说了</span>
+              <div class="skill-btn__icon stop-talking">🎯</div>
+              <span class="skill-btn__name">聚焦</span>
               <span class="skill-status" id="skillStopTalkingStatus"></span>
             </button>
           </div>
@@ -1739,28 +1677,6 @@
     </div>
   </div>
 
-  <!-- 配置区域 -->
-  <section class="config-section" id="config">
-    <div class="container">
-      <div class="config-card">
-        <div class="config-title">
-          <span>⚙️</span>
-          <span>服务配置</span>
-          <div class="status-dot" id="configStatus" style="margin-left: auto;"></div>
-          <span id="configStatusText" style="font-size: 0.75rem; color: var(--text-muted);">未连接</span>
-        </div>
-        <div class="config-group">
-          <label class="config-label">后端服务地址</label>
-          <input type="text" class="config-input" id="apiBaseUrl" value="http://localhost:4000">
-        </div>
-        <div class="config-actions">
-          <button class="btn-control primary" onclick="testConnection()">测试连接</button>
-          <button class="btn-control" onclick="saveConfig()">保存配置</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- Footer -->
   <footer class="footer">
     <p class="footer-text">
@@ -1811,9 +1727,6 @@
       qaMessages: $('qaMessages'),
       qaInput: $('qaInput'),
       qaSendBtn: $('qaSendBtn'),
-      configStatus: $('configStatus'),
-      configStatusText: $('configStatusText'),
-      apiBaseUrl: $('apiBaseUrl'),
       toastContainer: $('toastContainer'),
       alertBanner: $('alertBanner'),
       alertTitle: $('alertTitle'),
@@ -1828,7 +1741,6 @@
 
     // ========== Initialize ==========
     function init() {
-      elements.apiBaseUrl.value = state.apiBaseUrl;
       setupNavScroll();
       setupWaveform();
       setupUpload();
@@ -1905,8 +1817,7 @@
 
     // ========== Connection ==========
     async function testConnection() {
-      const baseUrl = elements.apiBaseUrl.value.trim();
-      state.apiBaseUrl = baseUrl;
+      const baseUrl = state.apiBaseUrl;
       updateConnectionStatus('testing');
       
       try {
@@ -1946,8 +1857,6 @@
       const s = statusMap[status] || statusMap.error;
       elements.connectionStatus.className = `status-dot ${s.class}`;
       elements.connectionText.textContent = s.text;
-      elements.configStatus.className = `status-dot ${s.class}`;
-      elements.configStatusText.textContent = s.text;
     }
 
     function enableControls(enabled) {
@@ -1967,12 +1876,6 @@
 
     function hideAlert() {
       elements.alertBanner.classList.remove('show');
-    }
-
-    function saveConfig() {
-      localStorage.setItem('apiBaseUrl', elements.apiBaseUrl.value.trim());
-      state.apiBaseUrl = elements.apiBaseUrl.value.trim();
-      showToast('配置已保存', 'success');
     }
 
     // ========== Recording ==========
@@ -2202,10 +2105,10 @@
 
     // 洞察卡片类型配置
     const INSIGHT_TYPES = {
-      inner_os: { title: '内心 OS', icon: '🧠', color: 'var(--color-inner-os)' },
-      brainstorm: { title: '头脑风暴', icon: '💡', color: 'var(--color-brainstorm)' },
-      stop_talking: { title: '纠偏提醒', icon: '⚠️', color: 'var(--color-stop-talking)' },
-      auto_analysis: { title: '自动分析', icon: '📊', color: 'var(--color-auto-analysis)' }
+      inner_os: { title: '潜台词', icon: '🔮', color: 'var(--color-inner-os)' },
+      brainstorm: { title: '灵感', icon: '⚡', color: 'var(--color-brainstorm)' },
+      stop_talking: { title: '聚焦', icon: '🎯', color: 'var(--color-stop-talking)' },
+      auto_analysis: { title: '洞察', icon: '✨', color: 'var(--color-auto-analysis)' }
     };
 
     function renderSummaries() {
@@ -2432,9 +2335,9 @@
       if (!state.sessionId) { showToast('请先开始录音', 'error'); return; }
 
       const names = { inner_os: 'InnerOS', brainstorm: 'Brainstorm', stop_talking: 'StopTalking' };
-      const displayNames = { inner_os: '内心 OS', brainstorm: '头脑风暴', stop_talking: '纠偏提醒' };
+      const displayNames = { inner_os: '潜台词', brainstorm: '灵感', stop_talking: '聚焦' };
       const statusEl = $(`skill${names[skill]}Status`);
-      const btnEl = $(`skill${names[skill]}`);
+      const btnEl = $(`skill${names[skill]}`);;
       
       btnEl.disabled = true;
       btnEl.classList.add('loading');
