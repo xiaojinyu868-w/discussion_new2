@@ -1,0 +1,997 @@
+﻿==== realtime_interface.html ====
+接口与实现
+本文主要介绍
+支持的输入格式：PCM（无压缩的
+支持的音频采样率：16000 Hz、8000Hz。
+支持的单次记录时长：24
+支持设置返回结果：是否返回中间识别结果。
+支持设置多语言识别：中文、英文、粤语、日语、韩语、中英自由说（长段中英混）。
+支持设置开启翻译：支持中、英、日、韩、德、法、俄语间的双向互译，中英自由说翻译目标语言可为中文、英文或中文&英文，支持会议中开启或关闭。
+支持设置同步音频转码：转码为比特率
+支持开启各项大模型能力：章节速览、大模型摘要总结（全文摘要、发言总结、问答回顾、思维导图）、要点提炼（关键词、待办事项、重点内容、场景识别）、服务质检、PPT
+对于
+接入步骤
+转写的管理粒度为记录，在完成记录创建后便可基于该记录体验会中
+结束实时记录后进入智能纪要提取等
+需要使用您的
+export ALIBABA_CLOUD_ACCESS_KEY_ID=YOUR_ACCESS_KEY_ID &&
+export ALIBABA_CLOUD_ACCESS_KEY_SECRET=YOUR_ACCESS_KEY_SECRET
+参考
+AppKey
+AppKey
+string
+-
+基本请求信息
+（body.Input）
+Input.Format
+string
+-
+Input.SampleRate
+int
+-
+Input.SourceLanguage
+string
+-
+若语音的语种是单语种，音视频文件对应的语言种类；支持
+若语音中的语种非单语种，涉及多个语种，可传入（multilingual），识别出对应语种的文字。结合
+Input.LanguageHints
+list[string]
+null
+当语音中涉及多个语种的语音均需识别出文字时，此参数用于限制语种类别，且仅当
+Input.TaskKey
+string
+null
+用户自行设置的自定义标识。
+Input.ProgressiveCallbacksEnabled
+boolean
+false
+是否开启回调功能。
+当需要开启回调功能时，您需要在
+转码
+（Transcoding）
+Parameters.Transcoding.TargetAudioFormat
+string
+null
+当前只支持设置
+语音识别
+（Transcription）
+Parameters.Transcription.OutputLevel
+int
+1
+设置语音识别结果返回等级。
+1：识别出完整句子时返回识别结果
+2：识别出中间结果及完整句子时返回识别结果
+仅在实时记录场景下按需设置，离线转写场景无须设置。
+Parameters.Transcription.DiarizationEnabled
+boolean
+false
+是否在语音识别过程中开启说话人分离功能。
+Parameters.Transcription.Diarization.SpeakerCount
+int
+-
+开启说话人分离功能时，设置的说话人数。
+不设置：不使用说话人角色区分
+0：说话人角色区分结果为不定人数
+2：说话人角色区分结果为
+当有此参数时，使用此参数辅助指定的人数。最终分轨人数以真实分类人数为准。
+Parameters.Transcription.PhraseId
+String
+-
+热词词表
+翻译
+(Translation)
+Parameters.TranslationEnabled
+boolean
+false
+是否开启翻译功能。
+Parameters.Translation.OutputLevel
+int
+1
+设置实时语言翻译识别结果返回等级。
+1：识别出完整句子时返回识别结果；
+2：识别出中间结果及完整句子时返回识别结果
+仅在实时记录场景下按需设置，离线转写场景无须设置。
+Parameters.Translation.TargetLanguages
+list[string]
+-
+如果开启翻译，需要设置目标翻译语言。支持设置 中文（cn）、英语（en）、日语（ja）、韩语（ko）、德语（de）、法语（fr）、俄语（ru）。
+章节速览
+Parameters.AutoChaptersEnabled
+boolean
+false
+章节速览功能，包括：议程标题和议程摘要
+要点提炼
+Parameters.MeetingAssistanceEnabled
+boolean
+false
+关键词、待办事项、重点内容、场景识别
+摘要总结
+Parameters.SummarizationEnabled
+boolean
+false
+是否开启摘要总结功能。
+Parameters.Summarization.Types
+list[string]
+-
+如果开启摘要功能，需要设置摘要类型。支持设置
+Paragraph（全文摘要）
+Conversational（发言总结）
+QuestionsAnswering（问答回顾）
+MindMap（思维导图）
+口语书面化
+Parameters.TextPolishEnabled
+boolean
+false
+是否开启口语书面化功能。
+服务质检
+Parameters.ServiceInspectionEnabled
+boolean
+false
+是否开启服务质检功能。
+Parameters.ServiceInspection
+object
+-
+参考
+自定义
+Parameters.CustomPromptEnabled
+boolean
+false
+是否开启自定义
+Parameters.CustomPrompt
+object
+-
+参考
+代码示例
+package com.alibaba.tingwu.client.demo.realtimemeeting;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyuncs.CommonRequest;
+import com.aliyuncs.CommonResponse;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.http.FormatType;
+import com.aliyuncs.http.MethodType;
+import com.aliyuncs.http.ProtocolType;
+import com.aliyuncs.profile.DefaultProfile;
+import org.junit.Test;
+
+/**
+ * @author tingwu2023
+ * @desc 演示了通过OpenAPI 创建实时记录的调用方式。
+ */
+public class SubmitRealtimeMeetingTaskTest {
+
+    @Test
+    public void testSummitRealtimeMeetingTask() throws ClientException {
+        CommonRequest request = createCommonRequest("tingwu.cn-beijing.aliyuncs.com", "2023-09-30", ProtocolType.HTTPS, MethodType.PUT, "/openapi/tingwu/v2/tasks");
+        request.putQueryParameter("type", "realtime");
+
+        JSONObject root = new JSONObject();
+        root.put("AppKey", "输入您在听悟管控台创建的Appkey");
+
+        JSONObject input = new JSONObject();
+        input.fluentPut("SourceLanguage", "cn").fluentPut("Format", "pcm").fluentPut("SampleRate", 16000).fluentPut("TaskKey", "task" + System.currentTimeMillis());
+        root.put("Input", input);
+
+        JSONObject parameters = initRequestParameters();
+        root.put("Parameters", parameters);
+
+        System.out.println(root.toJSONString());
+        request.setHttpContent(root.toJSONString().getBytes(), "utf-8", FormatType.JSON);
+
+        // TODO 请通过环境变量设置您的AccessKeyId、AccessKeySecret
+        DefaultProfile profile = DefaultProfile.getProfile("cn-beijing", System.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID"), System.getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET"));
+        IAcsClient client = new DefaultAcsClient(profile);
+        CommonResponse response = client.getCommonResponse(request);
+        System.out.println(response.getData());
+        JSONObject body = JSONObject.parseObject(response.getData());
+        JSONObject data = (JSONObject) body.get("Data");
+        System.out.println("TaskId = " + data.getString("TaskId"));
+        System.out.println("MeetingJoinUrl = " + data.getString("MeetingJoinUrl"));
+    }
+
+    private static JSONObject initRequestParameters() {
+        JSONObject parameters = new JSONObject();
+
+        // 音视频转换： 可选
+        JSONObject transcoding = new JSONObject();
+        //transcoding.put("TargetAudioFormat", "mp3");
+        //transcoding.put("SpectrumEnabled", false);
+        parameters.put("Transcoding", transcoding);
+
+        // 语音识别
+        JSONObject transcription = new JSONObject();
+        transcription.put("DiarizationEnabled", true);
+        JSONObject speakerCount = new JSONObject();
+        speakerCount.put("SpeakerCount", 2);
+        transcription.put("Diarization", speakerCount);
+        parameters.put("Transcription", transcription);
+
+        // 翻译： 可选
+        JSONObject translation = new JSONObject();
+        JSONArray langArry = new JSONArray();
+        langArry.add("en");
+        translation.put("TargetLanguages", langArry);
+        parameters.put("Translation", translation);
+        parameters.put("TranslationEnabled", true);
+
+        // 章节速览： 可选
+        parameters.put("AutoChaptersEnabled", false);
+
+        // 智能纪要： 可选
+        parameters.put("MeetingAssistanceEnabled", false);
+
+        // 摘要相关： 可选
+        parameters.put("SummarizationEnabled", true);
+        JSONObject summarization = new JSONObject();
+        JSONArray types = new JSONArray().fluentAdd("Paragraph").fluentAdd("Conversational").fluentAdd("QuestionsAnswering").fluentAdd("MindMap");
+        summarization.put("Types", types);
+        parameters.put("Summarization", summarization);
+
+        // PPT抽取： 不可选，实时记录没有视频信息，无法进行ppt功能
+        // parameters.put("PptExtractionEnabled", false);
+      	
+	// 口语书面化：可选
+        parameters.put("TextPolishEnabled", false);
+
+        return parameters;
+    }
+    public static CommonRequest createCommonRequest(String domain, String version, ProtocolType protocolType, MethodType method, String uri) {
+        CommonRequest request = new CommonRequest();
+        request.setSysDomain(domain);
+        request.setSysVersion(version);
+        request.setSysProtocol(protocolType);
+        request.setSysMethod(method);
+        request.setSysUriPattern(uri);
+        request.setHttpContentType(FormatType.JSON);
+        return request;
+    }
+}
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+	"time"
+
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
+)
+
+type TranscodeingParam struct {
+	TargetAudioFormat     string `json:"TargetAudioFormat,omitempty"`
+	TargetVideoFormat     string `json:"TargetVideoFormat,omitempty"`
+	VideoThumbnailEnabled bool   `json:"VideoThumbnailEnabled,omitempty"`
+	SpectrumEnabled       bool   `json:"SpectrumEnabled,omitempty"`
+}
+
+type DiarizationParam struct {
+	SpeakerCount int `json:"SpeakerCount,omitempty"`
+}
+
+type TranscriptionParam struct {
+	AudioEventDetectionEnabled bool              `json:"AudioEventDetectionEnabled,omitempty"`
+	DiarizationEnabled         bool              `json:"DiarizationEnabled,omitempty"`
+	Diarization                *DiarizationParam `json:"Diarization,omitempty"`
+}
+
+type TranslationParam struct {
+	TargetLanguages []string `json:"TargetLanguages,omitempty"`
+}
+
+type SummarizationParam struct {
+	Types []string `json:"Types,omitempty"`
+}
+
+type ExtraParamerters struct {
+	Transcoding              *TranscodeingParam  `json:"Transcoding,omitempty"`
+	Transcription            *TranscriptionParam `json:"Transcription,omitempty"`
+	TranslationEnabled       bool                `json:"TranslationEnabled,omitempty"`
+	Translation              *TranslationParam   `json:"Translation,omitempty"`
+	AutoChaptersEnabled      bool                `json:"AutoChaptersEnabled,omitempty"`
+	MeetingAssistanceEnabled bool                `json:"MeetingAssistanceEnabled,omitempty"`
+	SummarizationEnabled     bool                `json:"SummarizationEnabled,omitempty"`
+	Summarization            *SummarizationParam `json:"Summarization,omitempty"`
+  TextPolishEnabled        bool                `json:"TextPolishEnabled,omitempty"`
+}
+
+type InputParam struct {
+	SourceLanguage string `json:"SourceLanguage"`
+	FileUrl        string `json:"FileUrl,omitempty"`
+	TaskKey        string `json:"TaskKey,omitempty"`
+	Format         string `json:"Format,omitempty"`
+	SampleRate     int    `json:"SampleRate,omitempty"`
+}
+
+type TaskBodyParam struct {
+	Appkey      string            `json:"AppKey"`
+	Input       InputParam        `json:"Input"`
+	Paramerters *ExtraParamerters `json:"Parameters,omitempty"`
+}
+
+type CreateTaskResponse struct {
+	RequestId string `json:"RequestId"`
+	Code      string `json:"Code"`
+	Message   string `json:"Message"`
+	Data      struct {
+		TaskId         string `json:"TaskId"`
+		TaskKey        string `json:"TaskKey"`
+		MeetingJoinUrl string `json:"MeetingJoinUrl,omitempty"`
+	} `json:"Data"`
+}
+
+func init_request_param() *ExtraParamerters {
+	param := new(ExtraParamerters)
+	param.Transcoding = new(TranscodeingParam)
+
+	transcription := new(TranscriptionParam)
+	transcription.Diarization = new(DiarizationParam)
+	transcription.Diarization.SpeakerCount = 2
+	transcription.DiarizationEnabled = true
+	param.Transcription = transcription
+
+	translation := new(TranslationParam)
+	translation.TargetLanguages = []string{"en"}
+	param.Translation = translation
+	param.TranslationEnabled = true
+	param.AutoChaptersEnabled = false
+	param.MeetingAssistanceEnabled = false
+	param.SummarizationEnabled = true
+
+	summarization := new(SummarizationParam)
+	summarization.Types = []string{"Paragraph", "Conversational", "QuestionsAnswering", "MindMap"}
+	param.Summarization = summarization
+  param.TextPolishEnabled = false
+
+	return param
+}
+
+func test_submit_realtime_meeting_task() string {
+	akkey := os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_ID")
+	aksecret := os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET")
+	client, err := sdk.NewClientWithAccessKey("cn-beijing", akkey, aksecret)
+	if err != nil {
+		log.Default().Fatalln(err)
+		return ""
+	}
+
+	request := requests.NewCommonRequest()
+	request.Method = "PUT"
+	request.Domain = "tingwu.cn-beijing.aliyuncs.com"
+	request.Version = "2023-09-30"
+	request.SetContentType("application/json")
+	request.PathPattern = "/openapi/tingwu/v2/tasks"
+	request.QueryParams["type"] = "realtime"
+
+	param := new(TaskBodyParam)
+	param.Appkey = "输入您在听悟管控台创建的Appkey"
+	param.Input.SourceLanguage = "cn"
+	param.Input.Format = "pcm"
+	param.Input.SampleRate = 16000
+	param.Input.TaskKey = "task_" + fmt.Sprint(time.Now().Unix())
+	param.Paramerters = init_request_param()
+
+	b, _ := json.Marshal(param)
+	log.Default().Print("request body:\n", string(b))
+	request.SetContent(b)
+	request.SetScheme("https")
+
+	response, err := client.ProcessCommonRequest(request)
+	if err != nil {
+		log.Default().Fatalln(err)
+		return ""
+	}
+
+	log.Default().Print("response body:\n", string(response.GetHttpContentBytes()))
+
+	var resp CreateTaskResponse
+	err = json.Unmarshal(response.GetHttpContentBytes(), &resp)
+	if err != nil {
+		log.Default().Fatalln(err)
+		return ""
+	}
+
+	log.Default().Println("TaskId:", resp.Data.TaskId)
+	log.Default().Println("MeetingJoinUrl:", resp.Data.MeetingJoinUrl)
+
+	return resp.Data.MeetingJoinUrl
+}
+
+func main() {
+	test_submit_realtime_meeting_task()
+}
+#include <cstdlib>
+#include <iostream>
+#include <string>
+#include <alibabacloud/core/AlibabaCloud.h>
+#include <alibabacloud/core/CommonRequest.h>
+#include <alibabacloud/core/CommonClient.h>
+#include <alibabacloud/core/CommonResponse.h>
+#include "jsoncpp/json.h"
+/**
+ * @author tingwu2023
+ * @desc 演示了通过OpenAPI 创建实时转写记录 的调用方式。
+ */
+int main( int argc, char** argv ) {
+    AlibabaCloud::InitializeSdk();
+    AlibabaCloud::ClientConfiguration configuration( "cn-beijing" );
+    // specify timeout when create client.
+    configuration.setConnectTimeout(1500);
+    configuration.setReadTimeout(4000);
+    // Please ensure that the environment variables ALIBABA_CLOUD_ACCESS_KEY_ID and ALIBABA_CLOUD_ACCESS_KEY_SECRET are set.
+    AlibabaCloud::Credentials credential( getenv("ALIBABA_CLOUD_ACCESS_KEY_ID"), getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET") );
+    AlibabaCloud::CommonClient client( credential, configuration );
+    AlibabaCloud::CommonRequest request(AlibabaCloud::CommonRequest::RequestPattern::RoaPattern);
+    request.setHttpMethod(AlibabaCloud::HttpRequest::Method::Put);
+    request.setDomain("tingwu.cn-beijing.aliyuncs.com");
+    request.setVersion("2023-09-30");
+    request.setResourcePath("/openapi/tingwu/v2/tasks");
+    request.setQueryParameter("type", "realtime");
+    request.setHeaderParameter("Content-Type", "application/json");
+    
+    Json::Value root;
+    root["Appkey"] = "输入您在听悟管控台创建的Appkey";
+    root["Appkey"] = "tEA3SDcxTKire0ut";
+
+    Json::Value input;
+    input["SourceLanguage"] = "cn";
+    input["Format"]         = "pcm";
+    input["SampleRate"]     = "16000";
+    input["SourceLanguage"] = "cn";
+    input["TaskKey"] = "输入您为该次请求自定义的标识";
+    root["Input"] = input;
+
+    Json::Value parameters;
+    // 音视频文件转换 通常来说，不需要设置此参数
+    // Json::Value transcoding;
+    // transcoding["TargetAudioFormat"] = "mp3";
+    // parameters["Transcoding"] = transcoding;
+
+    // 语音转写: 以下是开启说话人分离功能(角色分离)，若您不需要，则无须设置
+    Json::Value transcription;
+    transcription["DiarizationEnabled"] = true;
+    Json::Value speakerCount;
+    speakerCount["SpeakerCount"] = 2;
+    transcription["Diarization"] = speakerCount;
+    parameters["Transcription"] = transcription;
+
+    // 翻译： 可选
+    Json::Value translation;
+    Json::Value langauges;
+    langauges.append("en");
+    translation["TargetLanguages"] = langauges;
+    parameters["Translation"] = translation;
+    parameters["TranslationEnabled"] = true;
+
+    // 章节速览： 可选
+    parameters["AutoChaptersEnabled"] = true;
+
+    // 智能纪要： 可选，包括： 待办、关键信息(关键词、重点内容、场景识别)
+    parameters["MeetingAssistanceEnabled"] = true;
+    Json::Value meetingAssistance;
+    Json::Value meetingAssistanceTypeList;
+    meetingAssistanceTypeList.append("Actions");
+    meetingAssistanceTypeList.append("KeyInformation");
+    meetingAssistance["Types"] = meetingAssistanceTypeList;
+    parameters["MeetingAssistanceTypeList"] = meetingAssistanceTypeList;
+
+    // 摘要相关： 可选， 以下设置将3种摘要类型都启用了，您可以按需增删
+    parameters["SummarizationEnabled"] = true;
+    Json::Value summarization;
+    Json::Value summarizationTypeList;
+    summarizationTypeList.append("Paragraph");
+    summarizationTypeList.append("Conversational");
+    summarizationTypeList.append("QuestionsAnswering");
+    summarizationTypeList.append("MindMap");
+    summarization["Types"] = summarizationTypeList;
+    parameters["Summarization"] = summarization;
+  	
+    // 口语书面化： 可选
+    parameters["TextPolishEnabled"] = true;
+
+    root["Parameters"] = parameters;
+
+    Json::FastWriter writer;
+    std::string body = writer.write(root);
+    printf("input json: [%s]\n", body.c_str());
+    request.setContent(body.c_str(), body.size());
+
+    auto response = client.commonResponse(request);
+    if (response.isSuccess()) {
+        printf("request success.\n");
+        printf("result: %s\n", response.result().payload().c_str());
+    } else {
+        printf("error: %s\n", response.error().errorMessage().c_str());
+        printf("request id: %s\n", response.error().requestId().c_str());
+    }
+      
+    AlibabaCloud::ShutdownSdk();
+    return 0;
+}
+#!/usr/bin/env python
+#coding=utf-8
+
+import os
+import json
+import datetime
+from aliyunsdkcore.client import AcsClient
+from aliyunsdkcore.request import CommonRequest
+from aliyunsdkcore.auth.credentials import AccessKeyCredential
+
+def create_common_request(domain, version, protocolType, method, uri):
+    request = CommonRequest()
+    request.set_accept_format('json')
+    request.set_domain(domain)
+    request.set_version(version)
+    request.set_protocol_type(protocolType)
+    request.set_method(method)
+    request.set_uri_pattern(uri)
+    request.add_header('Content-Type', 'application/json')
+    return request
+
+def init_parameters():
+    body = dict()
+    body['AppKey'] = '输入您在听悟管控台创建的Appkey'
+
+    # 基本请求参数
+    input = dict()
+
+    #输入语音流格式和采样率和以下参数设置保持一致
+    input['Format'] = 'pcm'
+    input['SampleRate'] = 16000
+    input['SourceLanguage'] = 'cn'
+    input['TaskKey'] = 'task' + datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    input['ProgressiveCallbacksEnabled'] = False
+    body['Input'] = input
+
+    # AI相关参数，按需设置即可
+    parameters = dict()
+
+    # 音视频转换相关
+    transcoding = dict()
+    # 将原音视频文件转成mp3文件，用以后续浏览器播放
+    # transcoding['TargetAudioFormat'] = 'mp3'
+    # transcoding['SpectrumEnabled'] = False
+    # parameters['Transcoding'] = transcoding
+
+    # 语音识别控制相关
+    transcription = dict()
+    # 角色分离 ： 可选
+    transcription['DiarizationEnabled'] = True
+    diarization = dict()
+    diarization['SpeakerCount'] = 2
+    transcription['Diarization'] = diarization
+    parameters['Transcription'] = transcription
+
+    # 文本翻译控制相关 ： 可选
+    parameters['TranslationEnabled'] = True
+    translation = dict()
+    translation['TargetLanguages'] = ['en'] # 假设翻译成英文
+    parameters['Translation'] = translation
+
+    # 章节速览相关 ： 可选，包括： 标题、议程摘要
+    parameters['AutoChaptersEnabled'] = True
+
+    # 智能纪要相关 ： 可选，包括： 待办、关键信息(关键词、重点内容、场景识别)
+    parameters['MeetingAssistanceEnabled'] = True
+    meetingAssistance = dict()
+    meetingAssistance['Types'] = ['Actions', 'KeyInformation']
+    parameters['MeetingAssistance'] = meetingAssistance
+
+    # 摘要控制相关 ： 可选，包括： 全文摘要、发言人总结摘要、问答摘要(问答回顾)
+    parameters['SummarizationEnabled'] = True
+    summarization = dict()
+    summarization['Types'] = ['Paragraph', 'Conversational', 'QuestionsAnswering', 'MindMap']
+    parameters['Summarization'] = summarization
+
+    # ppt抽取和ppt总结 ： 可选
+    parameters['PptExtractionEnabled'] = True
+    
+    # 口语书面化 ： 可选
+    parameters['TextPolishEnabled'] = True
+
+    body['Parameters'] = parameters
+    return body
+
+body = init_parameters()
+print(body)
+
+# TODO  请通过环境变量设置您的 AccessKeyId 和 AccessKeySecret
+credentials = AccessKeyCredential(os.environ['ALIBABA_CLOUD_ACCESS_KEY_ID'], os.environ['ALIBABA_CLOUD_ACCESS_KEY_SECRET'])
+client = AcsClient(region_id='cn-beijing', credential=credentials)
+
+request = create_common_request('tingwu.cn-beijing.aliyuncs.com', '2023-09-30', 'https', 'PUT', '/openapi/tingwu/v2/tasks')
+request.add_query_param('type', 'realtime')
+
+request.set_content(json.dumps(body).encode('utf-8'))
+response = client.do_action_with_exception(request)
+print("response: \n" + json.dumps(json.loads(response), indent=4, ensure_ascii=False))
+{
+    "Code":"0",
+    "Data":{
+        "TaskId":"3190978427bb43z09c01dfff********",
+        "TaskKey":"task16988********",
+        "MeetingJoinUrl":"wss://tingwu-realtime-cn-beijing.aliyuncs.com/api/ws/v1?mc=g9ySw5kiwXM4K7tBnIajKq6Fh9G1aUokzkptBIFixj7e7zv6c8AKxUDTW2Oz8AFFONWXtTQedh-NpKZUffqIYdW7yAlivqlo9B0TdeM88fzgWaYk2Ifg********"
+    },
+    "Message":"success",
+    "RequestId":"6582c654-cc37-4f2d-b80d-e5e7********"
+}
+具体字段定义如下。
+TaskId
+string
+创建任务时生成的
+TaskKey
+string
+您创建任务时设置的
+MeetingJoinUrl
+string
+实时记录场景下生成的音频流推送地址，您可以在后续实时音频流识别时通过该地址进行
+RequestId
+string
+RequestId
+实时记录语音推流
+在完成记录创建后，便可通过听悟提供的
+当该记录结束时，您
+结束实时记录操作，此时进入到后处理阶段，对后处理相关的
+TaskId
+TaskId
+-
+代码示例
+package com.alibaba.tingwu.client.demo.realtimemeeting;
+
+import com.alibaba.fastjson.JSONObject;
+import com.aliyuncs.CommonRequest;
+import com.aliyuncs.CommonResponse;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.http.FormatType;
+import com.aliyuncs.http.MethodType;
+import com.aliyuncs.http.ProtocolType;
+import com.aliyuncs.profile.DefaultProfile;
+import org.junit.Test;
+
+/**
+ * @author tingwu2023
+ * @desc 演示了通过OpenAPI 结束实时会议 的调用方式。
+ */
+public class StopRealtimeMeetingTaskTest {
+
+    @Test
+    public void stopTask() throws ClientException {
+        CommonRequest request = createCommonRequest("tingwu.cn-beijing.aliyuncs.com", "2023-09-30", ProtocolType.HTTPS, MethodType.PUT, "/openapi/tingwu/v2/tasks");
+        request.putQueryParameter("type", "realtime");
+        // 必须设置 operation=stop
+        request.putQueryParameter("operation", "stop");
+
+        JSONObject root = new JSONObject();
+        JSONObject input = new JSONObject();
+        input.put("TaskId", "请输入实时会议的TaskId");
+        root.put("Input", input);
+        System.out.println(root.toJSONString());
+        request.setHttpContent(root.toJSONString().getBytes(), "utf-8", FormatType.JSON);
+
+        // TODO 请通过环境变量设置您的AccessKeyId、AccessKeySecret
+        DefaultProfile profile = DefaultProfile.getProfile("cn-beijing", System.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID"), System.getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET"));
+        IAcsClient client = new DefaultAcsClient(profile);
+        CommonResponse response = client.getCommonResponse(request);
+        System.out.println(response.getData());
+    }
+  
+    public static CommonRequest createCommonRequest(String domain, String version, ProtocolType protocolType, MethodType method, String uri) {
+        CommonRequest request = new CommonRequest();
+        request.setSysDomain(domain);
+        request.setSysVersion(version);
+        request.setSysProtocol(protocolType);
+        request.setSysMethod(method);
+        request.setSysUriPattern(uri);
+        request.setHttpContentType(FormatType.JSON);
+        return request;
+    }
+}
+package main
+
+import (
+	"encoding/json"
+	"log"
+	"os"
+
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
+)
+
+type TranscodeingParam struct {
+	TargetAudioFormat     string `json:"TargetAudioFormat,omitempty"`
+	TargetVideoFormat     string `json:"TargetVideoFormat,omitempty"`
+	VideoThumbnailEnabled bool   `json:"VideoThumbnailEnabled,omitempty"`
+	SpectrumEnabled       bool   `json:"SpectrumEnabled,omitempty"`
+}
+
+type DiarizationParam struct {
+	SpeakerCount int `json:"SpeakerCount,omitempty"`
+}
+
+type TranscriptionParam struct {
+	AudioEventDetectionEnabled bool              `json:"AudioEventDetectionEnabled,omitempty"`
+	DiarizationEnabled         bool              `json:"DiarizationEnabled,omitempty"`
+	Diarization                *DiarizationParam `json:"Diarization,omitempty"`
+}
+
+type TranslationParam struct {
+	TargetLanguages []string `json:"TargetLanguages,omitempty"`
+}
+
+type SummarizationParam struct {
+	Types []string `json:"Types,omitempty"`
+}
+
+type ExtraParamerters struct {
+	Transcoding              *TranscodeingParam  `json:"Transcoding,omitempty"`
+	Transcription            *TranscriptionParam `json:"Transcription,omitempty"`
+	TranslationEnabled       bool                `json:"TranslationEnabled,omitempty"`
+	Translation              *TranslationParam   `json:"Translation,omitempty"`
+	AutoChaptersEnabled      bool                `json:"AutoChaptersEnabled,omitempty"`
+	MeetingAssistanceEnabled bool                `json:"MeetingAssistanceEnabled,omitempty"`
+	SummarizationEnabled     bool                `json:"SummarizationEnabled,omitempty"`
+	Summarization            *SummarizationParam `json:"Summarization,omitempty"`
+}
+
+type InputParam struct {
+	SourceLanguage string `json:"SourceLanguage"`
+	FileUrl        string `json:"FileUrl,omitempty"`
+	TaskKey        string `json:"TaskKey,omitempty"`
+	TaskId         string `json:"TaskId,omitempty"`
+	Format         string `json:"Format,omitempty"`
+	SampleRate     int    `json:"SampleRate,omitempty"`
+}
+
+type TaskBodyParam struct {
+	Appkey      string            `json:"AppKey"`
+	Input       InputParam        `json:"Input"`
+	Paramerters *ExtraParamerters `json:"Parameters,omitempty"`
+}
+
+type CreateTaskResponse struct {
+	RequestId string `json:"RequestId"`
+	Code      string `json:"Code"`
+	Message   string `json:"Message"`
+	Data      struct {
+		TaskId         string `json:"TaskId"`
+		TaskKey        string `json:"TaskKey"`
+		MeetingJoinUrl string `json:"MeetingJoinUrl,omitempty"`
+	} `json:"Data"`
+}
+
+func test_stop_realtime_meeting_task() {
+	akkey := os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_ID")
+	aksecret := os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET")
+	client, err := sdk.NewClientWithAccessKey("cn-beijing", akkey, aksecret)
+	if err != nil {
+		log.Default().Fatalln(err)
+		return
+	}
+
+	request := requests.NewCommonRequest()
+	request.Method = "PUT"
+	request.Domain = "tingwu.cn-beijing.aliyuncs.com"
+	request.Version = "2023-09-30"
+	request.SetContentType("application/json")
+	request.PathPattern = "/openapi/tingwu/v2/tasks"
+	request.QueryParams["type"] = "realtime"
+	request.QueryParams["operation"] = "stop"
+
+	param := new(TaskBodyParam)
+	param.Appkey = "输入您在听悟管控台创建的Appkey"
+	param.Input.TaskId = "请输入实时会议的TaskId"
+
+	b, _ := json.Marshal(param)
+	log.Default().Print("request body:\n", string(b))
+	request.SetContent(b)
+	request.SetScheme("https")
+
+	response, err := client.ProcessCommonRequest(request)
+	if err != nil {
+		log.Default().Fatalln(err)
+		return
+	}
+
+	log.Default().Print("response body:\n", string(response.GetHttpContentBytes()))
+	return
+}
+
+func main() {
+	test_stop_realtime_meeting_task()
+}
+#include <cstdlib>
+#include <iostream>
+#include <string>
+#include <string.h>
+#include <alibabacloud/core/AlibabaCloud.h>
+#include <alibabacloud/core/CommonRequest.h>
+#include <alibabacloud/core/CommonClient.h>
+#include <alibabacloud/core/CommonResponse.h>
+#include "jsoncpp/json.h"
+/**
+ * @author tingwu2023
+ * @desc 演示了通过OpenAPI 结束实时记录 的调用方式。
+ */
+int main( int argc, char** argv ) {
+    std::string taskId = "请输入创建任务(含离线转写、实时会议)的TaskId";
+
+    AlibabaCloud::InitializeSdk();
+    AlibabaCloud::ClientConfiguration configuration( "cn-beijing" );
+    // specify timeout when create client.
+    configuration.setConnectTimeout(1500);
+    configuration.setReadTimeout(4000);
+    // Please ensure that the environment variables ALIBABA_CLOUD_ACCESS_KEY_ID and ALIBABA_CLOUD_ACCESS_KEY_SECRET are set.
+    AlibabaCloud::Credentials credential( getenv("ALIBABA_CLOUD_ACCESS_KEY_ID"), getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET") );
+    AlibabaCloud::CommonClient client( credential, configuration );
+    AlibabaCloud::CommonRequest request(AlibabaCloud::CommonRequest::RequestPattern::RoaPattern);
+    request.setHttpMethod(AlibabaCloud::HttpRequest::Method::Put);
+    request.setDomain("tingwu.cn-beijing.aliyuncs.com");
+    request.setVersion("2023-09-30");
+    request.setResourcePath("/openapi/tingwu/v2/tasks");
+    request.setQueryParameter("type", "realtime");
+    request.setQueryParameter("operation", "stop");
+    request.setHeaderParameter("Content-Type", "application/json");
+
+    Json::Value root;
+    Json::Value input;
+    input["TaskId"] = taskId;
+    root["Input"] = input;
+
+    Json::FastWriter writer;
+    std::string body = writer.write(root);
+    printf("input json: [%s]\n", body.c_str());
+    request.setContent(body.c_str(), body.size());
+
+    auto response = client.commonResponse(request);
+    if (response.isSuccess()) {
+        printf("request success.\n");
+        printf("result: %s\n", response.result().payload().c_str());
+    } else {
+        printf("error: %s\n", response.error().errorMessage().c_str());
+        printf("request id: %s\n", response.error().requestId().c_str());
+    }
+      
+    AlibabaCloud::ShutdownSdk();
+    return 0;
+}
+#!/usr/bin/env python
+#coding=utf-8
+
+import os
+import json
+import datetime
+from aliyunsdkcore.client import AcsClient
+from aliyunsdkcore.request import CommonRequest
+from aliyunsdkcore.auth.credentials import AccessKeyCredential
+
+def create_common_request(domain, version, protocolType, method, uri):
+    request = CommonRequest()
+    request.set_accept_format('json')
+    request.set_domain(domain)
+    request.set_version(version)
+    request.set_protocol_type(protocolType)
+    request.set_method(method)
+    request.set_uri_pattern(uri)
+    request.add_header('Content-Type', 'application/json')
+    return request
+
+def init_parameters():
+    body = dict()
+    body['AppKey'] = '输入您在听悟管控台创建的Appkey'
+
+    # 基本请求参数
+    input = dict()
+
+    #输入语音流格式和采样率和以下参数设置保持一致
+    input['TaskId'] = '请输入实时会议的TaskId'
+    body['Input'] = input
+
+    return body
+
+body = init_parameters()
+print(body)
+
+# TODO  请通过环境变量设置您的 AccessKeyId 和 AccessKeySecret
+credentials = AccessKeyCredential(os.environ['ALIBABA_CLOUD_ACCESS_KEY_ID'], os.environ['ALIBABA_CLOUD_ACCESS_KEY_SECRET'])
+client = AcsClient(region_id='cn-beijing', credential=credentials)
+
+request = create_common_request('tingwu.cn-beijing.aliyuncs.com', '2023-09-30', 'https', 'PUT', '/openapi/tingwu/v2/tasks')
+request.add_query_param('type', 'realtime')
+request.add_query_param('operation', 'stop')
+
+request.set_content(json.dumps(body).encode('utf-8'))
+response = client.do_action_with_exception(request)
+print("response: \n" + json.dumps(json.loads(response), indent=4, ensure_ascii=False))
+当仅使用实时语音识别时：
+{
+    "Code":"0",
+    "Data":{
+        "TaskId":"e8adc0b3bc4b42d898fcadb0a*******",
+        "TaskStatus":"COMPLETED"
+    },
+    "Message":"success",
+    "RequestId":"1b20e0d9-c55c-4cc3-85af-80b********"
+}
+当开启语音识别的同时开启了摘要、章节速览、智能纪要等功能时：
+{
+    "Code":"0",
+    "Data":{
+        "TaskId":"e8adc0b3bc4b42d898fcadb0*******",
+        "TaskStatus":"ONGOING"
+    },
+    "Message":"success",
+    "RequestId":"5fa32fc6-441f-4dd1-bb86-c030*******"
+}
+具体字段定义如下。
+TaskId
+string
+创建任务时生成的
+TaskStatus
+string
+任务状态，包括：
+NEW： 刚创建状态，此时还未发送音频流
+ONGOING ：运行中
+PAUSED：实时记录暂停，在发送音频流之后停止发送，此时状态为
+COMPLETED : 已完成
+FAILED ： 任务失败
+INVALID ：无效，可能是
+ErrorCode
+string
+错误原因
+ErrorMessage
+string
+错误详细信息
+常见问题
+PPT
+请确保您的实时记录交互顺序正确。实时记录正常交互流程是先创建实时记录，向实时记录服务返回的
+常见语种场景示例如下：
+语种类型
+对应参数
+适用场景（实时记录）
+参考示例
+单语种
+（已知语种）
+参数名：Input.SourceLanguage
+参数值可配置（单选）：中文（cn）、 英语（en）、粤语（yue）、日语（ja）、韩语（ko）
+单语种语音识别模型。
+中文支持
+英、日、粤、韩仅支持
+若已知语音的语种是中文
+Input.SourceLanguage="cn"
+识别结果：感谢您使用通义听悟。
+若已知语音的语种是英文
+Input.SourceLanguage="en"
+识别结果：Thank you for using Tongyi Tingwu.
+多语种混合
+参数名
+参数值：multilingual
+参数名
+参数值可配置（可多选）： 中文（cn）， 英语（en）， 粤语（yue）， 日语（ja）、韩语（ko）、德语（de）、法语（fr）、俄语（ru）
+多语种语音识别。
+仅支持
+支持同时识别出中文、英文、日语、粤语、韩语、德语、法语和俄语。
+支持限定语种的范围。
+若语音中的语种非单语种，涉及多个语种，直接识别对应语种的文字。
+Input.SourceLanguage="multilingual"
+识别结果：hello, everyone. 感谢您使用通义听悟。
+若语音中的语种非单语种，涉及多个语种，但已知语种的范围（如只有中、英、粤），直接识别对应语种的文字，同时避免误识别出日、法、俄等和场景无关的语种。
+Input.SourceLanguage="multilingual"
+Input.LanguageHints=['cn', 'en', 'yue']
+为什么选择阿里云
+产品和定价
+解决方案
+文档与社区
+权益中心
+支持与服务
+关注阿里云
+关注阿里云公众号或下载阿里云APP，关注云资讯，随时随地运维管控云服务
+联系我们：4008013260
+友情链接
+© 2009-2025 Aliyun.com 版权所有 增值电信业务经营许可证：

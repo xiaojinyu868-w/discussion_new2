@@ -1,0 +1,958 @@
+﻿
+
+<!DOCTYPE html><html lang="zh"><head>
+  <meta name="nav-disable" content="flex">
+  
+  <link rel="icon" href="https://img.alicdn.com/imgextra/i2/O1CN01TFs5Qw27uYvfA6gib_!!6000000007857-55-tps-32-32.svg" type="image/x-icon">
+  <link rel="apple-touch-icon" href="https://img.alicdn.com/imgextra/i1/O1CN01BEqugB1KebzCRyIJl_!!6000000001189-55-tps-48-48.svg">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "阿里云计算",
+      "url": "https://help.aliyun.com",
+      "logo": "https://img.alicdn.com/imgextra/i1/O1CN01BEqugB1KebzCRyIJl_!!6000000001189-55-tps-48-48.svg"
+    }
+  </script>
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="x-ua-compatible" content="ie=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="applicable-device" content="pc,mobile">
+  <meta name="nav-config" content="footer=default">
+  <meta name="data-spm" content="a2c4g">
+  <meta name="aplus-core" content="aplus.js">
+  <meta name="aplus-ajax" content="chksum">
+  <meta name="aplus-waiting" content="MAN">
+  <meta name="aplus-pvhash" content="1">
+  <script>
+    window.pageStartTime = Date.now();
+  </script>
+
+
+  <title>接口与实现_工作学习 AI 助手通义听悟(TINGWU)-阿里云帮助中心</title>
+  <link rel="canonical" href="https://help.aliyun.com/zh/tingwu/interface-and-implementation">
+  <meta name="keywords" content="request,json,parameters,支持,记录,实时,string">
+  <meta name="description" content="本文主要介绍实时记录接入流程。">
+  <meta name="last-modified" content="2025-08-07T19:09:33+08:00">
+  <meta name="date" content="2023-11-09T05:01:01+08:00">
+  <meta property="og:title" content="接口与实现_工作学习 AI 助手通义听悟(TINGWU)-阿里云帮助中心">
+  <meta property="og:type" content="website">
+  <meta property="og:description" content="本文主要介绍实时记录接入流程。">
+  <meta property="og:url" content="https://help.aliyun.com/zh/tingwu/interface-and-implementation">
+
+  <link href="https://g.alicdn.com/aliyun-help/help-portal-fe/0.12.2/css/index.css" rel="stylesheet">
+  <script>
+    window.globalData = {
+      nodeId: "2609572",
+    }
+    window.$ACE_TRACKER_CONFIG = {
+      "enableHistory": true,
+      "enableHash": false
+    }
+  </script>
+<script>
+    window.__ICE_SSR_ENABLED__=true;
+    window.__ICE_APP_DATA__={};
+window.__ICE_PAGE_PROPS__={"docDetailData":{"storeData":{"alias":"/tingwu/interface-and-implementation","nodeId":null,"data":{"website":"cn","lastModifiedTime":1754564973000,"keywords":"request,json,parameters,支持,记录,实时,string","level":7,"docTitle":"接口与实现","language":"zh","nodeType":1,"seoTitle":"接口与实现_工作学习 AI 助手通义听悟(TINGWU)-阿里云帮助中心","title":"接口与实现","version":41,"content":"<div lang=\"zh\" class=\"icms-help-docs-content\">\n<main id=\"main-2537830\"><p id=\"427303a378rot\" data-tag=\"shortdesc\" class=\"shortdesc\">本文主要介绍<b>实时记录</b>接入流程。</p><div data-tag=\"body\" class=\"body\"><section id=\"f7324d7078vnj\" class=\"section\"><h2 uuid=\"locdid51wyh5rtpre3e\" id=\"abe5a7d378b12\"><b>使用须知</b></h2><ul id=\"abe5a7d478u7g\"><li id=\"abe5a7d5780kh\"><p id=\"abe5a7d678di1\">支持的输入格式：PCM（无压缩的<span class=\"help-letter-space\"></span>PCM<span class=\"help-letter-space\"></span>或<span class=\"help-letter-space\"></span>WAV<span class=\"help-letter-space\"></span>文件）、OPUS、SPEEX、MP3、AAC<span class=\"help-letter-space\"></span>格式，16 bit<span class=\"help-letter-space\"></span>采样位数、单声道（mono）。</p></li><li id=\"abe5a7d778vih\"><p id=\"abe5a7d8782kn\">支持的音频采样率：16000 Hz、8000Hz。</p></li><li id=\"abe5a7d978tqv\"><p id=\"abe5a7da78jxh\">支持的单次记录时长：24<span class=\"help-letter-space\"></span>小时。</p></li><li id=\"abe5a7db787l8\"><p id=\"abe5a7dc78qtm\">支持设置返回结果：是否返回中间识别结果。</p></li><li id=\"abe5a7dd78niw\"><p id=\"abe5a7de78syk\">支持设置多语言识别：中文、英文、粤语、日语、韩语、中英自由说（长段中英混）。</p></li><li id=\"abe5a7df78loq\"><p id=\"abe5a7e078r5u\">支持设置开启翻译：支持中、英、日、韩、德、法、俄语间的双向互译，中英自由说翻译目标语言可为中文、英文或中文&amp;英文，支持会议中开启或关闭。</p></li><li id=\"abe5a7e1783i7\"><p id=\"abe5a7e278q8s\">支持设置同步音频转码：转码为比特率<span class=\"help-letter-space\"></span>128kb/s<span class=\"help-letter-space\"></span>的<span class=\"help-letter-space\"></span>mp3<span class=\"help-letter-space\"></span>格式音频，准实时写入的指定<span class=\"help-letter-space\"></span>OSS。</p></li><li id=\"abe5a7e378uvv\"><p id=\"abe5cee07881m\">支持开启各项大模型能力：章节速览、大模型摘要总结（全文摘要、发言总结、问答回顾、思维导图）、要点提炼（关键词、待办事项、重点内容、场景识别）、服务质检、PPT<span class=\"help-letter-space\"></span>提取及摘要、口语书面化、自定义<span class=\"help-letter-space\"></span>prompt<span class=\"help-letter-space\"></span>等。</p></li><li id=\"002765548afm6\"><p id=\"3e095d4e97l75\">对于<span class=\"help-letter-space\"></span>API<span class=\"help-letter-space\"></span>维度的<span class=\"help-letter-space\"></span>QPS（Queries Per Second）限制如下：</p><ul id=\"e49bc0d7631dj\"><li id=\"7dc4796df09jd\"><p id=\"12be7f4e97ty6\"><a href=\"https://help.aliyun.com/zh/tingwu/api-tingwu-2023-09-30-createtask\" id=\"66c7aa6f24h25\" title=\"\" class=\"xref\">CreateTask - 创建听悟任务</a>用户级别<span class=\"help-letter-space\"></span>QPS<span class=\"help-letter-space\"></span>限制为<span class=\"help-letter-space\"></span>20。</p></li><li id=\"a0ba14e07cw2p\"><p id=\"20fdca87aaen6\"><a href=\"https://help.aliyun.com/zh/tingwu/api-tingwu-2023-09-30-gettaskinfo\" id=\"18a948fbffkzx\" title=\"\" class=\"xref\">GetTaskInfo - 查询任务状态和任务结果</a>用户级别<span class=\"help-letter-space\"></span>QPS<span class=\"help-letter-space\"></span>限制为<span class=\"help-letter-space\"></span>100。</p></li></ul></li></ul></section><section id=\"fe651b4078lsj\" class=\"section\"><h2 uuid=\"locdid530uo57rzzszie\" id=\"00eeac5078c7t\"><b>交互流程</b></h2><p id=\"b4a7ef4078h3h\"><img id=\"4afa3fa9aejpm\" src=\"https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8804292271/p830067.png\" alt=\"image\" placement=\"break\" width=\"476\" class=\"image break\"></p></section><section id=\"9481570078qqb\" class=\"section\"><h2 uuid=\"lofns7fa416o51of51o\" id=\"932793607846a\">接入步骤</h2><p id=\"c25cd88178y2e\" uuid=\"locdid53j7gg82alzk\"><b>步骤<span class=\"help-letter-space\"></span>1：</b>调用<span class=\"help-letter-space\"></span>CreateTask<span class=\"help-letter-space\"></span>接口<a href=\"#bf41578079kw5\" id=\"b850d85079l2h\" title=\"\" class=\"xref\">创建实时记录</a>，对应交互流程<span class=\"help-letter-space\"></span>1-2。</p><div type=\"note\" id=\"2656a1a078gj3\" class=\"note note-note\"><div class=\"note-icon-wrapper\"><i class=\"icon-note note note\"></i></div><div class=\"noteContentSpan\"><strong>说明 </strong><p uuid=\"locdid54hhid46q7cmh\" id=\"2817647078p9u\">转写的管理粒度为记录，在完成记录创建后便可基于该记录体验会中<b>实时记录语音推流</b>转写。</p></div></div><p id=\"4ec5ee1078hys\"><b>步骤<span class=\"help-letter-space\"></span>2：</b><a href=\"https://help.aliyun.com/zh/tingwu/real-time-stream-push\" id=\"a80746dcd1nxw\" title=\"\" class=\"xref\">实时记录语音推流</a>，在完成记录创建后，可通过听悟提供的<a href=\"https://help.aliyun.com/zh/tingwu/real-time-stream-push\" id=\"ee3c91fbd2jk4\" title=\"\" class=\"xref\">交互流程与实现</a>进行会中实时的语音推流并接收识别结果和翻译结果。</p><p uuid=\"locdid55fu6zlltubt5\" id=\"c25cd885788hg\"><b>步骤<span class=\"help-letter-space\"></span>3：</b>调用<span class=\"help-letter-space\"></span>CreateTask<span class=\"help-letter-space\"></span>接口<a href=\"#0de5549079i0x\" id=\"f2a438c079wvb\" title=\"\" class=\"xref\">结束实时记录</a>。</p><p uuid=\"locdid54pfko72vvzib\" id=\"55431ba134cpq\"><b>步骤<span class=\"help-letter-space\"></span>4：</b>调用<span class=\"help-letter-space\"></span>GetTaskInfo<span class=\"help-letter-space\"></span>接口<a href=\"https://help.aliyun.com/zh/tingwu/get-results\" id=\"b2cab269d9tmy\" title=\"\" class=\"xref\">查询实时记录状态</a>。</p><div type=\"note\" id=\"21c9033078has\" class=\"note note-note\"><div class=\"note-icon-wrapper\"><i class=\"icon-note note note\"></i></div><div class=\"noteContentSpan\"><strong>说明 </strong><p uuid=\"locdid56om6tl4wo2ck\" id=\"c25cd88778kvf\">结束实时记录后进入智能纪要提取等<span class=\"help-letter-space\"></span>AI<span class=\"help-letter-space\"></span>能力阶段，此时可查询或者通过回调获取结果。</p></div></div></section><section id=\"9bc149207e156\" class=\"section\"><h3 uuid=\"lo8qv9lmd5878o3tu3s\" id=\"53183b5179p5m\"><b>前提条件</b></h3><ul id=\"f62610927dohl\"><li id=\"f62610907dvc3\"><p id=\"53183b52791z7\"><a href=\"https://help.aliyun.com/zh/tingwu/getting-started-1#48b2f4707ehf9\" id=\"9c3b34107etab\" title=\"\" class=\"xref\">创建<span class=\"help-letter-space\"></span>AccessKey</a></p></li><li id=\"674ace007e5mm\"><p id=\"674aa6f07epe1\"><a href=\"https://help.aliyun.com/zh/tingwu/getting-started-1#b602cfa07egrl\" id=\"9c3b34117e1fr\" title=\"\" class=\"xref\">创建项目</a></p></li><li id=\"030c38207ddai\"><p id=\"030c11107d3up\"><a href=\"https://help.aliyun.com/zh/tingwu/install-the-sdk\" id=\"9c3b34127egyb\" title=\"\" class=\"xref\">安装<span class=\"help-letter-space\"></span>SDK</a></p></li></ul></section><section id=\"136e7dd081qj6\" class=\"section\"><h3 id=\"6cdc208181j3l\"><b>AccessKey<span class=\"help-letter-space\"></span>环境变量设置</b></h3><p id=\"6cdc2082811rk\">需要使用您的<span class=\"help-letter-space\"></span>AccessKey<span class=\"help-letter-space\"></span>的<span class=\"help-letter-space\"></span>Id<span class=\"help-letter-space\"></span>和<span class=\"help-letter-space\"></span>secret<span class=\"help-letter-space\"></span>替换如下命令中的<span class=\"help-letter-space\"></span>YOUR_ACCESS_KEY_ID<span class=\"help-letter-space\"></span>和<span class=\"help-letter-space\"></span>YOUR_ACCESS_KEY_SECRET。</p><pre id=\"63f49dd081t9z\" data-tag=\"codeblock\" outputclass=\"language-shell\" code-type=\"xCode\" class=\"pre codeblock language-shell\"><code>export ALIBABA_CLOUD_ACCESS_KEY_ID=YOUR_ACCESS_KEY_ID &amp;&amp;\nexport ALIBABA_CLOUD_ACCESS_KEY_SECRET=YOUR_ACCESS_KEY_SECRET</code></pre></section><section id=\"bf41578079kw5\" class=\"section\"><h3 id=\"dae3ed40791k9\" uuid=\"lofns7fa416o51of51o\"><b>创建实时记录</b></h3><p id=\"d3dbd8f079jxe\">参考<span class=\"help-letter-space\"></span><a href=\"https://help.aliyun.com/zh/tingwu/api-tingwu-2023-09-30-createtask\" id=\"c23fa1308enk8\" title=\"\" class=\"xref\">API<span class=\"help-letter-space\"></span>详情</a>创建一个实时记录任务，常用参数如下，之后根据获取到的记录推流<span class=\"help-letter-space\"></span>url，建立<span class=\"help-letter-space\"></span>websocket<span class=\"help-letter-space\"></span>链接，实时推流并进行识别。</p><section id=\"ee9a4d8078omr\" class=\"section\"><h4 id=\"0c04ec5078mbg\" uuid=\"lofgww37juerlbp8ea\"><b>请求参数</b></h4><table id=\"0c04ec5178zgy\" tablewidth=\"100\" tablecolswidth=\"17.13 37.3 9 6.68 29.890000000000015\" autofit=\"true\" class=\"table\"><colgroup colwidth=\"0.86*\" style=\"width:17.13%\"></colgroup><colgroup colwidth=\"1.86*\" style=\"width:37.30%\"></colgroup><colgroup colwidth=\"0.45*\" style=\"width:9.00%\"></colgroup><colgroup colwidth=\"0.33*\" style=\"width:6.68%\"></colgroup><colgroup colwidth=\"1.49*\" style=\"width:29.89%\"></colgroup><tbody class=\"tbody\"><tr id=\"0c04ec5278duq\"><td id=\"0c04ec5378xgv\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lofh6jx5ackhq31sg8\" id=\"bfb464a07979n\"><b>名称</b></p></td><td id=\"0c04ec5578kv0\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lofh6jx5oja0h3ovvv\" id=\"bfb464a179mvt\"><b>参数</b></p></td><td id=\"0c04ec5778lon\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lofh6jx53yy3lbc5x19\" id=\"bfb464a2799wg\"><b>类型</b></p></td><td id=\"08c7cb30796so\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p id=\"08c7cb3179q4d\"><b>默认值</b></p></td><td id=\"0c04ec5b78ehi\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lofh6jx5t8uyt94vxco\" id=\"bfb464a479hqw\"><b>说明</b></p></td></tr><tr id=\"0c04ec5d78nfl\" style=\"height:68px\"><td id=\"0c04ec5e78ttb\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh03pqrzohi64oj3\" id=\"bfb464a579rwv\">AppKey</p></td><td id=\"0c04ec6078eqs\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh03pqclgmq3649wp\" id=\"bfb464a679fp8\">AppKey</p></td><td id=\"0c05136078ttj\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh03pq2v6u0z9m6f7\" id=\"bfb464a7792x6\">string</p></td><td id=\"08c7f2407935i\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"08c7f24179sqo\">-</p></td><td id=\"0c05136478r8n\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh03pq7r6h6gx56lv\" id=\"bfb464a979qnq\"><b>必选</b>，请设置为您在管控台上创建的<span class=\"help-letter-space\"></span>appkey。</p></td></tr><tr id=\"0c051366782pg\" style=\"height:86px\"><td id=\"0c05136778sni\" rowspan=\"6\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh0y0gev3dscuinfb\" id=\"bfb464ab79x2x\">基本请求信息</p><p uuid=\"loh78yf1bqsbzw7iirc\" id=\"7b0e17c0791tx\">（body.Input）</p></td><td id=\"0c05136a78o34\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofgyrclzcgj7ws8oxf\" id=\"bfb48bb079zp8\">Input.Format</p></td><td id=\"0c05136c78v6p\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofgyrcln0jxu9kk19f\" id=\"bfb48bb179pry\">string</p></td><td id=\"08c7f242791z1\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"08c7f24379n0s\">-</p></td><td id=\"0c05137078gv1\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofgyrclsb6adxlix3g\" id=\"bfb48bb379pep\"><b>必选</b>，实时推送二进制音频流时对应的音频格式，支持<span class=\"help-letter-space\"></span>pcm、opus、aac、speex、mp3。</p></td></tr><tr id=\"0c05137278a3q\"><td id=\"0c05137578bu4\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh8ud815hyszhbapf\" id=\"bfb48bb679qis\">Input.SampleRate</p></td><td id=\"0c0513777825o\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh8ud8337khkyg43x\" id=\"bfb48bb779gko\">int</p></td><td id=\"08c7f24479e2x\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"08c7f24579ctf\">-</p></td><td id=\"0c053a7178xl5\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh8ud8a2i4shioehc\" id=\"bfb48bb979dgl\"><b>必选</b>，实时推送二进制音频流时对应的采样率，支持<span class=\"help-letter-space\"></span>16000<span class=\"help-letter-space\"></span>和<span class=\"help-letter-space\"></span>8000；一般来说大部分记录场景都是<span class=\"help-letter-space\"></span>16000。</p></td></tr><tr id=\"0c053a73789l1\"><td id=\"0c053a7678b0q\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh0tgjrif8nlt8uzi\" id=\"bfb48bbc79clo\">Input.SourceLanguage</p></td><td id=\"0c053a7878tu0\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh0tgjq6agwrvc9l\" id=\"bfb48bbd79yb8\">string</p></td><td id=\"08c7f24679f3n\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"08c7f24779b3c\">-</p></td><td id=\"0c053a7c788hl\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"bfb48bbf79k22\" uuid=\"lofh0tgj0rxnl516grxh\"><b>必选</b>。<a href=\"#a9090b5a7ee0b\" id=\"d53cde5dd4z6d\" title=\"\" class=\"xref\">根据音视频中的语种类别来配置对应的参数。</a></p><ul id=\"e2b526ba454yp\"><li id=\"adc7bea423gnx\"><p id=\"cceb4026f8in1\" uuid=\"m1ahoxo21cvuwisejom\">若语音的语种是单语种，音视频文件对应的语言种类；支持<span class=\"help-letter-space\"></span>cn（中文）、en（英文）、粤语（yue）、日语（ja）、韩语（ko）。</p></li><li id=\"e6531f8652jz3\"><p id=\"4eb15d6d50n5g\">若语音中的语种非单语种，涉及多个语种，可传入（multilingual），识别出对应语种的文字。结合<span class=\"help-letter-space\"></span>Input.LanguageHints<span class=\"help-letter-space\"></span>一起使用。</p></li></ul></td></tr><tr id=\"2d9b2f29dai68\"><td id=\"9c39e84c801vq\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh0tgjrif8nlt8uzi\" id=\"c76ee14ca5y8s\">Input.LanguageHints</p></td><td id=\"5b1381d70ayos\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lm7huepga8uxo7uq2xd\" id=\"2e95a405d32vk\">list[string]</p></td><td id=\"bf68b2c776lb9\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"d17a7d761c4vo\">null</p></td><td id=\"4953f29964hcn\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"d645b1ddf5x2x\"><a href=\"#c49c0bf020mpj\" id=\"906a16a483mk8\" title=\"\" class=\"xref\">指定多语言模型时需语音识别出文字的语种列表。</a></p><p id=\"a6b2104b75vn4\">当语音中涉及多个语种的语音均需识别出文字时，此参数用于限制语种类别，且仅当<span class=\"help-letter-space\"></span>Input.SourceLanguage='multilingual'时配置生效。</p></td></tr><tr id=\"0c053a7f78abo\"><td id=\"0c053a8278cl3\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh0t665o1byh51psx\" id=\"bfb4b2c379sv0\">Input.TaskKey</p></td><td id=\"0c053a8478r9b\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh0t663f8hg4ajhe\" id=\"bfb4b2c479f9a\">string</p></td><td id=\"08c8195079dje\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"08c8195179iqw\">null</p></td><td id=\"0c053a887867a\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"loh4db7wlv6c4xqsbqs\" id=\"38cb34c0795mi\">用户自行设置的自定义标识。</p></td></tr><tr id=\"d80f33142a9fm\"><td id=\"d769b0a383qt0\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"81610bf5c2a0p\">Input.ProgressiveCallbacksEnabled</p></td><td id=\"d769b0a5832np\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"2c8607050fhxk\">boolean</p></td><td id=\"d769d7b0831yz\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"db3b3821648bi\">false</p></td><td id=\"d769d7b283cz0\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"85052e4d9d6hx\">是否开启回调功能。</p><p id=\"1fbf18fe81ejz\">当需要开启回调功能时，您需要在<a class=\"\" href=\"https://nls-portal.console.aliyun.com/tingwu/projects\" id=\"1774d7a0832f5\">控制台</a>配置好回调类型和地址，并在创建任务时将该参数置为<span class=\"help-letter-space\"></span>true。</p></td></tr><tr id=\"0c05618078bl8\"><td id=\"0c05618178m65\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6dtm7hvfmefd\" id=\"bfb4b2c779xym\">转码</p><p uuid=\"lofh6jx6t0mgdlbmf1d\" id=\"bfb4b2c8791u0\">（Transcoding）</p></td><td id=\"0c056184782ns\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6th9iz9g7gsj\" id=\"bfb4b2c979ffw\">Parameters.Transcoding.TargetAudioFormat</p></td><td id=\"0c056186788o3\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6lc97lb9qx1\" id=\"bfb4b2ca79ozt\">string</p></td><td id=\"08c8195279owo\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"15bfcd1079u8r\">null</p></td><td id=\"0c05618a78pf1\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"3bf4613079r36\">当前只支持设置<span class=\"help-letter-space\"></span>mp3<span class=\"help-letter-space\"></span>转换，默认不开启。</p></td></tr><tr id=\"ce013e6085agd\"><td id=\"ce013e618520j\" rowspan=\"4\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"ce013e6285qpu\"></p><p uuid=\"lofh6jx6obke9mr2se\" id=\"bfb4b2cd79xt7\">语音识别</p><p uuid=\"lofh6jx65jfvxzlov9t\" id=\"bfb4b2ce79uec\">（Transcription）</p></td><td id=\"ce013e6385q8p\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"ce013e6485c1g\">Parameters.Transcription.OutputLevel</p></td><td id=\"ce013e658502v\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"ce01657085ky4\">int</p></td><td id=\"ce01657185u98\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"ce01657285yea\">1</p></td><td id=\"ce01657385n9q\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"f5d2e0b085emu\">设置语音识别结果返回等级。</p><ul id=\"1a2b937185bi7\"><li id=\"31486f7085qcs\"><p id=\"31484860854hh\">1：识别出完整句子时返回识别结果</p></li><li id=\"32970f8085e3b\"><p id=\"3296c1608548z\">2：识别出中间结果及完整句子时返回识别结果</p></li></ul><p id=\"683214a087s5w\">仅在实时记录场景下按需设置，离线转写场景无须设置。</p></td></tr><tr id=\"0c05618e7804o\" style=\"height:42px\"><td id=\"0c05619278a6q\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6ya7aerog6y\" id=\"bfb4b2cf79i7u\">Parameters.Transcription.DiarizationEnabled</p></td><td id=\"0c05619478nax\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx61rvqq1ql9et\" id=\"bfb4d9d079u0r\">boolean</p></td><td id=\"08c8195479at7\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"168a972079k4w\">false</p></td><td id=\"0c05889278dw9\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"4bbf593079if5\" uuid=\"loh4dzr7v9z7qhw9729\">是否在语音识别过程中开启说话人分离功能。</p></td></tr><tr id=\"0c05889478meo\"><td id=\"0c0588977807u\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6dj0snrxlo\" id=\"bfb4d9d579riw\">Parameters.Transcription.Diarization.SpeakerCount</p></td><td id=\"0c058899780vv\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6ed0do06pa5l\" id=\"bfb4d9d679gpo\">int</p></td><td id=\"08c8195679zo8\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"1740eed079xie\">-</p></td><td id=\"0c05889d78fyg\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"bfb4d9d879a42\">开启说话人分离功能时，设置的说话人数。</p><ul id=\"29d3ddb285t72\"><li id=\"29d3ddb085ezp\"><p id=\"bfb4d9d979ijq\">不设置：不使用说话人角色区分</p></li><li id=\"2bd1a98085z3r\"><p id=\"2bd1827085edo\">0：说话人角色区分结果为不定人数 </p></li><li id=\"2d21f7408580k\"><p id=\"2d21a920856l9\">2：说话人角色区分结果为<span class=\"help-letter-space\"></span>2<span class=\"help-letter-space\"></span>人</p></li></ul><p id=\"b8ffb1ced0vuq\">当有此参数时，使用此参数辅助指定的人数。最终分轨人数以真实分类人数为准。</p></td></tr><tr id=\"fb36b7fda6dz8\"><td id=\"5ee7b10a66cgk\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"ee92434ac7wbe\">Parameters.Transcription.PhraseId</p></td><td id=\"4c813dc87ci84\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"40410e7d9cy55\">String</p></td><td id=\"e8ff4ba02bsik\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"14d7c99d0fxpt\">-</p></td><td id=\"893985d05054d\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"e5d14a0238d7m\">热词词表<span class=\"help-letter-space\"></span>ID。</p></td></tr><tr id=\"0c0588a378m3i\" style=\"height:42px\"><td id=\"0c0588a478idw\" rowspan=\"3\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"bfb4d9da79d11\" uuid=\"lofh6jx6ocaph2fo0q\"></p><p uuid=\"lofh6jx64i3co4trg3d\" id=\"bfb4d9db794pf\">翻译</p><p uuid=\"lofh6jx6vwans8lcsgo\" id=\"bfb4d9dc797vn\">(Translation)</p></td><td id=\"0c05afa078jfh\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx617gkcobxgmj\" id=\"bfb4d9dd79pz0\">Parameters.TranslationEnabled</p></td><td id=\"0c05afa278juk\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6n7ui81xja9\" id=\"bfb4d9de790z6\">boolean</p></td><td id=\"08c8195879ei5\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"17a1ac70793j5\">false</p></td><td id=\"0c05afa678ghj\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"bfb500e179ies\" uuid=\"lofh6jx6s7893fuyuii\">是否开启翻译功能。</p></td></tr><tr id=\"432dea3087ifh\"><td id=\"432e114087ji8\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"43d37900873qr\">Parameters.Translation.OutputLevel</p></td><td id=\"432e114287hrg\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"45c69670877gc\">int</p></td><td id=\"432e114487fh4\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"432e114587nmm\">1</p></td><td id=\"432e114687esy\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"570c6ea087r45\">设置实时语言翻译识别结果返回等级。</p><ul id=\"5bfc9f7187q5t\"><li id=\"5bfc786087g69\"><p id=\"5968fc4087qam\">1：识别出完整句子时返回识别结果；</p></li><li id=\"5eb752a0879xj\"><p id=\"5eb7048087kgr\">2：识别出中间结果及完整句子时返回识别结果</p></li></ul><p id=\"608c87d08728n\">仅在实时记录场景下按需设置，离线转写场景无须设置。</p></td></tr><tr id=\"0c05afa878lzb\"><td id=\"0c05afab78ysg\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6xsebrdsscwh\" id=\"bfb500e479o0k\">Parameters.Translation.TargetLanguages</p></td><td id=\"0c05afad78kky\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6ci4bkpbdc5f\" id=\"bfb500e579vrg\">list[string]</p></td><td id=\"08c8195a791s1\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"187b1c80798zm\">-</p></td><td id=\"0c05afb178dfk\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"bfb500e779mcn\" uuid=\"lofh6jx6hxh7a97kly9\">如果开启翻译，需要设置目标翻译语言。支持设置 中文（cn）、英语（en）、日语（ja）、韩语（ko）、德语（de）、法语（fr）、俄语（ru）。</p></td></tr><tr id=\"0c05afb478x45\"><td id=\"0c05afb578nke\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6as59tndur39\" id=\"bfb500e979km1\">章节速览</p></td><td id=\"0c05afb778l2b\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx64ddtsbwy7gy\" id=\"bfb500ea79yuw\">Parameters.AutoChaptersEnabled</p></td><td id=\"0c05afb9780vq\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx65t0r5d5cnb5\" id=\"bfb500eb79p5z\">boolean</p></td><td id=\"08c84060790ya\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"195269b079h41\">false</p></td><td id=\"0c05d6b378vyg\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6pijheilehl\" id=\"bfb500ed792y8\">章节速览功能，包括：议程标题和议程摘要</p></td></tr><tr id=\"0c05d6b5784sl\"><td id=\"0c05d6b678ow1\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx60r5stkihpus9\" id=\"bfb500ee79j6j\">要点提炼</p></td><td id=\"0c05d6b878g4m\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6kgxdjy1sdqd\" id=\"bfb500ef79953\">Parameters.MeetingAssistanceEnabled</p></td><td id=\"0c05d6ba78xdz\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx64oxd20oozo\" id=\"bfb527f079cwu\">boolean</p></td><td id=\"08c840627921a\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"19a96350793jg\">false</p></td><td id=\"0c05d6be78i2d\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6iqhrlbvdk4\" id=\"bfb527f279fef\">关键词、待办事项、重点内容、场景识别</p></td></tr><tr id=\"0c05d6c078cqx\" style=\"height:42px\"><td id=\"0c05d6c178yjl\" rowspan=\"2\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"bfb527f379cnt\" uuid=\"lofh6jx6id9qxt2yitb\">摘要总结</p></td><td id=\"0c05d6c3785yf\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx694mloc4grip\" id=\"bfb527f479k5e\">Parameters.SummarizationEnabled</p></td><td id=\"0c05d6c5787tn\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx666h32ncyjec\" id=\"bfb527f579frm\">boolean</p></td><td id=\"08c8406479n0v\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"19fb05c079s3u\">false</p></td><td id=\"0c05d6c978qk0\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6t9rp71kz6ze\" id=\"bfb527f779nqo\">是否开启摘要总结功能。</p></td></tr><tr id=\"0c05fdc178val\" style=\"height:155px\"><td id=\"0c05fdc478nqw\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6t42fxao3d3l\" id=\"bfb527fa794q7\">Parameters.Summarization.Types</p></td><td id=\"0c05fdc678psx\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx655uskv21in3\" id=\"bfb527fb7967g\">list[string]</p></td><td id=\"08c8406679d7k\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"1a9f5c1079qqv\">-</p></td><td id=\"0c05fdca78n5z\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofh6jx6hitv5k5ysp8\" id=\"bfb527fd793jk\">如果开启摘要功能，需要设置摘要类型。支持设置<span class=\"help-letter-space\"></span>1<span class=\"help-letter-space\"></span>个或多个。</p><ul id=\"0c05fdcc78lrj\"><li id=\"0c05fdcd78oj9\"><p id=\"bfb527fe798ed\">Paragraph（全文摘要）</p></li><li id=\"0c05fdcf78972\"><p id=\"bfb54f0079xa9\">Conversational（发言总结）</p></li><li id=\"0c05fdd178uze\"><p id=\"bfb54f017916n\">QuestionsAnswering（问答回顾）</p></li><li id=\"381d1d9e70g43\"><p id=\"ceb8aef877nnt\">MindMap（思维导图）</p></li></ul></td></tr><tr id=\"af6de14024bd6\"><td id=\"831101988btna\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"16e9e2fcadfdk\">口语书面化</p></td><td id=\"f5d8a54d30cbm\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"54ee391b3fy8h\">Parameters.TextPolishEnabled</p></td><td id=\"ef4b8289e3h5j\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"b9718b3f59mqr\" uuid=\"lm7huepgzbjm57xbyk\">boolean</p></td><td id=\"44e5fa8e7592o\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"fe0aa49d899hx\">false</p></td><td id=\"4de69f340bxg5\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"75d1428824dpp\">是否开启口语书面化功能。</p></td></tr><tr id=\"ce1cd1987f58b\"><td id=\"e3fa657282vru\" rowspan=\"2\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"58aed9285djsa\">服务质检</p></td><td id=\"b527e4c499mzm\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"8fba3a4b32bdg\">Parameters.ServiceInspectionEnabled</p></td><td id=\"0539c7e76crhr\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lm7huepgzbjm57xbyk\" id=\"38366d77671tp\">boolean</p></td><td id=\"03a3f45480pqf\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"e802f955c5gi1\">false</p></td><td id=\"ad7f7427bavf1\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"253a90d171jjj\">是否开启服务质检功能。</p></td></tr><tr id=\"23f9834e457wo\"><td id=\"f411814d0dxrp\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"26444270cccr3\">Parameters.ServiceInspection</p></td><td id=\"6e01923c29ypq\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"3f7726a30253i\">object</p></td><td id=\"f4eecff501hiw\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"20900904dauot\">-</p></td><td id=\"d4ca734952wqo\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"34c6d28308g5q\">参考<a href=\"https://help.aliyun.com/zh/tingwu/service-inspection#823d1c4278rt5\" id=\"79c45cb9e4005\" title=\"\" class=\"xref\">服务质检参数对象</a>对服务过程中的对话进行质量检测，支持自定义多个质检维度，辅助客户提升服务水平。</p></td></tr><tr id=\"1464429a4cvq6\"><td id=\"78d71751bcxce\" rowspan=\"2\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"a3d358b7a0lq8\">自定义<span class=\"help-letter-space\"></span>Prompt</p></td><td id=\"e211b94c1eidb\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"3fa7a99189a1t\">Parameters.CustomPromptEnabled</p></td><td id=\"88a30829a8s3q\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lm7huepgzbjm57xbyk\" id=\"32e1bf74933nw\">boolean</p></td><td id=\"9efb330490mlb\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"e5f0a015ddl56\">false</p></td><td id=\"8212718b2e90t\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"1ab447b9f5y84\">是否开启自定义<span class=\"help-letter-space\"></span>prompt<span class=\"help-letter-space\"></span>功能。</p></td></tr><tr id=\"30a3b46d0czbt\"><td id=\"bf8cb4c319dpa\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"d59b041baf3i0\">Parameters.CustomPrompt</p></td><td id=\"d924019970so0\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"602fbb7fe6ly0\">object</p></td><td id=\"bb205f0311rxv\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"ea65cbd9c735w\">-</p></td><td id=\"2703906c7c0cq\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"c62454c3b0da8\">参考<a href=\"https://help.aliyun.com/zh/tingwu/custom-prompt#94461d6b78d8h\" id=\"8c14e111545kh\" title=\"\" class=\"xref\">自定义<span class=\"help-letter-space\"></span>prompt<span class=\"help-letter-space\"></span>参数对象</a>由客户自主定义大模型提示词，引导大模型完成客户定义的各类任务。</p></td></tr></tbody></table></section><section id=\"fb587ab078l0p\" class=\"section\"><h4 uuid=\"lob944gg5q3uc7lfu2m\" id=\"902d3af0783zs\">代码示例</h4><p id=\"cda881e083uza\"></p><div outputclass=\"tabbed-codeblock\" data-tag=\"fig\" id=\"cf545d2083p5r\" class=\"tabbed-codeblock-box\"><div class=\"tab-box\"></div><input type=\"radio\" name=\"check-cf545d2083p5r\" id=\"cf545d2083p5r-java-tab\" checked=\"\"><label for=\"cf545d2083p5r-java-tab\">Java</label><div class=\"codeblock-item\"><pre id=\"cf54ab40830ah\" data-tag=\"codeblock\" outputclass=\"language-java\" code-type=\"xCode\" class=\"pre codeblock language-java\"><code>package com.alibaba.tingwu.client.demo.realtimemeeting;\n\nimport com.alibaba.fastjson.JSONArray;\nimport com.alibaba.fastjson.JSONObject;\nimport com.aliyuncs.CommonRequest;\nimport com.aliyuncs.CommonResponse;\nimport com.aliyuncs.DefaultAcsClient;\nimport com.aliyuncs.IAcsClient;\nimport com.aliyuncs.exceptions.ClientException;\nimport com.aliyuncs.http.FormatType;\nimport com.aliyuncs.http.MethodType;\nimport com.aliyuncs.http.ProtocolType;\nimport com.aliyuncs.profile.DefaultProfile;\nimport org.junit.Test;\n\n/**\n * @author tingwu2023\n * @desc 演示了通过OpenAPI 创建实时记录的调用方式。\n */\npublic class SubmitRealtimeMeetingTaskTest {\n\n    @Test\n    public void testSummitRealtimeMeetingTask() throws ClientException {\n        CommonRequest request = createCommonRequest(\"tingwu.cn-beijing.aliyuncs.com\", \"2023-09-30\", ProtocolType.HTTPS, MethodType.PUT, \"/openapi/tingwu/v2/tasks\");\n        request.putQueryParameter(\"type\", \"realtime\");\n\n        JSONObject root = new JSONObject();\n        root.put(\"AppKey\", \"输入您在听悟管控台创建的Appkey\");\n\n        JSONObject input = new JSONObject();\n        input.fluentPut(\"SourceLanguage\", \"cn\").fluentPut(\"Format\", \"pcm\").fluentPut(\"SampleRate\", 16000).fluentPut(\"TaskKey\", \"task\" + System.currentTimeMillis());\n        root.put(\"Input\", input);\n\n        JSONObject parameters = initRequestParameters();\n        root.put(\"Parameters\", parameters);\n\n        System.out.println(root.toJSONString());\n        request.setHttpContent(root.toJSONString().getBytes(), \"utf-8\", FormatType.JSON);\n\n        // TODO 请通过环境变量设置您的AccessKeyId、AccessKeySecret\n        DefaultProfile profile = DefaultProfile.getProfile(\"cn-beijing\", System.getenv(\"ALIBABA_CLOUD_ACCESS_KEY_ID\"), System.getenv(\"ALIBABA_CLOUD_ACCESS_KEY_SECRET\"));\n        IAcsClient client = new DefaultAcsClient(profile);\n        CommonResponse response = client.getCommonResponse(request);\n        System.out.println(response.getData());\n        JSONObject body = JSONObject.parseObject(response.getData());\n        JSONObject data = (JSONObject) body.get(\"Data\");\n        System.out.println(\"TaskId = \" + data.getString(\"TaskId\"));\n        System.out.println(\"MeetingJoinUrl = \" + data.getString(\"MeetingJoinUrl\"));\n    }\n\n    private static JSONObject initRequestParameters() {\n        JSONObject parameters = new JSONObject();\n\n        // 音视频转换： 可选\n        JSONObject transcoding = new JSONObject();\n        //transcoding.put(\"TargetAudioFormat\", \"mp3\");\n        //transcoding.put(\"SpectrumEnabled\", false);\n        parameters.put(\"Transcoding\", transcoding);\n\n        // 语音识别\n        JSONObject transcription = new JSONObject();\n        transcription.put(\"DiarizationEnabled\", true);\n        JSONObject speakerCount = new JSONObject();\n        speakerCount.put(\"SpeakerCount\", 2);\n        transcription.put(\"Diarization\", speakerCount);\n        parameters.put(\"Transcription\", transcription);\n\n        // 翻译： 可选\n        JSONObject translation = new JSONObject();\n        JSONArray langArry = new JSONArray();\n        langArry.add(\"en\");\n        translation.put(\"TargetLanguages\", langArry);\n        parameters.put(\"Translation\", translation);\n        parameters.put(\"TranslationEnabled\", true);\n\n        // 章节速览： 可选\n        parameters.put(\"AutoChaptersEnabled\", false);\n\n        // 智能纪要： 可选\n        parameters.put(\"MeetingAssistanceEnabled\", false);\n\n        // 摘要相关： 可选\n        parameters.put(\"SummarizationEnabled\", true);\n        JSONObject summarization = new JSONObject();\n        JSONArray types = new JSONArray().fluentAdd(\"Paragraph\").fluentAdd(\"Conversational\").fluentAdd(\"QuestionsAnswering\").fluentAdd(\"MindMap\");\n        summarization.put(\"Types\", types);\n        parameters.put(\"Summarization\", summarization);\n\n        // PPT抽取： 不可选，实时记录没有视频信息，无法进行ppt功能\n        // parameters.put(\"PptExtractionEnabled\", false);\n      \t\n\t// 口语书面化：可选\n        parameters.put(\"TextPolishEnabled\", false);\n\n        return parameters;\n    }\n    public static CommonRequest createCommonRequest(String domain, String version, ProtocolType protocolType, MethodType method, String uri) {\n        CommonRequest request = new CommonRequest();\n        request.setSysDomain(domain);\n        request.setSysVersion(version);\n        request.setSysProtocol(protocolType);\n        request.setSysMethod(method);\n        request.setSysUriPattern(uri);\n        request.setHttpContentType(FormatType.JSON);\n        return request;\n    }\n}</code></pre></div><input type=\"radio\" name=\"check-cf545d2083p5r\" id=\"cf545d2083p5r-go-tab\"><label for=\"cf545d2083p5r-go-tab\">Go</label><div class=\"codeblock-item\"><pre id=\"dccd27c0833ok\" data-tag=\"codeblock\" outputclass=\"language-go\" code-type=\"xCode\" class=\"pre codeblock language-go\"><code>package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"log\"\n\t\"os\"\n\t\"time\"\n\n\t\"github.com/aliyun/alibaba-cloud-sdk-go/sdk\"\n\t\"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests\"\n)\n\ntype TranscodeingParam struct {\n\tTargetAudioFormat     string `json:\"TargetAudioFormat,omitempty\"`\n\tTargetVideoFormat     string `json:\"TargetVideoFormat,omitempty\"`\n\tVideoThumbnailEnabled bool   `json:\"VideoThumbnailEnabled,omitempty\"`\n\tSpectrumEnabled       bool   `json:\"SpectrumEnabled,omitempty\"`\n}\n\ntype DiarizationParam struct {\n\tSpeakerCount int `json:\"SpeakerCount,omitempty\"`\n}\n\ntype TranscriptionParam struct {\n\tAudioEventDetectionEnabled bool              `json:\"AudioEventDetectionEnabled,omitempty\"`\n\tDiarizationEnabled         bool              `json:\"DiarizationEnabled,omitempty\"`\n\tDiarization                *DiarizationParam `json:\"Diarization,omitempty\"`\n}\n\ntype TranslationParam struct {\n\tTargetLanguages []string `json:\"TargetLanguages,omitempty\"`\n}\n\ntype SummarizationParam struct {\n\tTypes []string `json:\"Types,omitempty\"`\n}\n\ntype ExtraParamerters struct {\n\tTranscoding              *TranscodeingParam  `json:\"Transcoding,omitempty\"`\n\tTranscription            *TranscriptionParam `json:\"Transcription,omitempty\"`\n\tTranslationEnabled       bool                `json:\"TranslationEnabled,omitempty\"`\n\tTranslation              *TranslationParam   `json:\"Translation,omitempty\"`\n\tAutoChaptersEnabled      bool                `json:\"AutoChaptersEnabled,omitempty\"`\n\tMeetingAssistanceEnabled bool                `json:\"MeetingAssistanceEnabled,omitempty\"`\n\tSummarizationEnabled     bool                `json:\"SummarizationEnabled,omitempty\"`\n\tSummarization            *SummarizationParam `json:\"Summarization,omitempty\"`\n  TextPolishEnabled        bool                `json:\"TextPolishEnabled,omitempty\"`\n}\n\ntype InputParam struct {\n\tSourceLanguage string `json:\"SourceLanguage\"`\n\tFileUrl        string `json:\"FileUrl,omitempty\"`\n\tTaskKey        string `json:\"TaskKey,omitempty\"`\n\tFormat         string `json:\"Format,omitempty\"`\n\tSampleRate     int    `json:\"SampleRate,omitempty\"`\n}\n\ntype TaskBodyParam struct {\n\tAppkey      string            `json:\"AppKey\"`\n\tInput       InputParam        `json:\"Input\"`\n\tParamerters *ExtraParamerters `json:\"Parameters,omitempty\"`\n}\n\ntype CreateTaskResponse struct {\n\tRequestId string `json:\"RequestId\"`\n\tCode      string `json:\"Code\"`\n\tMessage   string `json:\"Message\"`\n\tData      struct {\n\t\tTaskId         string `json:\"TaskId\"`\n\t\tTaskKey        string `json:\"TaskKey\"`\n\t\tMeetingJoinUrl string `json:\"MeetingJoinUrl,omitempty\"`\n\t} `json:\"Data\"`\n}\n\nfunc init_request_param() *ExtraParamerters {\n\tparam := new(ExtraParamerters)\n\tparam.Transcoding = new(TranscodeingParam)\n\n\ttranscription := new(TranscriptionParam)\n\ttranscription.Diarization = new(DiarizationParam)\n\ttranscription.Diarization.SpeakerCount = 2\n\ttranscription.DiarizationEnabled = true\n\tparam.Transcription = transcription\n\n\ttranslation := new(TranslationParam)\n\ttranslation.TargetLanguages = []string{\"en\"}\n\tparam.Translation = translation\n\tparam.TranslationEnabled = true\n\tparam.AutoChaptersEnabled = false\n\tparam.MeetingAssistanceEnabled = false\n\tparam.SummarizationEnabled = true\n\n\tsummarization := new(SummarizationParam)\n\tsummarization.Types = []string{\"Paragraph\", \"Conversational\", \"QuestionsAnswering\", \"MindMap\"}\n\tparam.Summarization = summarization\n  param.TextPolishEnabled = false\n\n\treturn param\n}\n\nfunc test_submit_realtime_meeting_task() string {\n\takkey := os.Getenv(\"ALIBABA_CLOUD_ACCESS_KEY_ID\")\n\taksecret := os.Getenv(\"ALIBABA_CLOUD_ACCESS_KEY_SECRET\")\n\tclient, err := sdk.NewClientWithAccessKey(\"cn-beijing\", akkey, aksecret)\n\tif err != nil {\n\t\tlog.Default().Fatalln(err)\n\t\treturn \"\"\n\t}\n\n\trequest := requests.NewCommonRequest()\n\trequest.Method = \"PUT\"\n\trequest.Domain = \"tingwu.cn-beijing.aliyuncs.com\"\n\trequest.Version = \"2023-09-30\"\n\trequest.SetContentType(\"application/json\")\n\trequest.PathPattern = \"/openapi/tingwu/v2/tasks\"\n\trequest.QueryParams[\"type\"] = \"realtime\"\n\n\tparam := new(TaskBodyParam)\n\tparam.Appkey = \"输入您在听悟管控台创建的Appkey\"\n\tparam.Input.SourceLanguage = \"cn\"\n\tparam.Input.Format = \"pcm\"\n\tparam.Input.SampleRate = 16000\n\tparam.Input.TaskKey = \"task_\" + fmt.Sprint(time.Now().Unix())\n\tparam.Paramerters = init_request_param()\n\n\tb, _ := json.Marshal(param)\n\tlog.Default().Print(\"request body:\\n\", string(b))\n\trequest.SetContent(b)\n\trequest.SetScheme(\"https\")\n\n\tresponse, err := client.ProcessCommonRequest(request)\n\tif err != nil {\n\t\tlog.Default().Fatalln(err)\n\t\treturn \"\"\n\t}\n\n\tlog.Default().Print(\"response body:\\n\", string(response.GetHttpContentBytes()))\n\n\tvar resp CreateTaskResponse\n\terr = json.Unmarshal(response.GetHttpContentBytes(), &amp;resp)\n\tif err != nil {\n\t\tlog.Default().Fatalln(err)\n\t\treturn \"\"\n\t}\n\n\tlog.Default().Println(\"TaskId:\", resp.Data.TaskId)\n\tlog.Default().Println(\"MeetingJoinUrl:\", resp.Data.MeetingJoinUrl)\n\n\treturn resp.Data.MeetingJoinUrl\n}\n\nfunc main() {\n\ttest_submit_realtime_meeting_task()\n}\n</code></pre></div><input type=\"radio\" name=\"check-cf545d2083p5r\" id=\"cf545d2083p5r-c++-tab\"><label for=\"cf545d2083p5r-c++-tab\">C++</label><div class=\"codeblock-item\"><pre id=\"dec0d78435iwa\" data-tag=\"codeblock\" outputclass=\"language-c++\" code-type=\"xCode\" class=\"pre codeblock language-c++\"><code>#include &lt;cstdlib&gt;\n#include &lt;iostream&gt;\n#include &lt;string&gt;\n#include &lt;alibabacloud/core/AlibabaCloud.h&gt;\n#include &lt;alibabacloud/core/CommonRequest.h&gt;\n#include &lt;alibabacloud/core/CommonClient.h&gt;\n#include &lt;alibabacloud/core/CommonResponse.h&gt;\n#include \"jsoncpp/json.h\"\n/**\n * @author tingwu2023\n * @desc 演示了通过OpenAPI 创建实时转写记录 的调用方式。\n */\nint main( int argc, char** argv ) {\n    AlibabaCloud::InitializeSdk();\n    AlibabaCloud::ClientConfiguration configuration( \"cn-beijing\" );\n    // specify timeout when create client.\n    configuration.setConnectTimeout(1500);\n    configuration.setReadTimeout(4000);\n    // Please ensure that the environment variables ALIBABA_CLOUD_ACCESS_KEY_ID and ALIBABA_CLOUD_ACCESS_KEY_SECRET are set.\n    AlibabaCloud::Credentials credential( getenv(\"ALIBABA_CLOUD_ACCESS_KEY_ID\"), getenv(\"ALIBABA_CLOUD_ACCESS_KEY_SECRET\") );\n    AlibabaCloud::CommonClient client( credential, configuration );\n    AlibabaCloud::CommonRequest request(AlibabaCloud::CommonRequest::RequestPattern::RoaPattern);\n    request.setHttpMethod(AlibabaCloud::HttpRequest::Method::Put);\n    request.setDomain(\"tingwu.cn-beijing.aliyuncs.com\");\n    request.setVersion(\"2023-09-30\");\n    request.setResourcePath(\"/openapi/tingwu/v2/tasks\");\n    request.setQueryParameter(\"type\", \"realtime\");\n    request.setHeaderParameter(\"Content-Type\", \"application/json\");\n    \n    Json::Value root;\n    root[\"Appkey\"] = \"输入您在听悟管控台创建的Appkey\";\n    root[\"Appkey\"] = \"tEA3SDcxTKire0ut\";\n\n    Json::Value input;\n    input[\"SourceLanguage\"] = \"cn\";\n    input[\"Format\"]         = \"pcm\";\n    input[\"SampleRate\"]     = \"16000\";\n    input[\"SourceLanguage\"] = \"cn\";\n    input[\"TaskKey\"] = \"输入您为该次请求自定义的标识\";\n    root[\"Input\"] = input;\n\n    Json::Value parameters;\n    // 音视频文件转换 通常来说，不需要设置此参数\n    // Json::Value transcoding;\n    // transcoding[\"TargetAudioFormat\"] = \"mp3\";\n    // parameters[\"Transcoding\"] = transcoding;\n\n    // 语音转写: 以下是开启说话人分离功能(角色分离)，若您不需要，则无须设置\n    Json::Value transcription;\n    transcription[\"DiarizationEnabled\"] = true;\n    Json::Value speakerCount;\n    speakerCount[\"SpeakerCount\"] = 2;\n    transcription[\"Diarization\"] = speakerCount;\n    parameters[\"Transcription\"] = transcription;\n\n    // 翻译： 可选\n    Json::Value translation;\n    Json::Value langauges;\n    langauges.append(\"en\");\n    translation[\"TargetLanguages\"] = langauges;\n    parameters[\"Translation\"] = translation;\n    parameters[\"TranslationEnabled\"] = true;\n\n    // 章节速览： 可选\n    parameters[\"AutoChaptersEnabled\"] = true;\n\n    // 智能纪要： 可选，包括： 待办、关键信息(关键词、重点内容、场景识别)\n    parameters[\"MeetingAssistanceEnabled\"] = true;\n    Json::Value meetingAssistance;\n    Json::Value meetingAssistanceTypeList;\n    meetingAssistanceTypeList.append(\"Actions\");\n    meetingAssistanceTypeList.append(\"KeyInformation\");\n    meetingAssistance[\"Types\"] = meetingAssistanceTypeList;\n    parameters[\"MeetingAssistanceTypeList\"] = meetingAssistanceTypeList;\n\n    // 摘要相关： 可选， 以下设置将3种摘要类型都启用了，您可以按需增删\n    parameters[\"SummarizationEnabled\"] = true;\n    Json::Value summarization;\n    Json::Value summarizationTypeList;\n    summarizationTypeList.append(\"Paragraph\");\n    summarizationTypeList.append(\"Conversational\");\n    summarizationTypeList.append(\"QuestionsAnswering\");\n    summarizationTypeList.append(\"MindMap\");\n    summarization[\"Types\"] = summarizationTypeList;\n    parameters[\"Summarization\"] = summarization;\n  \t\n    // 口语书面化： 可选\n    parameters[\"TextPolishEnabled\"] = true;\n\n    root[\"Parameters\"] = parameters;\n\n    Json::FastWriter writer;\n    std::string body = writer.write(root);\n    printf(\"input json: [%s]\\n\", body.c_str());\n    request.setContent(body.c_str(), body.size());\n\n    auto response = client.commonResponse(request);\n    if (response.isSuccess()) {\n        printf(\"request success.\\n\");\n        printf(\"result: %s\\n\", response.result().payload().c_str());\n    } else {\n        printf(\"error: %s\\n\", response.error().errorMessage().c_str());\n        printf(\"request id: %s\\n\", response.error().requestId().c_str());\n    }\n      \n    AlibabaCloud::ShutdownSdk();\n    return 0;\n} </code></pre></div><input type=\"radio\" name=\"check-cf545d2083p5r\" id=\"cf545d2083p5r-python-tab\"><label for=\"cf545d2083p5r-python-tab\">Python</label><div class=\"codeblock-item\"><pre code-type=\"xCode\" id=\"5427a02ae64td\" data-tag=\"codeblock\" outputclass=\"language-python\" class=\"pre codeblock language-python\"><code>#!/usr/bin/env python\n#coding=utf-8\n\nimport os\nimport json\nimport datetime\nfrom aliyunsdkcore.client import AcsClient\nfrom aliyunsdkcore.request import CommonRequest\nfrom aliyunsdkcore.auth.credentials import AccessKeyCredential\n\ndef create_common_request(domain, version, protocolType, method, uri):\n    request = CommonRequest()\n    request.set_accept_format('json')\n    request.set_domain(domain)\n    request.set_version(version)\n    request.set_protocol_type(protocolType)\n    request.set_method(method)\n    request.set_uri_pattern(uri)\n    request.add_header('Content-Type', 'application/json')\n    return request\n\ndef init_parameters():\n    body = dict()\n    body['AppKey'] = '输入您在听悟管控台创建的Appkey'\n\n    # 基本请求参数\n    input = dict()\n\n    #输入语音流格式和采样率和以下参数设置保持一致\n    input['Format'] = 'pcm'\n    input['SampleRate'] = 16000\n    input['SourceLanguage'] = 'cn'\n    input['TaskKey'] = 'task' + datetime.datetime.now().strftime('%Y%m%d%H%M%S')\n    input['ProgressiveCallbacksEnabled'] = False\n    body['Input'] = input\n\n    # AI相关参数，按需设置即可\n    parameters = dict()\n\n    # 音视频转换相关\n    transcoding = dict()\n    # 将原音视频文件转成mp3文件，用以后续浏览器播放\n    # transcoding['TargetAudioFormat'] = 'mp3'\n    # transcoding['SpectrumEnabled'] = False\n    # parameters['Transcoding'] = transcoding\n\n    # 语音识别控制相关\n    transcription = dict()\n    # 角色分离 ： 可选\n    transcription['DiarizationEnabled'] = True\n    diarization = dict()\n    diarization['SpeakerCount'] = 2\n    transcription['Diarization'] = diarization\n    parameters['Transcription'] = transcription\n\n    # 文本翻译控制相关 ： 可选\n    parameters['TranslationEnabled'] = True\n    translation = dict()\n    translation['TargetLanguages'] = ['en'] # 假设翻译成英文\n    parameters['Translation'] = translation\n\n    # 章节速览相关 ： 可选，包括： 标题、议程摘要\n    parameters['AutoChaptersEnabled'] = True\n\n    # 智能纪要相关 ： 可选，包括： 待办、关键信息(关键词、重点内容、场景识别)\n    parameters['MeetingAssistanceEnabled'] = True\n    meetingAssistance = dict()\n    meetingAssistance['Types'] = ['Actions', 'KeyInformation']\n    parameters['MeetingAssistance'] = meetingAssistance\n\n    # 摘要控制相关 ： 可选，包括： 全文摘要、发言人总结摘要、问答摘要(问答回顾)\n    parameters['SummarizationEnabled'] = True\n    summarization = dict()\n    summarization['Types'] = ['Paragraph', 'Conversational', 'QuestionsAnswering', 'MindMap']\n    parameters['Summarization'] = summarization\n\n    # ppt抽取和ppt总结 ： 可选\n    parameters['PptExtractionEnabled'] = True\n    \n    # 口语书面化 ： 可选\n    parameters['TextPolishEnabled'] = True\n\n    body['Parameters'] = parameters\n    return body\n\nbody = init_parameters()\nprint(body)\n\n# TODO  请通过环境变量设置您的 AccessKeyId 和 AccessKeySecret\ncredentials = AccessKeyCredential(os.environ['ALIBABA_CLOUD_ACCESS_KEY_ID'], os.environ['ALIBABA_CLOUD_ACCESS_KEY_SECRET'])\nclient = AcsClient(region_id='cn-beijing', credential=credentials)\n\nrequest = create_common_request('tingwu.cn-beijing.aliyuncs.com', '2023-09-30', 'https', 'PUT', '/openapi/tingwu/v2/tasks')\nrequest.add_query_param('type', 'realtime')\n\nrequest.set_content(json.dumps(body).encode('utf-8'))\nresponse = client.do_action_with_exception(request)\nprint(\"response: \\n\" + json.dumps(json.loads(response), indent=4, ensure_ascii=False))\n</code></pre></div></div></section><section id=\"0a0ef57078q40\" class=\"section\"><h4 id=\"0c05fdd5783fk\" uuid=\"lob944gg5q3uc7lfu2m\"><b>示例输出</b></h4><pre id=\"xqlaqt\" title=\"\" uuid=\"lofd4u9pgxvnp9v7hnk\" data-tag=\"codeblock\" outputclass=\"language-json\" code-type=\"xCode\" class=\"pre codeblock language-json\"><code>{\n    \"Code\":\"0\",\n    \"Data\":{\n        \"TaskId\":\"3190978427bb43z09c01dfff********\",\n        \"TaskKey\":\"task16988********\",\n        \"MeetingJoinUrl\":\"wss://tingwu-realtime-cn-beijing.aliyuncs.com/api/ws/v1?mc=g9ySw5kiwXM4K7tBnIajKq6Fh9G1aUokzkptBIFixj7e7zv6c8AKxUDTW2Oz8AFFONWXtTQedh-NpKZUffqIYdW7yAlivqlo9B0TdeM88fzgWaYk2Ifg********\"\n    },\n    \"Message\":\"success\",\n    \"RequestId\":\"6582c654-cc37-4f2d-b80d-e5e7********\"\n}</code></pre></section><section id=\"0fdbcaa078v4d\" class=\"section\"><h4 id=\"0c0624d078bei\" uuid=\"loa56taovbapcyeh2\"><b>协议解析</b></h4><p uuid=\"lob8knfbahkypmk6a9j\" id=\"bfb54f0279m4c\">具体字段定义如下。</p><table id=\"0c0624d278jpi\" tablewidth=\"713\" tablecolswidth=\"158 104 451\" autofit=\"true\" class=\"table\"><colgroup colwidth=\"0.67*\" style=\"width:22.16%\"></colgroup><colgroup colwidth=\"0.44*\" style=\"width:14.59%\"></colgroup><colgroup colwidth=\"1.9*\" style=\"width:63.25%\"></colgroup><tbody class=\"tbody\"><tr id=\"0c0624d378vjf\"><td id=\"0c0624d478bov\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lob8t2lgt6097cmcpfn\" id=\"bfb54f0379scd\"><b>参数名</b></p></td><td id=\"0c0624d678659\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lob8t2lgvb4z768cxns\" id=\"bfb54f0479bp9\"><b>类型</b></p></td><td id=\"0c0624d878m8m\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lob8t2lgpw0grwy389\" id=\"bfb54f0579q2k\"><b>说明</b></p></td></tr><tr id=\"0c0624da78ydy\"><td id=\"0c0624db7862r\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8t2lg5cjn531tm9o\" id=\"bfb54f0679q6p\">TaskId</p></td><td id=\"0c064be078crj\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8t2lg1eojponjvu3\" id=\"bfb54f07793ca\">string</p></td><td id=\"0c064be278khq\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8t2lgypmlgyntij\" id=\"ee656dc4788dx\">创建任务时生成的<span class=\"help-letter-space\"></span>TaskId，用于查询任务状态、结果以及排查问题时使用。</p></td></tr><tr id=\"0c064be4788aj\"><td id=\"0c064be578pxm\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofdgy1qo5fbasvh5kg\" id=\"bfb54f0979rwp\">TaskKey</p></td><td id=\"0c064be778fxj\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofdgy1qgwpj84p97mj\" id=\"bfb57610791yn\">string</p></td><td id=\"0c064be978bj0\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofdgy1rsb9m409zp0d\" id=\"bfb57611799mw\">您创建任务时设置的<span class=\"help-letter-space\"></span>TaskKey</p></td></tr><tr id=\"0c064beb78pd6\"><td id=\"0c064bec78hkl\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofhjo6re3vm7l6aqod\" id=\"bfb5761279540\">MeetingJoinUrl</p></td><td id=\"0c064bee783py\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofhjo6r7i1l2a9018s\" id=\"bfb5761379c6h\">string</p></td><td id=\"0c064bf078tsk\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lofhjo6r1mncxwbogc4\" id=\"bfb576147971h\">实时记录场景下生成的音频流推送地址，您可以在后续实时音频流识别时通过该地址进行</p></td></tr><tr id=\"0c064bf278gnj\"><td id=\"0c064bf378bat\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8ynm0rhoi4nkkat\" id=\"bfb57615793sl\">RequestId</p></td><td id=\"0c064bf578og2\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8ynm0r4hxwfiptk\" id=\"bfb5761679078\">string</p></td><td id=\"0c0672f078x6w\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8ynm0nyjo509r7s\" id=\"bfb5761779uc8\">RequestId<span class=\"help-letter-space\"></span>用于排查问题使用。</p></td></tr></tbody></table></section></section><section id=\"18bff38ce3xu5\" class=\"section\"><h3 uuid=\"lofnv4fpz2t7fwv5q5i\" id=\"ec838d6078h3g\">实时记录语音推流</h3><p id=\"2777d89571jox\">在完成记录创建后，便可通过听悟提供的<a href=\"https://help.aliyun.com/zh/tingwu/real-time-stream-push\" id=\"dfc9b1802egkd\" title=\"\" class=\"xref\">交互流程与实现</a>进行会中实时语音推流并接收实时识别结果和翻译结果。</p></section><section id=\"0de5549079i0x\" class=\"section\"><h3 id=\"5502e80078fte\"><b>结束实时记录</b></h3><p id=\"1735d24079h5j\">当该记录结束时，您<b>务必参考如下内容</b>及时调用<span class=\"help-letter-space\"></span>API<span class=\"help-letter-space\"></span>结束该记录。若您之前在创建实时记录时设置了后续的比如摘要、章节速览、智能纪要等功能参数，那么在结束记录之后，该实时记录状态并不是<span class=\"help-letter-space\"></span>COMPLETED，而是<span class=\"help-letter-space\"></span>ONGOING，表示此时进入到后处理阶段。</p><div type=\"note\" id=\"5f71007a4b52c\" class=\"note note-note\"><div class=\"note-icon-wrapper\"><i class=\"icon-note note note\"></i></div><div class=\"noteContentSpan\"><strong>说明 </strong><p id=\"a83f5fc0c16j5\">结束实时记录操作，此时进入到后处理阶段，对后处理相关的<span class=\"help-letter-space\"></span>AI<span class=\"help-letter-space\"></span>模型能力产生计费，若重复结束，则会触发多次会后大模型能力计费，建议不要对同一个<span class=\"help-letter-space\"></span>TaskId<span class=\"help-letter-space\"></span>进行多次的“结束实时记录”操作。</p></div></div><section id=\"eb589a9078bqf\" class=\"section\"><h4 id=\"152225027823d\" uuid=\"lofcyajxp9zk67vy8he\"><b>请求参数</b></h4><table id=\"a6892fdcedt25\" tablewidth=\"100\" tablecolswidth=\"18.43 16.55 13.5 9.58 41.94\" autofit=\"true\" class=\"table\"><colgroup colwidth=\"0.92*\" style=\"width:18.43%\"></colgroup><colgroup colwidth=\"0.83*\" style=\"width:16.55%\"></colgroup><colgroup colwidth=\"0.68*\" style=\"width:13.50%\"></colgroup><colgroup colwidth=\"0.48*\" style=\"width:9.58%\"></colgroup><colgroup colwidth=\"2.1*\" style=\"width:41.94%\"></colgroup><tbody class=\"tbody\"><tr id=\"c04af33b2fp0y\"><td id=\"52ba637270uwk\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lofh6jx5ackhq31sg8\" id=\"5996f2fc6fv58\"><b>名称</b></p></td><td id=\"be7e02b72f0xw\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lofh6jx5oja0h3ovvv\" id=\"f89cf942150wx\"><b>参数</b></p></td><td id=\"0a3a43a740jdi\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lofh6jx53yy3lbc5x19\" id=\"910d45dc104q4\"><b>类型</b></p></td><td id=\"071fa7b64awab\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p id=\"8cf1c0f716key\"><b>默认值</b></p></td><td id=\"35cd9a745b98g\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lofh6jx5t8uyt94vxco\" id=\"14b5dc65802da\"><b>说明</b></p></td></tr><tr id=\"cbd4906e19bol\"><td id=\"a335f8840cizs\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"loa744twbvdt35m2sge\" id=\"b081df27c4jox\">TaskId</p></td><td id=\"79ce84be44wjn\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"loa744twbvdt35m2sge\" id=\"4185a80162hsi\">TaskId</p></td><td id=\"55dcaf0689a5e\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"b59c11c33a23f\"><span style=\"color:rgb(24, 24, 24)\">string</span></p></td><td id=\"7fde127bd3553\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p id=\"017c83f2c2cas\">-</p></td><td id=\"550e5174c7xdt\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"loa761sg4dv4ntdfq05\" id=\"2927db3d2axwh\"><b>必选，</b>您提交任务时返回的<span class=\"help-letter-space\"></span>TaskId<span class=\"help-letter-space\"></span>信息</p></td></tr></tbody></table></section><section id=\"8eddb7e078u8v\" class=\"section\"><h4 uuid=\"lob944gg5q3uc7lfu2m\" id=\"d676a9807dicn\">代码示例</h4><div outputclass=\"tabbed-codeblock\" data-tag=\"fig\" id=\"9a78259078yfp\" class=\"tabbed-codeblock-box\"><div class=\"tab-box\"></div><input type=\"radio\" name=\"check-9a78259078yfp\" id=\"9a78259078yfp-java-tab\" checked=\"\"><label for=\"9a78259078yfp-java-tab\">Java</label><div class=\"codeblock-item\"><pre id=\"9ff02400783ro\" data-tag=\"codeblock\" outputclass=\"language-java\" code-type=\"xCode\" class=\"pre codeblock language-java\"><code>package com.alibaba.tingwu.client.demo.realtimemeeting;\n\nimport com.alibaba.fastjson.JSONObject;\nimport com.aliyuncs.CommonRequest;\nimport com.aliyuncs.CommonResponse;\nimport com.aliyuncs.DefaultAcsClient;\nimport com.aliyuncs.IAcsClient;\nimport com.aliyuncs.exceptions.ClientException;\nimport com.aliyuncs.http.FormatType;\nimport com.aliyuncs.http.MethodType;\nimport com.aliyuncs.http.ProtocolType;\nimport com.aliyuncs.profile.DefaultProfile;\nimport org.junit.Test;\n\n/**\n * @author tingwu2023\n * @desc 演示了通过OpenAPI 结束实时会议 的调用方式。\n */\npublic class StopRealtimeMeetingTaskTest {\n\n    @Test\n    public void stopTask() throws ClientException {\n        CommonRequest request = createCommonRequest(\"tingwu.cn-beijing.aliyuncs.com\", \"2023-09-30\", ProtocolType.HTTPS, MethodType.PUT, \"/openapi/tingwu/v2/tasks\");\n        request.putQueryParameter(\"type\", \"realtime\");\n        // 必须设置 operation=stop\n        request.putQueryParameter(\"operation\", \"stop\");\n\n        JSONObject root = new JSONObject();\n        JSONObject input = new JSONObject();\n        input.put(\"TaskId\", \"请输入实时会议的TaskId\");\n        root.put(\"Input\", input);\n        System.out.println(root.toJSONString());\n        request.setHttpContent(root.toJSONString().getBytes(), \"utf-8\", FormatType.JSON);\n\n        // TODO 请通过环境变量设置您的AccessKeyId、AccessKeySecret\n        DefaultProfile profile = DefaultProfile.getProfile(\"cn-beijing\", System.getenv(\"ALIBABA_CLOUD_ACCESS_KEY_ID\"), System.getenv(\"ALIBABA_CLOUD_ACCESS_KEY_SECRET\"));\n        IAcsClient client = new DefaultAcsClient(profile);\n        CommonResponse response = client.getCommonResponse(request);\n        System.out.println(response.getData());\n    }\n  \n    public static CommonRequest createCommonRequest(String domain, String version, ProtocolType protocolType, MethodType method, String uri) {\n        CommonRequest request = new CommonRequest();\n        request.setSysDomain(domain);\n        request.setSysVersion(version);\n        request.setSysProtocol(protocolType);\n        request.setSysMethod(method);\n        request.setSysUriPattern(uri);\n        request.setHttpContentType(FormatType.JSON);\n        return request;\n    }\n}</code></pre></div><input type=\"radio\" name=\"check-9a78259078yfp\" id=\"9a78259078yfp-go-tab\"><label for=\"9a78259078yfp-go-tab\">Go</label><div class=\"codeblock-item\"><pre id=\"17e15ca083pcp\" data-tag=\"codeblock\" outputclass=\"language-go\" code-type=\"xCode\" class=\"pre codeblock language-go\"><code>package main\n\nimport (\n\t\"encoding/json\"\n\t\"log\"\n\t\"os\"\n\n\t\"github.com/aliyun/alibaba-cloud-sdk-go/sdk\"\n\t\"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests\"\n)\n\ntype TranscodeingParam struct {\n\tTargetAudioFormat     string `json:\"TargetAudioFormat,omitempty\"`\n\tTargetVideoFormat     string `json:\"TargetVideoFormat,omitempty\"`\n\tVideoThumbnailEnabled bool   `json:\"VideoThumbnailEnabled,omitempty\"`\n\tSpectrumEnabled       bool   `json:\"SpectrumEnabled,omitempty\"`\n}\n\ntype DiarizationParam struct {\n\tSpeakerCount int `json:\"SpeakerCount,omitempty\"`\n}\n\ntype TranscriptionParam struct {\n\tAudioEventDetectionEnabled bool              `json:\"AudioEventDetectionEnabled,omitempty\"`\n\tDiarizationEnabled         bool              `json:\"DiarizationEnabled,omitempty\"`\n\tDiarization                *DiarizationParam `json:\"Diarization,omitempty\"`\n}\n\ntype TranslationParam struct {\n\tTargetLanguages []string `json:\"TargetLanguages,omitempty\"`\n}\n\ntype SummarizationParam struct {\n\tTypes []string `json:\"Types,omitempty\"`\n}\n\ntype ExtraParamerters struct {\n\tTranscoding              *TranscodeingParam  `json:\"Transcoding,omitempty\"`\n\tTranscription            *TranscriptionParam `json:\"Transcription,omitempty\"`\n\tTranslationEnabled       bool                `json:\"TranslationEnabled,omitempty\"`\n\tTranslation              *TranslationParam   `json:\"Translation,omitempty\"`\n\tAutoChaptersEnabled      bool                `json:\"AutoChaptersEnabled,omitempty\"`\n\tMeetingAssistanceEnabled bool                `json:\"MeetingAssistanceEnabled,omitempty\"`\n\tSummarizationEnabled     bool                `json:\"SummarizationEnabled,omitempty\"`\n\tSummarization            *SummarizationParam `json:\"Summarization,omitempty\"`\n}\n\ntype InputParam struct {\n\tSourceLanguage string `json:\"SourceLanguage\"`\n\tFileUrl        string `json:\"FileUrl,omitempty\"`\n\tTaskKey        string `json:\"TaskKey,omitempty\"`\n\tTaskId         string `json:\"TaskId,omitempty\"`\n\tFormat         string `json:\"Format,omitempty\"`\n\tSampleRate     int    `json:\"SampleRate,omitempty\"`\n}\n\ntype TaskBodyParam struct {\n\tAppkey      string            `json:\"AppKey\"`\n\tInput       InputParam        `json:\"Input\"`\n\tParamerters *ExtraParamerters `json:\"Parameters,omitempty\"`\n}\n\ntype CreateTaskResponse struct {\n\tRequestId string `json:\"RequestId\"`\n\tCode      string `json:\"Code\"`\n\tMessage   string `json:\"Message\"`\n\tData      struct {\n\t\tTaskId         string `json:\"TaskId\"`\n\t\tTaskKey        string `json:\"TaskKey\"`\n\t\tMeetingJoinUrl string `json:\"MeetingJoinUrl,omitempty\"`\n\t} `json:\"Data\"`\n}\n\nfunc test_stop_realtime_meeting_task() {\n\takkey := os.Getenv(\"ALIBABA_CLOUD_ACCESS_KEY_ID\")\n\taksecret := os.Getenv(\"ALIBABA_CLOUD_ACCESS_KEY_SECRET\")\n\tclient, err := sdk.NewClientWithAccessKey(\"cn-beijing\", akkey, aksecret)\n\tif err != nil {\n\t\tlog.Default().Fatalln(err)\n\t\treturn\n\t}\n\n\trequest := requests.NewCommonRequest()\n\trequest.Method = \"PUT\"\n\trequest.Domain = \"tingwu.cn-beijing.aliyuncs.com\"\n\trequest.Version = \"2023-09-30\"\n\trequest.SetContentType(\"application/json\")\n\trequest.PathPattern = \"/openapi/tingwu/v2/tasks\"\n\trequest.QueryParams[\"type\"] = \"realtime\"\n\trequest.QueryParams[\"operation\"] = \"stop\"\n\n\tparam := new(TaskBodyParam)\n\tparam.Appkey = \"输入您在听悟管控台创建的Appkey\"\n\tparam.Input.TaskId = \"请输入实时会议的TaskId\"\n\n\tb, _ := json.Marshal(param)\n\tlog.Default().Print(\"request body:\\n\", string(b))\n\trequest.SetContent(b)\n\trequest.SetScheme(\"https\")\n\n\tresponse, err := client.ProcessCommonRequest(request)\n\tif err != nil {\n\t\tlog.Default().Fatalln(err)\n\t\treturn\n\t}\n\n\tlog.Default().Print(\"response body:\\n\", string(response.GetHttpContentBytes()))\n\treturn\n}\n\nfunc main() {\n\ttest_stop_realtime_meeting_task()\n}\n</code></pre></div><input type=\"radio\" name=\"check-9a78259078yfp\" id=\"9a78259078yfp-c++-tab\"><label for=\"9a78259078yfp-c++-tab\">C++</label><div class=\"codeblock-item\"><pre id=\"b0aa32b799ng4\" data-tag=\"codeblock\" outputclass=\"language-c++\" code-type=\"xCode\" class=\"pre codeblock language-c++\"><code>#include &lt;cstdlib&gt;\n#include &lt;iostream&gt;\n#include &lt;string&gt;\n#include &lt;string.h&gt;\n#include &lt;alibabacloud/core/AlibabaCloud.h&gt;\n#include &lt;alibabacloud/core/CommonRequest.h&gt;\n#include &lt;alibabacloud/core/CommonClient.h&gt;\n#include &lt;alibabacloud/core/CommonResponse.h&gt;\n#include \"jsoncpp/json.h\"\n/**\n * @author tingwu2023\n * @desc 演示了通过OpenAPI 结束实时记录 的调用方式。\n */\nint main( int argc, char** argv ) {\n    std::string taskId = \"请输入创建任务(含离线转写、实时会议)的TaskId\";\n\n    AlibabaCloud::InitializeSdk();\n    AlibabaCloud::ClientConfiguration configuration( \"cn-beijing\" );\n    // specify timeout when create client.\n    configuration.setConnectTimeout(1500);\n    configuration.setReadTimeout(4000);\n    // Please ensure that the environment variables ALIBABA_CLOUD_ACCESS_KEY_ID and ALIBABA_CLOUD_ACCESS_KEY_SECRET are set.\n    AlibabaCloud::Credentials credential( getenv(\"ALIBABA_CLOUD_ACCESS_KEY_ID\"), getenv(\"ALIBABA_CLOUD_ACCESS_KEY_SECRET\") );\n    AlibabaCloud::CommonClient client( credential, configuration );\n    AlibabaCloud::CommonRequest request(AlibabaCloud::CommonRequest::RequestPattern::RoaPattern);\n    request.setHttpMethod(AlibabaCloud::HttpRequest::Method::Put);\n    request.setDomain(\"tingwu.cn-beijing.aliyuncs.com\");\n    request.setVersion(\"2023-09-30\");\n    request.setResourcePath(\"/openapi/tingwu/v2/tasks\");\n    request.setQueryParameter(\"type\", \"realtime\");\n    request.setQueryParameter(\"operation\", \"stop\");\n    request.setHeaderParameter(\"Content-Type\", \"application/json\");\n\n    Json::Value root;\n    Json::Value input;\n    input[\"TaskId\"] = taskId;\n    root[\"Input\"] = input;\n\n    Json::FastWriter writer;\n    std::string body = writer.write(root);\n    printf(\"input json: [%s]\\n\", body.c_str());\n    request.setContent(body.c_str(), body.size());\n\n    auto response = client.commonResponse(request);\n    if (response.isSuccess()) {\n        printf(\"request success.\\n\");\n        printf(\"result: %s\\n\", response.result().payload().c_str());\n    } else {\n        printf(\"error: %s\\n\", response.error().errorMessage().c_str());\n        printf(\"request id: %s\\n\", response.error().requestId().c_str());\n    }\n      \n    AlibabaCloud::ShutdownSdk();\n    return 0;\n} </code></pre></div><input type=\"radio\" name=\"check-9a78259078yfp\" id=\"9a78259078yfp-python-tab\"><label for=\"9a78259078yfp-python-tab\">Python</label><div class=\"codeblock-item\"><pre code-type=\"xCode\" id=\"b89845eff8rxh\" data-tag=\"codeblock\" outputclass=\"language-python\" class=\"pre codeblock language-python\"><code>#!/usr/bin/env python\n#coding=utf-8\n\nimport os\nimport json\nimport datetime\nfrom aliyunsdkcore.client import AcsClient\nfrom aliyunsdkcore.request import CommonRequest\nfrom aliyunsdkcore.auth.credentials import AccessKeyCredential\n\ndef create_common_request(domain, version, protocolType, method, uri):\n    request = CommonRequest()\n    request.set_accept_format('json')\n    request.set_domain(domain)\n    request.set_version(version)\n    request.set_protocol_type(protocolType)\n    request.set_method(method)\n    request.set_uri_pattern(uri)\n    request.add_header('Content-Type', 'application/json')\n    return request\n\ndef init_parameters():\n    body = dict()\n    body['AppKey'] = '输入您在听悟管控台创建的Appkey'\n\n    # 基本请求参数\n    input = dict()\n\n    #输入语音流格式和采样率和以下参数设置保持一致\n    input['TaskId'] = '请输入实时会议的TaskId'\n    body['Input'] = input\n\n    return body\n\nbody = init_parameters()\nprint(body)\n\n# TODO  请通过环境变量设置您的 AccessKeyId 和 AccessKeySecret\ncredentials = AccessKeyCredential(os.environ['ALIBABA_CLOUD_ACCESS_KEY_ID'], os.environ['ALIBABA_CLOUD_ACCESS_KEY_SECRET'])\nclient = AcsClient(region_id='cn-beijing', credential=credentials)\n\nrequest = create_common_request('tingwu.cn-beijing.aliyuncs.com', '2023-09-30', 'https', 'PUT', '/openapi/tingwu/v2/tasks')\nrequest.add_query_param('type', 'realtime')\nrequest.add_query_param('operation', 'stop')\n\nrequest.set_content(json.dumps(body).encode('utf-8'))\nresponse = client.do_action_with_exception(request)\nprint(\"response: \\n\" + json.dumps(json.loads(response), indent=4, ensure_ascii=False))\n</code></pre></div></div></section><section id=\"af6078e078yyo\" class=\"section\"><h4 id=\"15224c22782a2\" uuid=\"loa56nbek1r7h7uvvi\"><b>示例输出</b></h4><p id=\"8e77e4307eewv\">当仅使用实时语音识别时：</p><pre id=\"b0mqqk\" title=\"\" data-tag=\"codeblock\" outputclass=\"language-json\" uuid=\"lofddq0y7gmtmhp1f05\" code-type=\"xCode\" class=\"pre codeblock language-json\"><code>{\n    \"Code\":\"0\",\n    \"Data\":{\n        \"TaskId\":\"e8adc0b3bc4b42d898fcadb0a*******\",\n        \"TaskStatus\":\"COMPLETED\"\n    },\n    \"Message\":\"success\",\n    \"RequestId\":\"1b20e0d9-c55c-4cc3-85af-80b********\"\n}</code></pre><p id=\"15224c2378qg5\" uuid=\"lofdes2ghui9vraro9b\">当开启语音识别的同时开启了摘要、章节速览、智能纪要等功能时：</p><pre uuid=\"lofd4u9pgxvnp9v7hnk\" id=\"20dfe1b479lp2\" title=\"\" data-tag=\"codeblock\" outputclass=\"language-json\" code-type=\"xCode\" class=\"pre codeblock language-json\"><code>{\n    \"Code\":\"0\",\n    \"Data\":{\n        \"TaskId\":\"e8adc0b3bc4b42d898fcadb0*******\",\n        \"TaskStatus\":\"ONGOING\"\n    },\n    \"Message\":\"success\",\n    \"RequestId\":\"5fa32fc6-441f-4dd1-bb86-c030*******\"\n}</code></pre></section><section id=\"cc3b679078pum\" class=\"section\"><h4 uuid=\"loa56taovbapcyeh2\" id=\"1522732278u6m\"><b>协议解析</b></h4><p id=\"1522732378m3s\" uuid=\"lob8knfbahkypmk6a9j\">具体字段定义如下。</p><table id=\"1522732478wgv\" tablewidth=\"100\" tablecolswidth=\"21.48 21.19 57.33\" autofit=\"true\" class=\"table\"><colgroup colwidth=\"0.65*\" style=\"width:21.48%\"></colgroup><colgroup colwidth=\"0.64*\" style=\"width:21.19%\"></colgroup><colgroup colwidth=\"1.74*\" style=\"width:57.33%\"></colgroup><tbody class=\"tbody\"><tr id=\"15227325787ij\"><td id=\"1522732678tsf\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lob8t2lgt6097cmcpfn\" id=\"1522732778oyq\"><b>参数名</b></p></td><td id=\"1522732878159\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lob8t2lgvb4z768cxns\" id=\"1522732978f71\"><b>类型</b></p></td><td id=\"1522732a788lb\" rowspan=\"1\" style=\"background-color:#e5e5e5\" colspan=\"1\"><p uuid=\"lob8t2lgpw0grwy389\" id=\"1522732b78yon\"><b>说明</b></p></td></tr><tr id=\"1522732c78r22\"><td id=\"15229a3078lkt\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8t2lg5cjn531tm9o\" id=\"15229a3178vj9\">TaskId</p></td><td id=\"15229a3278n76\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8t2lg1eojponjvu3\" id=\"15229a3378srd\">string</p></td><td id=\"15229a3478oyf\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8t2lgypmlgyntij\" id=\"15229a3578kgo\">创建任务时生成的<span class=\"help-letter-space\"></span>TaskId</p></td></tr><tr id=\"15229a3678oo7\"><td id=\"15229a3778kuq\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8t2lg9sz5d10hxc\" id=\"15229a38784c2\">TaskStatus</p></td><td id=\"15229a3978y48\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8t2lgbk2om97v605\" id=\"15229a3a78yhj\">string</p></td><td id=\"15229a3b784pi\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8t2lgyqvncqdkbb\" id=\"15229a3c78thu\">任务状态，包括：</p><ul id=\"15229a3d7868l\"><li id=\"15229a3e78i07\"><p id=\"15229a3f78np3\">NEW： 刚创建状态，此时还未发送音频流</p></li><li id=\"c924bac800nx4\"><p id=\"6ccc2aeffd6b1\">ONGOING ：运行中</p></li><li id=\"8f4283cb0fnrb\"><p id=\"4d6c985d85z8k\">PAUSED：实时记录暂停，在发送音频流之后停止发送，此时状态为<span class=\"help-letter-space\"></span>PAUSED</p></li><li id=\"15229a4078r59\"><p id=\"15229a4178upc\">COMPLETED : 已完成</p></li><li id=\"1522c14078oot\"><p id=\"1522c1417805s\">FAILED ： 任务失败</p></li><li id=\"1522c14278onv\"><p id=\"1522c14378gqh\">INVALID ：无效，可能是<span class=\"help-letter-space\"></span>TaskId<span class=\"help-letter-space\"></span>不存在</p></li></ul></td></tr><tr id=\"1522c14478i4h\"><td id=\"1522c14578564\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8ynm0rhoi4nkkat\" id=\"1522c146781yj\">ErrorCode</p></td><td id=\"1522c147784sh\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8ynm0r4hxwfiptk\" id=\"1522c14878n4h\">string</p></td><td id=\"1522c14978bv8\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8ynm0nyjo509r7s\" id=\"1522c14a78jqt\">错误原因</p></td></tr><tr id=\"1522c14b78ghr\"><td id=\"1522c14c781pu\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8ypq7t9yaa1n3n7l\" id=\"1522c14d78qbi\">ErrorMessage</p></td><td id=\"1522c14e78ycw\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8ypq7cmwqv9lsreu\" id=\"1522c14f78i4b\">string</p></td><td id=\"1522c15078t1z\" rowspan=\"1\" style=\"background-color:rgba(0, 0, 0, 0)\" colspan=\"1\"><p uuid=\"lob8ypq74bc2z2871ig\" id=\"1522c15178bcf\">错误详细信息</p></td></tr></tbody></table></section></section><section id=\"3381c76079rts\" class=\"section\"><h2 id=\"16bca7e078zko\" uuid=\"loa56wzfwvj7kubg0a9\">常见问题</h2><p id=\"33d11fe07907h\"><b>相比离线转写，为什么实时记录参数里缺少了<span class=\"help-letter-space\"></span>PPT<span class=\"help-letter-space\"></span>提取功能参数？</b></p><p id=\"33d11fe179bvm\">PPT<span class=\"help-letter-space\"></span>提取（包括<span class=\"help-letter-space\"></span>PPT<span class=\"help-letter-space\"></span>抽取和<span class=\"help-letter-space\"></span>PPT<span class=\"help-letter-space\"></span>摘要）主要是针对在离线转写场景下，原文件是视频格式的情况下发挥作用的。不论是音频文件还是实时记录里的二进制音频流都没有视频信息，因此也不会产生<span class=\"help-letter-space\"></span>PPT<span class=\"help-letter-space\"></span>相关结果。</p><p id=\"21f2b0fe2468x\"><b>为什么查询实时记录的状态是<span class=\"help-letter-space\"></span>PAUSED？</b></p><p id=\"a4ee96f50dmjx\">请确保您的实时记录交互顺序正确。实时记录正常交互流程是先创建实时记录，向实时记录服务返回的<span class=\"help-letter-space\"></span>MeetingJoinUrl<span class=\"help-letter-space\"></span>发送<span class=\"help-letter-space\"></span>StartTranscription<span class=\"help-letter-space\"></span>开始识别指令、推送语音帧、发送<span class=\"help-letter-space\"></span>StopTranscription<span class=\"help-letter-space\"></span>结束识别指令，然后关闭<span class=\"help-letter-space\"></span>MeetingJoinUrl<span class=\"help-letter-space\"></span>链接，再结束实时记录操作以及获取实时记录最终结果。MeetingJoinUrl<span class=\"help-letter-space\"></span>链接可重复发送开始识别指令、推送语音帧、发送结束识别指令来实现实时记录的暂停。</p><p id=\"a9090b5a7ee0b\"><b>语种该怎么选择？</b></p><ul id=\"c4f8e7c3dczk8\"><li id=\"86b9dacfb8n6w\"><p id=\"ca418140ff87d\">常见语种场景示例如下：</p><table id=\"4703467419p1f\" tablewidth=\"713\" tablecolswidth=\"67 187 234 225\" autofit=\"true\" class=\"table\"><colgroup colwidth=\"0.38*\" style=\"width:9.40%\"></colgroup><colgroup colwidth=\"1.05*\" style=\"width:26.23%\"></colgroup><colgroup colwidth=\"1.31*\" style=\"width:32.82%\"></colgroup><colgroup colwidth=\"1.26*\" style=\"width:31.56%\"></colgroup><tbody class=\"tbody\"><tr id=\"65ca7c611bufq\"><td id=\"104d27b6940px\" rowspan=\"1\" colspan=\"1\"><p id=\"f064802d902g8\">语种类型</p></td><td id=\"cad3ba472ektd\" rowspan=\"1\" colspan=\"1\"><p id=\"17d49462cauiv\">对应参数</p></td><td id=\"7fb2e7df59qq7\" rowspan=\"1\" colspan=\"1\"><p id=\"a7995833c48vi\">适用场景（实时记录）</p></td><td id=\"d0d3250663xlt\" rowspan=\"1\" colspan=\"1\"><p id=\"3e1e850ebeafd\">参考示例</p></td></tr><tr id=\"dbe871a48d2sb\"><td id=\"04fc198244xfu\" rowspan=\"1\" colspan=\"1\"><p id=\"4d8c2f42c6c4y\">单语种</p><p id=\"b4017e5ea5eb3\">（已知语种）</p></td><td id=\"f77147849d2ai\" rowspan=\"1\" colspan=\"1\"><p id=\"f36c332690hb6\">参数名：Input.SourceLanguage</p><p id=\"8109df239dtqj\">参数值可配置（单选）：中文（cn）、 英语（en）、粤语（yue）、日语（ja）、韩语（ko）</p></td><td id=\"5451d90e3e4n4\" rowspan=\"1\" colspan=\"1\"><ul id=\"876a3a7ff3hiy\"><li id=\"e597ce8a38kic\"><p id=\"15fec02d334ct\">单语种语音识别模型。</p></li><li id=\"33922a2298dr5\"><p id=\"cd2c08f928wwz\">中文支持<span class=\"help-letter-space\"></span>8K<span class=\"help-letter-space\"></span>和<span class=\"help-letter-space\"></span>16K。</p></li><li id=\"66d414c5f2sro\"><p id=\"d29a4ce559lae\">英、日、粤、韩仅支持<span class=\"help-letter-space\"></span>16K。</p></li></ul></td><td id=\"025c504b09fmi\" rowspan=\"1\" colspan=\"1\"><p id=\"c4c2302478rk1\"><b>示例<span class=\"help-letter-space\"></span>1：</b></p><p id=\"cce02c500fl0p\">若已知语音的语种是中文</p><p id=\"6d4b2328b4r3b\">Input.SourceLanguage=\"cn\"</p><p id=\"0bd06af6ccl96\">识别结果：感谢您使用通义听悟。</p><p id=\"bed3fb2f3f8wd\"><b>示例<span class=\"help-letter-space\"></span>2：</b></p><p id=\"661ed1aca2fzh\">若已知语音的语种是英文</p><p id=\"320ea6ed77y2f\">Input.SourceLanguage=\"en\"</p><p id=\"5f927b304a60d\">识别结果：Thank you for using Tongyi Tingwu.</p></td></tr><tr id=\"c49c0bf020mpj\"><td id=\"d688a75a0d73d\" rowspan=\"1\" colspan=\"1\"><p id=\"44b9a5011cuwh\">多语种混合</p></td><td id=\"c8d9c9cc86bta\" rowspan=\"1\" colspan=\"1\"><ul id=\"c38cec1f48ac1\"><li id=\"97d3065a49osd\"><p id=\"48dfe8faadpic\">参数名<span class=\"help-letter-space\"></span>1：Input.SourceLanguage</p><p id=\"91e61a7d1315q\">参数值：multilingual</p></li><li id=\"e2e73bb910bvu\"><p id=\"8f53bbfa22c4t\">参数名<span class=\"help-letter-space\"></span>2：Input.LanguageHints</p><p id=\"314c24381c1rb\">参数值可配置（可多选）： 中文（cn）， 英语（en）， 粤语（yue）， 日语（ja）、韩语（ko）、德语（de）、法语（fr）、俄语（ru）</p></li></ul></td><td id=\"5ea4387ce8g70\" rowspan=\"1\" colspan=\"1\"><ul id=\"8499685ef3cpu\"><li id=\"5b0bd26f124pn\"><p id=\"d93262e47chux\">多语种语音识别。</p></li><li id=\"81c61c462bgwz\"><p id=\"3b6334e7cacpa\">仅支持<span class=\"help-letter-space\"></span>16K。</p></li><li id=\"2cfe3a711c7eg\"><p id=\"ac7bb536aaoem\">支持同时识别出中文、英文、日语、粤语、韩语、德语、法语和俄语。</p></li><li id=\"e2fa4399d1rz4\"><p id=\"7fcca103e1641\">支持限定语种的范围。</p></li></ul></td><td id=\"ec4af2d109847\" rowspan=\"1\" colspan=\"1\"><p id=\"27b085f0260hx\"><b>示例<span class=\"help-letter-space\"></span>1：</b></p><p id=\"ca9ace76e1xsl\">若语音中的语种非单语种，涉及多个语种，直接识别对应语种的文字。</p><p id=\"81a9ba0b57bul\">Input.SourceLanguage=\"multilingual\"</p><p id=\"5c3798505d5mc\">识别结果：hello, everyone. 感谢您使用通义听悟。</p><p id=\"0b851ee7f2om0\"><b>示例<span class=\"help-letter-space\"></span>2：</b></p><p id=\"21b1a905bc1cn\">若语音中的语种非单语种，涉及多个语种，但已知语种的范围（如只有中、英、粤），直接识别对应语种的文字，同时避免误识别出日、法、俄等和场景无关的语种。</p><p id=\"7766b8c05dlew\">Input.SourceLanguage=\"multilingual\"</p><p id=\"2ff4e6b6a96wa\">Input.LanguageHints=['cn', 'en', 'yue'] </p></td></tr></tbody></table></li></ul></section><p id=\"c4938ea078xtq\" uuid=\"lofl0pzfzcup1vsteh\"></p></div></main>\n\n</div>","url":"/zh/tingwu/interface-and-implementation","tags":[{"value":"0","key":"accept","desc":"未承接"},{"value":false,"key":"autoTranslation","desc":"非自动翻译"},{"value":2609572,"key":"nodeId","desc":"文档ID"}],"userVO":{},"recommendDocs":[{"scm":"20140722.H_460677._.ID_460677-OR_rec-PAR1_2150471f17545647147462322e263e-V_1","title":"计费说明","nodeId":460677,"url":"https://help.aliyun.com/zh/tingwu/pricing-and-billing-rules?scm=20140722.H_460677._.ID_460677-OR_rec-PAR1_2150471f17545647147462322e263e-V_1"},{"scm":"20140722.H_2609555._.ID_2609555-OR_rec-PAR1_2150471f17545647147462322e263e-V_1","title":"PPT抽取及摘要","nodeId":2609555,"url":"https://help.aliyun.com/zh/tingwu/ppt-extraction-and-summary?scm=20140722.H_2609555._.ID_2609555-OR_rec-PAR1_2150471f17545647147462322e263e-V_1"},{"scm":"20140722.H_2600520._.ID_2600520-OR_rec-PAR1_2150471f17545647147462322e263e-V_1","title":"CreateTask - 创建听悟任务","nodeId":2600520,"url":"https://help.aliyun.com/zh/tingwu/api-tingwu-2023-09-30-createtask?scm=20140722.H_2600520._.ID_2600520-OR_rec-PAR1_2150471f17545647147462322e263e-V_1"},{"scm":"20140722.H_460684._.ID_460684-OR_rec-PAR1_2150471f17545647147462322e263e-V_1","title":"基础使用类","nodeId":460684,"url":"https://help.aliyun.com/zh/tingwu/faq-about-basic-usage?scm=20140722.H_460684._.ID_460684-OR_rec-PAR1_2150471f17545647147462322e263e-V_1"},{"scm":"20140722.H_460678._.ID_460678-OR_rec-PAR1_2150471f17545647147462322e263e-V_1","title":"退费说明","nodeId":460678,"url":"https://help.aliyun.com/zh/tingwu/refund-policy?scm=20140722.H_460678._.ID_460678-OR_rec-PAR1_2150471f17545647147462322e263e-V_1"},{"scm":"20140722.H_2639683._.ID_2639683-OR_rec-PAR1_2150471f17545647147462322e263e-V_1","title":"创建热词词表","nodeId":2639683,"url":"https://help.aliyun.com/zh/tingwu/create-a-hotword-vocabulary?scm=20140722.H_2639683._.ID_2639683-OR_rec-PAR1_2150471f17545647147462322e263e-V_1"},{"scm":"20140722.H_2639687._.ID_2639687-OR_rec-PAR1_2150471f17545647147462322e263e-V_1","title":"删除热词词表","nodeId":2639687,"url":"https://help.aliyun.com/zh/tingwu/delete-hot-word-vocabulary?scm=20140722.H_2639687._.ID_2639687-OR_rec-PAR1_2150471f17545647147462322e263e-V_1"},{"scm":"20140722.H_2842415._.ID_2842415-OR_rec-PAR1_2150471f17545647147462322e263e-V_1","title":"移动端Android推流","nodeId":2842415,"url":"https://help.aliyun.com/zh/tingwu/mobile-terminal-android-push-stream?scm=20140722.H_2842415._.ID_2842415-OR_rec-PAR1_2150471f17545647147462322e263e-V_1"}],"path":"https://help.aliyun.com/zh/tingwu/interface-and-implementation","productNodeVO":{"level":3,"docTitle":"工作学习 AI 助手通义听悟","id":454189,"title":"工作学习 AI 助手通义听悟","url":"/zh/tingwu/"},"directoryPath":{"children":[{"children":[{"children":[{"children":[{"level":7,"docTitle":"接口与实现","id":2609572,"title":"接口与实现","url":"/zh/tingwu/interface-and-implementation"}],"level":6,"docTitle":"实时记录","id":2616739,"title":"实时记录","url":"/zh/tingwu/real-time-meeting-transcription/"}],"level":5,"docTitle":"开发指南","id":2609564,"title":"开发指南","url":"/zh/tingwu/development-guide/"}],"level":4,"docTitle":"开发参考","id":2609539,"title":"开发参考","url":"/zh/tingwu/development-reference-new-version-recommend/"}],"level":3,"docTitle":"工作学习 AI 助手通义听悟","id":454189,"title":"工作学习 AI 助手通义听悟","url":"/zh/tingwu/"},"alias":"/tingwu/interface-and-implementation","showType":1,"productUrl":"https://tingwu.aliyun.com/","nodeId":2609572,"taskStatus":"NO_TASK_AVAILABLE","desc":"本文主要介绍实时记录接入流程。"},"breadcrumb":[{"level":3,"docTitle":"工作学习 AI 助手通义听悟","id":454189,"title":"工作学习 AI 助手通义听悟","url":"/zh/tingwu/"},{"level":4,"docTitle":"开发参考","id":2609539,"title":"开发参考","url":"/zh/tingwu/development-reference-new-version-recommend/"},{"level":5,"docTitle":"开发指南","id":2609564,"title":"开发指南","url":"/zh/tingwu/development-guide/"},{"level":6,"docTitle":"实时记录","id":2616739,"title":"实时记录","url":"/zh/tingwu/real-time-meeting-transcription/"},{"level":7,"docTitle":"接口与实现","id":2609572,"title":"接口与实现","url":"/zh/tingwu/interface-and-implementation"}],"isMachineTranslation":false,"showNoteTip":false,"isNotFound":false,"helpResponseCode":200,"redirectUrl":"","helpDocVersion":1}}};
+  </script><link href="https://g.alicdn.com/code/npm/@ali??hmod-ace-2023-box/0.1.0/index.css,hmod-aliyun-com-global-nav-search/0.7.13/index.css,hmod-aliyun-com-global-nav/0.2.46/index.css" rel="stylesheet"/>
+<link href="https://g.alicdn.com/code/npm/@ali??hmod-ace-2023-box/0.1.0/index.css,hmod-ace-2024-global-footer/0.1.2/index.css" rel="stylesheet"/>
+</head>
+
+<body><script>
+with(document)with(body)with(insertBefore(createElement("script"),firstChild))setAttribute("exparams","category=&userid=&aplus&yunid=&&trid=2150424b17612041982246222edddc&asid=AQAAAADm1/loKce5NgAAAAAvdBbT4HXAWQ==",id="tb-beacon-aplus",src=(location>"https"?"//g":"//g")+".alicdn.com/alilog/mlog/aplus_v2.js")
+</script>
+
+  <header><div id="d8089f2b5bb92f5a418c8edb0557719d"><div class="_18a32969382a277c44015217fbc5cb5a_box"><div class="c97dc5fe8c8f69b0e60edf6a1f709489_pc de5ef2fee09ebcb2b1dcaf0c982523bc_theme bdac01e7d42089a1161e0315c2a68512_reset" data-ai-assistant-text-selection-tooltip="disabled"><header class="b62a767265ae40ce4e5e07aa2336b1be_container   "><button class="_17fcaf1a4ee37405e5ad5fbad24204b4_container _17fcaf1a4ee37405e5ad5fbad24204b4_loading" aria-label="打开菜单" data-spm="d_dashboard_trigger" data-tracker-exp="true"><span class="_17fcaf1a4ee37405e5ad5fbad24204b4_burger "><span class="_17fcaf1a4ee37405e5ad5fbad24204b4_middle"></span></span></button><a href="https://www.aliyun.com/" class="_3f46140aade30bc61f3012933357c477_logo b62a767265ae40ce4e5e07aa2336b1be_logo" data-tracker-content="LOGO" data-spm="d_logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4608 1024" fill="#ff6a00" width="80"><path d="M3266.56 773.12h327.68v-102.4h-327.68v-102.4H3584V35.84H2846.72v532.48h317.44v102.4h-327.68v102.4h327.68v112.64h-353.28v102.4h814.08v-102.4h-353.28v-112.64zM3276.8 138.24h215.04v112.64H3276.8V138.24z m0 215.04h215.04V460.8H3276.8V353.28zM3174.4 460.8h-215.04V353.28H3174.4V460.8z m0-209.92h-215.04V138.24H3174.4v112.64zM537.6 445.44H1075.2v122.88H537.6z"></path><path d="M1341.44 5.12h-353.28L1075.2 128l256 81.92c46.08 15.36 76.8 61.44 76.8 107.52v389.12c0 46.08-30.72 92.16-76.8 107.52l-256 81.92-87.04 122.88h353.28c148.48 0 266.24-117.76 266.24-266.24V276.48c0-148.48-117.76-271.36-266.24-271.36zM276.48 814.08c-46.08-15.36-76.8-61.44-76.8-107.52V317.44c0-46.08 30.72-92.16 76.8-107.52l256-81.92L619.52 5.12H266.24C117.76 5.12 0 128 0 276.48v471.04c0 148.48 117.76 266.24 266.24 266.24h353.28l-87.04-122.88-256-76.8zM2493.44 250.88h-261.12v537.6h261.12V250.88z m-107.52 430.08h-56.32V353.28h56.32v327.68zM1848.32 988.16h102.4V138.24h107.52L1996.8 419.84v102.4h61.44v225.28c0 15.36-10.24 25.6-25.6 25.6h-25.6v102.4h51.2c56.32 0 102.4-46.08 102.4-102.4v-358.4H2099.2l61.44-281.6v-102.4h-312.32v957.44z"></path><path d="M2206.72 138.24H2560v660.48c0 46.08-35.84 87.04-87.04 87.04h-76.8v102.4h107.52c87.04 0 163.84-71.68 163.84-163.84V138.24h35.84v-102.4h-496.64v102.4zM3763.2 40.96h737.28v102.4H3763.2zM4541.44 527.36v-102.4H3727.36v102.4h204.8l-163.84 358.4v102.4h691.2c30.72 0 51.2-25.6 51.2-51.2 0-10.24 0-15.36-5.12-20.48l-87.04-194.56h-112.64l76.8 163.84h-496.64l163.84-358.4h491.52z"></path></svg></a><div class="e76910c82efe8556eb8a6ce6019c5d00_container"><button class="e76910c82efe8556eb8a6ce6019c5d00_controller" data-spm="dscroll-left"><i class="ee52067fb65534cb06d3b35f654f5441_icon f0a824eb82dac2d4dfef226ae9529970-button_left"></i></button><div class="e76910c82efe8556eb8a6ce6019c5d00_menu-warp"><nav class="_6bd4655fd97b17a7b684887be1d4e2a4_menus"><a class="_6bd4655fd97b17a7b684887be1d4e2a4_menu  " href="https://www.aliyun.com/product/tongyi" data-spm="d_menu_0">大模型</a><a class="_6bd4655fd97b17a7b684887be1d4e2a4_menu  " href="https://www.aliyun.com/product/list" data-spm="d_menu_1">产品</a><a class="_6bd4655fd97b17a7b684887be1d4e2a4_menu  " href="https://www.aliyun.com/solution/tech-solution/" data-spm="d_menu_2">解决方案</a><a class="_6bd4655fd97b17a7b684887be1d4e2a4_menu  " href="https://www.aliyun.com/resources" data-spm="d_menu_3">文档与社区</a><a class="_6bd4655fd97b17a7b684887be1d4e2a4_menu  " href="https://www.aliyun.com/benefit" data-spm="d_menu_4">权益中心</a><a class="_6bd4655fd97b17a7b684887be1d4e2a4_menu  " href="https://www.aliyun.com/price" data-spm="d_menu_5">定价</a><a class="_6bd4655fd97b17a7b684887be1d4e2a4_menu  " href="https://market.aliyun.com/" data-spm="d_menu_6">云市场</a><a class="_6bd4655fd97b17a7b684887be1d4e2a4_menu  " href="https://partner.aliyun.com/management/v2" data-spm="d_menu_7">合作伙伴</a><a class="_6bd4655fd97b17a7b684887be1d4e2a4_menu  " href="https://www.aliyun.com/service" data-spm="d_menu_8">支持与服务</a><a class="_6bd4655fd97b17a7b684887be1d4e2a4_menu  " href="https://www.aliyun.com/about" data-spm="d_menu_9">了解阿里云</a></nav></div><button class="e76910c82efe8556eb8a6ce6019c5d00_controller" data-spm="dscroll-right"><i class="ee52067fb65534cb06d3b35f654f5441_icon f0a824eb82dac2d4dfef226ae9529970-button_right"></i></button></div><div class="b62a767265ae40ce4e5e07aa2336b1be_search-wrap "><div class="global-nav-search _626567c051250ffe2f303af907d3fc83_global-nav-search"><div class="global-search-container _626567c051250ffe2f303af907d3fc83_global-nav-search-desktop-container"><div class="ff4f4a96a12f52ffbdd0d6adbdb6a2b0_position-desktop-search-container"><div><div class="f6fd7e4d3293f0634b9ac54848c275b7_default-search-panel  f6fd7e4d3293f0634b9ac54848c275b7_hidden-default-search-panel"></div><div class="_3b4f5487091623b0b6852e2b46d2729e_search-recommend-panel  _3b4f5487091623b0b6852e2b46d2729e_hidden-search-recommend-panel"><button class="_4b65cdd64479a2fabe582b8c0789821e_search-no-content " type="button"><div>查看 “</div><div class="_4b65cdd64479a2fabe582b8c0789821e_search-word"></div><div>” 全部搜索结果</div></button></div></div></div></div><div class="_626567c051250ffe2f303af907d3fc83_global-nav-search-mobile-container"><a class="_626567c051250ffe2f303af907d3fc83_search-button" href="https://www.aliyun.com/search?from=h5-global-nav-search"><span role="img" class="_9a1d73bbcd1a80626a31035a12410804_icon _626567c051250ffe2f303af907d3fc83_search-button-icon"><svg width="1em" height="1em" viewBox="0 0 32 32" focusable="false" color="currentColor" fill="currentColor" class="" data-icon="search"><g fill-rule="evenodd" stroke-width="1"><path d="M14,4 C15.3558127,4 16.653362,4.26210485 17.8926477,4.78631455 C19.0891275,5.29241739 20.1485621,6.00666269 21.0709515,6.92905045 C21.9933389,7.8514363 22.7075837,8.91087023 23.213686,10.1073523 C23.7378953,11.3466396 24,12.6441889 24,14 C24,15.3558159 23.737896,16.6533658 23.2136879,17.8926497 C22.838225,18.7802852 22.3482024,19.5924969 21.7436199,20.3292847 L27.7071819,26.2928467 L26.2929688,27.7070599 L20.3294201,21.7435112 C19.592603,22.3481382 18.7803456,22.8381971 17.8926477,23.2136879 C16.6533607,23.737896 15.3558114,24 14,24 C12.6441879,24 11.3466384,23.737896 10.1073513,23.2136879 C8.91087246,22.7075844 7.85143844,21.9933383 6.92904925,21.0709496 C6.00666173,20.1485621 5.29241653,19.0891282 4.78631365,17.8926477 C4.26210455,16.6533613 4,15.3558121 4,14 C4,12.6441879 4.26210451,11.3466388 4.78631353,10.1073527 C5.29241594,8.91087262 6.00666118,7.85143844 6.92904925,6.92905021 C7.85143812,6.00666118 8.91087198,5.2924157 10.1073508,4.78631377 C11.3466366,4.26210459 12.6441863,4 14,4 Z M14,6 C11.7910172,6 9.90543811,6.78108788 8.34326267,8.34326363 C6.78108756,9.90543874 6,11.7910175 6,14 C6,16.2089825 6.78108756,18.0945616 8.34326267,19.6567373 C9.90543779,21.2189124 11.7910169,22 14,22 C16.2089844,22 18.0945635,21.2189128 19.6567373,19.6567383 C21.2189124,18.0945644 22,16.208985 22,14 C22,11.7910175 21.2189124,9.9054389 19.6567373,8.3432641 C18.0945622,6.78108803 16.2089831,6 14,6 Z"></path></g></svg></span></a></div></div></div><div class="_687dcfd9dc95efb27374014acbe88037_container"><button class="_687dcfd9dc95efb27374014acbe88037_item"><i class="ee52067fb65534cb06d3b35f654f5441_icon f0a824eb82dac2d4dfef226ae9529970-intl"></i></button><button class="_687dcfd9dc95efb27374014acbe88037_item"><i class="ee52067fb65534cb06d3b35f654f5441_icon f0a824eb82dac2d4dfef226ae9529970-contact _2b88897e79e906382c0bd9ee52b33c40_icon"></i></button><a class="_687dcfd9dc95efb27374014acbe88037_item _2d3ef330b3f8055912d355b9a255bfcf_btn global-nav-ai-assistant" href="https://www.aliyun.com/ai-assistant?displayMode=side" data-spm="dai_assistant" target="_blank"><div class="LogoStyled-aliyun-service-ai-assistant-8096__sc-1qhy9yu-0 cTwoqf"><div class="ai-assistant-brand-logo-icon"></div><div class="ai-assistant-brand-logo-tooltip "><div class="ai-assistant-logo-tooltip-content">AI 助理</div></div></div></a><a class="_687dcfd9dc95efb27374014acbe88037_item" href="https://beian.aliyun.com/" target="_blank" data-spm="d_beian">备案</a><a class="_687dcfd9dc95efb27374014acbe88037_item" href="https://home.console.aliyun.com/home/dashboard/ProductAndService" target="_blank" rel="nofollow" data-spm="d_console">控制台</a><span class="a0203b3108302f476b0541e6fc593008_loading"></span></div></header></div><div class="c97dc5fe8c8f69b0e60edf6a1f709489_mobile de5ef2fee09ebcb2b1dcaf0c982523bc_theme bdac01e7d42089a1161e0315c2a68512_reset"></div><div class="_18a32969382a277c44015217fbc5cb5a_box"></div></div></div></header>
+
+  <div id="app"><div class="MainLayout--mainContainer--T7VyS0L" id="docs-container"><div class="MainLayout--helpBodyHead--WaAdRhj"><div class="HelpBodyHead--helpBodyHeadBox--HYlv4D7 help-body-head" data-spm="help-sub-nav"><div class="HelpBodyHead--helpBodyHead--P3Pk2U4 help-body-head-content"><div class="HelpBodyHead--helpHeadDocName--gntFssw"><a href="/" data-spm="d_logo">官方文档</a></div><div class="TabList--tabListContainer--B9nztnf"></div><div class="HelpBodyHead--bodyHeadRight--vGcxD7X"><div class="HelpBodyHead--helpBodyBoxHeaderSearch--zU8Pkno"><div class="TopSearch--helpTopSearch--mfaux4L help-search" data-spm="d_help_search"><div class="TopSearch--helpTopSearchBtn--p4xi3nv help-search-btn"><span>输入文档关键字查找</span><i class="TopSearch--searchIcon--wjY7t7t help-iconfont help-icon-sousuoicon"></i></div></div></div></div></div></div></div><div class="PcLayout--docsContainer--DmnyXRs"><div class="PcLayout--mobileHelpBodyHead--q5cfaco"><div class="HelpBodyHead--mobileHeadBlank--CVMGJNc"></div></div><div class="PcLayout--aliyunAppLayout--w3f1Oh2"><nav class="aliyun-docs-menu" id="aliyun-docs-menu"><div class="Menu--helpMenuBox--rvBkNtL" style="width:300px"><div class="Menu--helpMenuInnerBox--ug8hNia aliyun-docs-toc-content" style="width:300px"><div class="Menu--helpMenuDrag--W0G51Pn help-menu-drag-box"></div><div class="Menu--helpMenu--NtCAOFi"><div class="Menu--helpMenuTop--sW3oCtd"><div class="help-menu-title">
+<a class="menu-title-text" href="/zh/tingwu/">工作学习 AI 助手通义听悟</a>
+</div><span class="Menu--iconBox--aiGPySP"><i class="help-iconfont help-icon-mulushu-shouqiicon Menu--iconFold--OWcQCnw"></i></span></div><div class="help-menu-subproduct"></div><div class="MenuSearch--collapseActionBar--RGvhX68"><div class="MenuSearch--searchContainer--HaaEp1U"><div class="MenuSearch--searchInputWrapper--TzFxFLF"><i class="help-iconfont help-icon-sousuoicon"></i><input placeholder="在目录中筛选" class="MenuSearch--searchInput--RHPwQ0V"></div></div></div><div class="help-menu-scroll-container Menu--menuContent--yZh5e8Y" data-spm="help-menu-undefined"><ul id="common-menu-container">
+ <li id="2618979" class="Menu--level1--UN3zYr3">
+<a href="/zh/tingwu/product-overview/">
+<i class="iconfont icon-close-arrow"></i>
+<span class="Menu--menuItemText--a6B4ZGH">产品概述</span>
+</a>
+</li>
+ <li id="2619237" class="Menu--level1--UN3zYr3">
+<a href="/zh/tingwu/getting-started-1">
+<i class="iconfont icon-close-arrow"></i>
+<span class="Menu--menuItemText--a6B4ZGH">快速入门</span>
+</a>
+</li>
+ <li id="2609539" class="Menu--level1--UN3zYr3">
+<a href="/zh/tingwu/development-reference-new-version-recommend/">
+<i class="iconfont icon-close-arrow"></i>
+<span class="Menu--menuItemText--a6B4ZGH">开发参考</span>
+</a>
+</li>
+ <li id="2867743" class="Menu--level1--UN3zYr3">
+<a href="/zh/tingwu/security-compliance/">
+<i class="iconfont icon-close-arrow"></i>
+<span class="Menu--menuItemText--a6B4ZGH">安全合规</span>
+</a>
+</li>
+ <li id="2609594" class="Menu--level1--UN3zYr3">
+<a href="/zh/tingwu/support/">
+<i class="iconfont icon-close-arrow"></i>
+<span class="Menu--menuItemText--a6B4ZGH">服务支持</span>
+</a>
+</li>
+</ul></div></div></div><div class="Menu--productList--SsQU8sf" style="display:none"><div class="ProductList--allProducts--Cpyf6bU"><div class="ProductList--allProductsHead--MeeTG5_"><div class="ProductList--allProductsSearchWrapper--OKEHZgy"><div class="ProductList--allProductsSearch--abkWbSn"><span class="ProductList--searchIcon--MP25K3d"><i class="help-iconfont help-icon-sousuoicon"></i></span><input placeholder="输入文档关键字查找"></div></div></div><div class="ProductList--allProductsBody--JZw6xAE"></div></div></div></div></nav><main class="aliyun-docs-view" id="aliyun-docs-view"><div class="ProductDetail--contentWrapper--iCunrBZ"><section class="aliyun-docs-content" style="height:auto"><header class="aliyun-docs-view-header"><div class="Header--topBar--LXfTLL5"><div class="BreadCrumb--breadcrumb--cbt4qaF"><div class="BreadCrumb--breadcrumb--cbt4qaF">
+<a href="/">首页</a>
+ <span class="BreadCrumb--arrow--FD7AzzB">
+<i class="iconfont icon-right-arrow"></i>
+</span>
+ <a href="/zh/tingwu/">工作学习 AI 助手通义听悟</a>
+ <span class="BreadCrumb--arrow--FD7AzzB">
+<i class="iconfont icon-right-arrow"></i>
+</span>
+ <a href="/zh/tingwu/development-reference-new-version-recommend/">开发参考</a>
+ <span class="BreadCrumb--arrow--FD7AzzB">
+<i class="iconfont icon-right-arrow"></i>
+</span>
+ <a href="/zh/tingwu/development-guide/">开发指南</a>
+ <span class="BreadCrumb--arrow--FD7AzzB">
+<i class="iconfont icon-right-arrow"></i>
+</span>
+ <a href="/zh/tingwu/real-time-meeting-transcription/">实时记录</a>
+ <span class="BreadCrumb--arrow--FD7AzzB">
+<i class="iconfont icon-right-arrow"></i>
+</span>
+ <span>接口与实现</span>
+</div></div></div><div class="Header--title--iTk2tUo"><h1>接口与实现</h1><div class="Header--actionBar--dvzFYrk"><div class="Header--left--x8TGxDL"><span class="Header--updateTime--YXGPhcZ">更新时间：</span></div><div class="Header--right--l4TSW1E"><div class="Header--linkButton--LpCRs1O"><div class="OuterUrl--outUrl--ZFzJIhk"><a href="https://tingwu.aliyun.com/" target="_blank" rel="noreferrer">产品详情</a></div></div><div class="Contact--contactButton--TBwTX5R"><span class="Contact--favoritesBtn--J8mRVBp" title="收藏本文档" data-spm-click="gostr=/aliyun;locaid=collect"><i class="help-iconfont help-icon-like"></i></span><a href="/my_favorites.html">我的收藏</a></div></div></div></div></header><div class="pc-markdown-container unionContainer" id="pc-markdown-container"><div class="markdown-body"><div lang="zh" class="icms-help-docs-content">
+<main id="main-2537830"><p id="427303a378rot" data-tag="shortdesc" class="shortdesc">本文主要介绍<b>实时记录</b>接入流程。</p><div data-tag="body" class="body"><section id="f7324d7078vnj" class="section"><h2 uuid="locdid51wyh5rtpre3e" id="abe5a7d378b12"><b>使用须知</b></h2><ul id="abe5a7d478u7g"><li id="abe5a7d5780kh"><p id="abe5a7d678di1">支持的输入格式：PCM（无压缩的<span class="help-letter-space"></span>PCM<span class="help-letter-space"></span>或<span class="help-letter-space"></span>WAV<span class="help-letter-space"></span>文件）、OPUS、SPEEX、MP3、AAC<span class="help-letter-space"></span>格式，16 bit<span class="help-letter-space"></span>采样位数、单声道（mono）。</p></li><li id="abe5a7d778vih"><p id="abe5a7d8782kn">支持的音频采样率：16000 Hz、8000Hz。</p></li><li id="abe5a7d978tqv"><p id="abe5a7da78jxh">支持的单次记录时长：24<span class="help-letter-space"></span>小时。</p></li><li id="abe5a7db787l8"><p id="abe5a7dc78qtm">支持设置返回结果：是否返回中间识别结果。</p></li><li id="abe5a7dd78niw"><p id="abe5a7de78syk">支持设置多语言识别：中文、英文、粤语、日语、韩语、中英自由说（长段中英混）。</p></li><li id="abe5a7df78loq"><p id="abe5a7e078r5u">支持设置开启翻译：支持中、英、日、韩、德、法、俄语间的双向互译，中英自由说翻译目标语言可为中文、英文或中文&amp;英文，支持会议中开启或关闭。</p></li><li id="abe5a7e1783i7"><p id="abe5a7e278q8s">支持设置同步音频转码：转码为比特率<span class="help-letter-space"></span>128kb/s<span class="help-letter-space"></span>的<span class="help-letter-space"></span>mp3<span class="help-letter-space"></span>格式音频，准实时写入的指定<span class="help-letter-space"></span>OSS。</p></li><li id="abe5a7e378uvv"><p id="abe5cee07881m">支持开启各项大模型能力：章节速览、大模型摘要总结（全文摘要、发言总结、问答回顾、思维导图）、要点提炼（关键词、待办事项、重点内容、场景识别）、服务质检、PPT<span class="help-letter-space"></span>提取及摘要、口语书面化、自定义<span class="help-letter-space"></span>prompt<span class="help-letter-space"></span>等。</p></li><li id="002765548afm6"><p id="3e095d4e97l75">对于<span class="help-letter-space"></span>API<span class="help-letter-space"></span>维度的<span class="help-letter-space"></span>QPS（Queries Per Second）限制如下：</p><ul id="e49bc0d7631dj"><li id="7dc4796df09jd"><p id="12be7f4e97ty6"><a href="https://help.aliyun.com/zh/tingwu/api-tingwu-2023-09-30-createtask" id="66c7aa6f24h25" title="" class="xref">CreateTask - 创建听悟任务</a>用户级别<span class="help-letter-space"></span>QPS<span class="help-letter-space"></span>限制为<span class="help-letter-space"></span>20。</p></li><li id="a0ba14e07cw2p"><p id="20fdca87aaen6"><a href="https://help.aliyun.com/zh/tingwu/api-tingwu-2023-09-30-gettaskinfo" id="18a948fbffkzx" title="" class="xref">GetTaskInfo - 查询任务状态和任务结果</a>用户级别<span class="help-letter-space"></span>QPS<span class="help-letter-space"></span>限制为<span class="help-letter-space"></span>100。</p></li></ul></li></ul></section><section id="fe651b4078lsj" class="section"><h2 uuid="locdid530uo57rzzszie" id="00eeac5078c7t"><b>交互流程</b></h2><p id="b4a7ef4078h3h"><img id="4afa3fa9aejpm" src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/8804292271/p830067.png" alt="image" placement="break" width="476" class="image break"></p></section><section id="9481570078qqb" class="section"><h2 uuid="lofns7fa416o51of51o" id="932793607846a">接入步骤</h2><p id="c25cd88178y2e" uuid="locdid53j7gg82alzk"><b>步骤<span class="help-letter-space"></span>1：</b>调用<span class="help-letter-space"></span>CreateTask<span class="help-letter-space"></span>接口<a href="#bf41578079kw5" id="b850d85079l2h" title="" class="xref">创建实时记录</a>，对应交互流程<span class="help-letter-space"></span>1-2。</p><div type="note" id="2656a1a078gj3" class="note note-note"><div class="note-icon-wrapper"><i class="icon-note note note"></i></div><div class="noteContentSpan"><strong>说明 </strong><p uuid="locdid54hhid46q7cmh" id="2817647078p9u">转写的管理粒度为记录，在完成记录创建后便可基于该记录体验会中<b>实时记录语音推流</b>转写。</p></div></div><p id="4ec5ee1078hys"><b>步骤<span class="help-letter-space"></span>2：</b><a href="https://help.aliyun.com/zh/tingwu/real-time-stream-push" id="a80746dcd1nxw" title="" class="xref">实时记录语音推流</a>，在完成记录创建后，可通过听悟提供的<a href="https://help.aliyun.com/zh/tingwu/real-time-stream-push" id="ee3c91fbd2jk4" title="" class="xref">交互流程与实现</a>进行会中实时的语音推流并接收识别结果和翻译结果。</p><p uuid="locdid55fu6zlltubt5" id="c25cd885788hg"><b>步骤<span class="help-letter-space"></span>3：</b>调用<span class="help-letter-space"></span>CreateTask<span class="help-letter-space"></span>接口<a href="#0de5549079i0x" id="f2a438c079wvb" title="" class="xref">结束实时记录</a>。</p><p uuid="locdid54pfko72vvzib" id="55431ba134cpq"><b>步骤<span class="help-letter-space"></span>4：</b>调用<span class="help-letter-space"></span>GetTaskInfo<span class="help-letter-space"></span>接口<a href="https://help.aliyun.com/zh/tingwu/get-results" id="b2cab269d9tmy" title="" class="xref">查询实时记录状态</a>。</p><div type="note" id="21c9033078has" class="note note-note"><div class="note-icon-wrapper"><i class="icon-note note note"></i></div><div class="noteContentSpan"><strong>说明 </strong><p uuid="locdid56om6tl4wo2ck" id="c25cd88778kvf">结束实时记录后进入智能纪要提取等<span class="help-letter-space"></span>AI<span class="help-letter-space"></span>能力阶段，此时可查询或者通过回调获取结果。</p></div></div></section><section id="9bc149207e156" class="section"><h3 uuid="lo8qv9lmd5878o3tu3s" id="53183b5179p5m"><b>前提条件</b></h3><ul id="f62610927dohl"><li id="f62610907dvc3"><p id="53183b52791z7"><a href="https://help.aliyun.com/zh/tingwu/getting-started-1#48b2f4707ehf9" id="9c3b34107etab" title="" class="xref">创建<span class="help-letter-space"></span>AccessKey</a></p></li><li id="674ace007e5mm"><p id="674aa6f07epe1"><a href="https://help.aliyun.com/zh/tingwu/getting-started-1#b602cfa07egrl" id="9c3b34117e1fr" title="" class="xref">创建项目</a></p></li><li id="030c38207ddai"><p id="030c11107d3up"><a href="https://help.aliyun.com/zh/tingwu/install-the-sdk" id="9c3b34127egyb" title="" class="xref">安装<span class="help-letter-space"></span>SDK</a></p></li></ul></section><section id="136e7dd081qj6" class="section"><h3 id="6cdc208181j3l"><b>AccessKey<span class="help-letter-space"></span>环境变量设置</b></h3><p id="6cdc2082811rk">需要使用您的<span class="help-letter-space"></span>AccessKey<span class="help-letter-space"></span>的<span class="help-letter-space"></span>Id<span class="help-letter-space"></span>和<span class="help-letter-space"></span>secret<span class="help-letter-space"></span>替换如下命令中的<span class="help-letter-space"></span>YOUR_ACCESS_KEY_ID<span class="help-letter-space"></span>和<span class="help-letter-space"></span>YOUR_ACCESS_KEY_SECRET。</p><pre id="63f49dd081t9z" data-tag="codeblock" outputclass="language-shell" code-type="xCode" class="pre codeblock language-shell"><code>export ALIBABA_CLOUD_ACCESS_KEY_ID=YOUR_ACCESS_KEY_ID &amp;&amp;
+export ALIBABA_CLOUD_ACCESS_KEY_SECRET=YOUR_ACCESS_KEY_SECRET</code></pre></section><section id="bf41578079kw5" class="section"><h3 id="dae3ed40791k9" uuid="lofns7fa416o51of51o"><b>创建实时记录</b></h3><p id="d3dbd8f079jxe">参考<span class="help-letter-space"></span><a href="https://help.aliyun.com/zh/tingwu/api-tingwu-2023-09-30-createtask" id="c23fa1308enk8" title="" class="xref">API<span class="help-letter-space"></span>详情</a>创建一个实时记录任务，常用参数如下，之后根据获取到的记录推流<span class="help-letter-space"></span>url，建立<span class="help-letter-space"></span>websocket<span class="help-letter-space"></span>链接，实时推流并进行识别。</p><section id="ee9a4d8078omr" class="section"><h4 id="0c04ec5078mbg" uuid="lofgww37juerlbp8ea"><b>请求参数</b></h4><table id="0c04ec5178zgy" tablewidth="100" tablecolswidth="17.13 37.3 9 6.68 29.890000000000015" autofit="true" class="table"><colgroup colwidth="0.86*" style="width:17.13%"></colgroup><colgroup colwidth="1.86*" style="width:37.30%"></colgroup><colgroup colwidth="0.45*" style="width:9.00%"></colgroup><colgroup colwidth="0.33*" style="width:6.68%"></colgroup><colgroup colwidth="1.49*" style="width:29.89%"></colgroup><tbody class="tbody"><tr id="0c04ec5278duq"><td id="0c04ec5378xgv" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lofh6jx5ackhq31sg8" id="bfb464a07979n"><b>名称</b></p></td><td id="0c04ec5578kv0" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lofh6jx5oja0h3ovvv" id="bfb464a179mvt"><b>参数</b></p></td><td id="0c04ec5778lon" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lofh6jx53yy3lbc5x19" id="bfb464a2799wg"><b>类型</b></p></td><td id="08c7cb30796so" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p id="08c7cb3179q4d"><b>默认值</b></p></td><td id="0c04ec5b78ehi" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lofh6jx5t8uyt94vxco" id="bfb464a479hqw"><b>说明</b></p></td></tr><tr id="0c04ec5d78nfl" style="height:68px"><td id="0c04ec5e78ttb" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh03pqrzohi64oj3" id="bfb464a579rwv">AppKey</p></td><td id="0c04ec6078eqs" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh03pqclgmq3649wp" id="bfb464a679fp8">AppKey</p></td><td id="0c05136078ttj" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh03pq2v6u0z9m6f7" id="bfb464a7792x6">string</p></td><td id="08c7f2407935i" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="08c7f24179sqo">-</p></td><td id="0c05136478r8n" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh03pq7r6h6gx56lv" id="bfb464a979qnq"><b>必选</b>，请设置为您在管控台上创建的<span class="help-letter-space"></span>appkey。</p></td></tr><tr id="0c051366782pg" style="height:86px"><td id="0c05136778sni" rowspan="6" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh0y0gev3dscuinfb" id="bfb464ab79x2x">基本请求信息</p><p uuid="loh78yf1bqsbzw7iirc" id="7b0e17c0791tx">（body.Input）</p></td><td id="0c05136a78o34" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofgyrclzcgj7ws8oxf" id="bfb48bb079zp8">Input.Format</p></td><td id="0c05136c78v6p" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofgyrcln0jxu9kk19f" id="bfb48bb179pry">string</p></td><td id="08c7f242791z1" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="08c7f24379n0s">-</p></td><td id="0c05137078gv1" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofgyrclsb6adxlix3g" id="bfb48bb379pep"><b>必选</b>，实时推送二进制音频流时对应的音频格式，支持<span class="help-letter-space"></span>pcm、opus、aac、speex、mp3。</p></td></tr><tr id="0c05137278a3q"><td id="0c05137578bu4" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh8ud815hyszhbapf" id="bfb48bb679qis">Input.SampleRate</p></td><td id="0c0513777825o" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh8ud8337khkyg43x" id="bfb48bb779gko">int</p></td><td id="08c7f24479e2x" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="08c7f24579ctf">-</p></td><td id="0c053a7178xl5" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh8ud8a2i4shioehc" id="bfb48bb979dgl"><b>必选</b>，实时推送二进制音频流时对应的采样率，支持<span class="help-letter-space"></span>16000<span class="help-letter-space"></span>和<span class="help-letter-space"></span>8000；一般来说大部分记录场景都是<span class="help-letter-space"></span>16000。</p></td></tr><tr id="0c053a73789l1"><td id="0c053a7678b0q" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh0tgjrif8nlt8uzi" id="bfb48bbc79clo">Input.SourceLanguage</p></td><td id="0c053a7878tu0" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh0tgjq6agwrvc9l" id="bfb48bbd79yb8">string</p></td><td id="08c7f24679f3n" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="08c7f24779b3c">-</p></td><td id="0c053a7c788hl" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="bfb48bbf79k22" uuid="lofh0tgj0rxnl516grxh"><b>必选</b>。<a href="#a9090b5a7ee0b" id="d53cde5dd4z6d" title="" class="xref">根据音视频中的语种类别来配置对应的参数。</a></p><ul id="e2b526ba454yp"><li id="adc7bea423gnx"><p id="cceb4026f8in1" uuid="m1ahoxo21cvuwisejom">若语音的语种是单语种，音视频文件对应的语言种类；支持<span class="help-letter-space"></span>cn（中文）、en（英文）、粤语（yue）、日语（ja）、韩语（ko）。</p></li><li id="e6531f8652jz3"><p id="4eb15d6d50n5g">若语音中的语种非单语种，涉及多个语种，可传入（multilingual），识别出对应语种的文字。结合<span class="help-letter-space"></span>Input.LanguageHints<span class="help-letter-space"></span>一起使用。</p></li></ul></td></tr><tr id="2d9b2f29dai68"><td id="9c39e84c801vq" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh0tgjrif8nlt8uzi" id="c76ee14ca5y8s">Input.LanguageHints</p></td><td id="5b1381d70ayos" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lm7huepga8uxo7uq2xd" id="2e95a405d32vk">list[string]</p></td><td id="bf68b2c776lb9" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="d17a7d761c4vo">null</p></td><td id="4953f29964hcn" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="d645b1ddf5x2x"><a href="#c49c0bf020mpj" id="906a16a483mk8" title="" class="xref">指定多语言模型时需语音识别出文字的语种列表。</a></p><p id="a6b2104b75vn4">当语音中涉及多个语种的语音均需识别出文字时，此参数用于限制语种类别，且仅当<span class="help-letter-space"></span>Input.SourceLanguage='multilingual'时配置生效。</p></td></tr><tr id="0c053a7f78abo"><td id="0c053a8278cl3" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh0t665o1byh51psx" id="bfb4b2c379sv0">Input.TaskKey</p></td><td id="0c053a8478r9b" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh0t663f8hg4ajhe" id="bfb4b2c479f9a">string</p></td><td id="08c8195079dje" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="08c8195179iqw">null</p></td><td id="0c053a887867a" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="loh4db7wlv6c4xqsbqs" id="38cb34c0795mi">用户自行设置的自定义标识。</p></td></tr><tr id="d80f33142a9fm"><td id="d769b0a383qt0" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="81610bf5c2a0p">Input.ProgressiveCallbacksEnabled</p></td><td id="d769b0a5832np" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="2c8607050fhxk">boolean</p></td><td id="d769d7b0831yz" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="db3b3821648bi">false</p></td><td id="d769d7b283cz0" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="85052e4d9d6hx">是否开启回调功能。</p><p id="1fbf18fe81ejz">当需要开启回调功能时，您需要在<a class="" href="https://nls-portal.console.aliyun.com/tingwu/projects" id="1774d7a0832f5">控制台</a>配置好回调类型和地址，并在创建任务时将该参数置为<span class="help-letter-space"></span>true。</p></td></tr><tr id="0c05618078bl8"><td id="0c05618178m65" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6dtm7hvfmefd" id="bfb4b2c779xym">转码</p><p uuid="lofh6jx6t0mgdlbmf1d" id="bfb4b2c8791u0">（Transcoding）</p></td><td id="0c056184782ns" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6th9iz9g7gsj" id="bfb4b2c979ffw">Parameters.Transcoding.TargetAudioFormat</p></td><td id="0c056186788o3" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6lc97lb9qx1" id="bfb4b2ca79ozt">string</p></td><td id="08c8195279owo" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="15bfcd1079u8r">null</p></td><td id="0c05618a78pf1" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="3bf4613079r36">当前只支持设置<span class="help-letter-space"></span>mp3<span class="help-letter-space"></span>转换，默认不开启。</p></td></tr><tr id="ce013e6085agd"><td id="ce013e618520j" rowspan="4" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="ce013e6285qpu"></p><p uuid="lofh6jx6obke9mr2se" id="bfb4b2cd79xt7">语音识别</p><p uuid="lofh6jx65jfvxzlov9t" id="bfb4b2ce79uec">（Transcription）</p></td><td id="ce013e6385q8p" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="ce013e6485c1g">Parameters.Transcription.OutputLevel</p></td><td id="ce013e658502v" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="ce01657085ky4">int</p></td><td id="ce01657185u98" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="ce01657285yea">1</p></td><td id="ce01657385n9q" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="f5d2e0b085emu">设置语音识别结果返回等级。</p><ul id="1a2b937185bi7"><li id="31486f7085qcs"><p id="31484860854hh">1：识别出完整句子时返回识别结果</p></li><li id="32970f8085e3b"><p id="3296c1608548z">2：识别出中间结果及完整句子时返回识别结果</p></li></ul><p id="683214a087s5w">仅在实时记录场景下按需设置，离线转写场景无须设置。</p></td></tr><tr id="0c05618e7804o" style="height:42px"><td id="0c05619278a6q" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6ya7aerog6y" id="bfb4b2cf79i7u">Parameters.Transcription.DiarizationEnabled</p></td><td id="0c05619478nax" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx61rvqq1ql9et" id="bfb4d9d079u0r">boolean</p></td><td id="08c8195479at7" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="168a972079k4w">false</p></td><td id="0c05889278dw9" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="4bbf593079if5" uuid="loh4dzr7v9z7qhw9729">是否在语音识别过程中开启说话人分离功能。</p></td></tr><tr id="0c05889478meo"><td id="0c0588977807u" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6dj0snrxlo" id="bfb4d9d579riw">Parameters.Transcription.Diarization.SpeakerCount</p></td><td id="0c058899780vv" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6ed0do06pa5l" id="bfb4d9d679gpo">int</p></td><td id="08c8195679zo8" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="1740eed079xie">-</p></td><td id="0c05889d78fyg" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="bfb4d9d879a42">开启说话人分离功能时，设置的说话人数。</p><ul id="29d3ddb285t72"><li id="29d3ddb085ezp"><p id="bfb4d9d979ijq">不设置：不使用说话人角色区分</p></li><li id="2bd1a98085z3r"><p id="2bd1827085edo">0：说话人角色区分结果为不定人数 </p></li><li id="2d21f7408580k"><p id="2d21a920856l9">2：说话人角色区分结果为<span class="help-letter-space"></span>2<span class="help-letter-space"></span>人</p></li></ul><p id="b8ffb1ced0vuq">当有此参数时，使用此参数辅助指定的人数。最终分轨人数以真实分类人数为准。</p></td></tr><tr id="fb36b7fda6dz8"><td id="5ee7b10a66cgk" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="ee92434ac7wbe">Parameters.Transcription.PhraseId</p></td><td id="4c813dc87ci84" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="40410e7d9cy55">String</p></td><td id="e8ff4ba02bsik" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="14d7c99d0fxpt">-</p></td><td id="893985d05054d" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="e5d14a0238d7m">热词词表<span class="help-letter-space"></span>ID。</p></td></tr><tr id="0c0588a378m3i" style="height:42px"><td id="0c0588a478idw" rowspan="3" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="bfb4d9da79d11" uuid="lofh6jx6ocaph2fo0q"></p><p uuid="lofh6jx64i3co4trg3d" id="bfb4d9db794pf">翻译</p><p uuid="lofh6jx6vwans8lcsgo" id="bfb4d9dc797vn">(Translation)</p></td><td id="0c05afa078jfh" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx617gkcobxgmj" id="bfb4d9dd79pz0">Parameters.TranslationEnabled</p></td><td id="0c05afa278juk" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6n7ui81xja9" id="bfb4d9de790z6">boolean</p></td><td id="08c8195879ei5" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="17a1ac70793j5">false</p></td><td id="0c05afa678ghj" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="bfb500e179ies" uuid="lofh6jx6s7893fuyuii">是否开启翻译功能。</p></td></tr><tr id="432dea3087ifh"><td id="432e114087ji8" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="43d37900873qr">Parameters.Translation.OutputLevel</p></td><td id="432e114287hrg" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="45c69670877gc">int</p></td><td id="432e114487fh4" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="432e114587nmm">1</p></td><td id="432e114687esy" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="570c6ea087r45">设置实时语言翻译识别结果返回等级。</p><ul id="5bfc9f7187q5t"><li id="5bfc786087g69"><p id="5968fc4087qam">1：识别出完整句子时返回识别结果；</p></li><li id="5eb752a0879xj"><p id="5eb7048087kgr">2：识别出中间结果及完整句子时返回识别结果</p></li></ul><p id="608c87d08728n">仅在实时记录场景下按需设置，离线转写场景无须设置。</p></td></tr><tr id="0c05afa878lzb"><td id="0c05afab78ysg" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6xsebrdsscwh" id="bfb500e479o0k">Parameters.Translation.TargetLanguages</p></td><td id="0c05afad78kky" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6ci4bkpbdc5f" id="bfb500e579vrg">list[string]</p></td><td id="08c8195a791s1" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="187b1c80798zm">-</p></td><td id="0c05afb178dfk" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="bfb500e779mcn" uuid="lofh6jx6hxh7a97kly9">如果开启翻译，需要设置目标翻译语言。支持设置 中文（cn）、英语（en）、日语（ja）、韩语（ko）、德语（de）、法语（fr）、俄语（ru）。</p></td></tr><tr id="0c05afb478x45"><td id="0c05afb578nke" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6as59tndur39" id="bfb500e979km1">章节速览</p></td><td id="0c05afb778l2b" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx64ddtsbwy7gy" id="bfb500ea79yuw">Parameters.AutoChaptersEnabled</p></td><td id="0c05afb9780vq" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx65t0r5d5cnb5" id="bfb500eb79p5z">boolean</p></td><td id="08c84060790ya" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="195269b079h41">false</p></td><td id="0c05d6b378vyg" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6pijheilehl" id="bfb500ed792y8">章节速览功能，包括：议程标题和议程摘要</p></td></tr><tr id="0c05d6b5784sl"><td id="0c05d6b678ow1" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx60r5stkihpus9" id="bfb500ee79j6j">要点提炼</p></td><td id="0c05d6b878g4m" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6kgxdjy1sdqd" id="bfb500ef79953">Parameters.MeetingAssistanceEnabled</p></td><td id="0c05d6ba78xdz" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx64oxd20oozo" id="bfb527f079cwu">boolean</p></td><td id="08c840627921a" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="19a96350793jg">false</p></td><td id="0c05d6be78i2d" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6iqhrlbvdk4" id="bfb527f279fef">关键词、待办事项、重点内容、场景识别</p></td></tr><tr id="0c05d6c078cqx" style="height:42px"><td id="0c05d6c178yjl" rowspan="2" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="bfb527f379cnt" uuid="lofh6jx6id9qxt2yitb">摘要总结</p></td><td id="0c05d6c3785yf" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx694mloc4grip" id="bfb527f479k5e">Parameters.SummarizationEnabled</p></td><td id="0c05d6c5787tn" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx666h32ncyjec" id="bfb527f579frm">boolean</p></td><td id="08c8406479n0v" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="19fb05c079s3u">false</p></td><td id="0c05d6c978qk0" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6t9rp71kz6ze" id="bfb527f779nqo">是否开启摘要总结功能。</p></td></tr><tr id="0c05fdc178val" style="height:155px"><td id="0c05fdc478nqw" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6t42fxao3d3l" id="bfb527fa794q7">Parameters.Summarization.Types</p></td><td id="0c05fdc678psx" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx655uskv21in3" id="bfb527fb7967g">list[string]</p></td><td id="08c8406679d7k" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="1a9f5c1079qqv">-</p></td><td id="0c05fdca78n5z" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofh6jx6hitv5k5ysp8" id="bfb527fd793jk">如果开启摘要功能，需要设置摘要类型。支持设置<span class="help-letter-space"></span>1<span class="help-letter-space"></span>个或多个。</p><ul id="0c05fdcc78lrj"><li id="0c05fdcd78oj9"><p id="bfb527fe798ed">Paragraph（全文摘要）</p></li><li id="0c05fdcf78972"><p id="bfb54f0079xa9">Conversational（发言总结）</p></li><li id="0c05fdd178uze"><p id="bfb54f017916n">QuestionsAnswering（问答回顾）</p></li><li id="381d1d9e70g43"><p id="ceb8aef877nnt">MindMap（思维导图）</p></li></ul></td></tr><tr id="af6de14024bd6"><td id="831101988btna" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="16e9e2fcadfdk">口语书面化</p></td><td id="f5d8a54d30cbm" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="54ee391b3fy8h">Parameters.TextPolishEnabled</p></td><td id="ef4b8289e3h5j" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="b9718b3f59mqr" uuid="lm7huepgzbjm57xbyk">boolean</p></td><td id="44e5fa8e7592o" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="fe0aa49d899hx">false</p></td><td id="4de69f340bxg5" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="75d1428824dpp">是否开启口语书面化功能。</p></td></tr><tr id="ce1cd1987f58b"><td id="e3fa657282vru" rowspan="2" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="58aed9285djsa">服务质检</p></td><td id="b527e4c499mzm" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="8fba3a4b32bdg">Parameters.ServiceInspectionEnabled</p></td><td id="0539c7e76crhr" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lm7huepgzbjm57xbyk" id="38366d77671tp">boolean</p></td><td id="03a3f45480pqf" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="e802f955c5gi1">false</p></td><td id="ad7f7427bavf1" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="253a90d171jjj">是否开启服务质检功能。</p></td></tr><tr id="23f9834e457wo"><td id="f411814d0dxrp" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="26444270cccr3">Parameters.ServiceInspection</p></td><td id="6e01923c29ypq" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="3f7726a30253i">object</p></td><td id="f4eecff501hiw" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="20900904dauot">-</p></td><td id="d4ca734952wqo" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="34c6d28308g5q">参考<a href="https://help.aliyun.com/zh/tingwu/service-inspection#823d1c4278rt5" id="79c45cb9e4005" title="" class="xref">服务质检参数对象</a>对服务过程中的对话进行质量检测，支持自定义多个质检维度，辅助客户提升服务水平。</p></td></tr><tr id="1464429a4cvq6"><td id="78d71751bcxce" rowspan="2" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="a3d358b7a0lq8">自定义<span class="help-letter-space"></span>Prompt</p></td><td id="e211b94c1eidb" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="3fa7a99189a1t">Parameters.CustomPromptEnabled</p></td><td id="88a30829a8s3q" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lm7huepgzbjm57xbyk" id="32e1bf74933nw">boolean</p></td><td id="9efb330490mlb" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="e5f0a015ddl56">false</p></td><td id="8212718b2e90t" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="1ab447b9f5y84">是否开启自定义<span class="help-letter-space"></span>prompt<span class="help-letter-space"></span>功能。</p></td></tr><tr id="30a3b46d0czbt"><td id="bf8cb4c319dpa" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="d59b041baf3i0">Parameters.CustomPrompt</p></td><td id="d924019970so0" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="602fbb7fe6ly0">object</p></td><td id="bb205f0311rxv" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="ea65cbd9c735w">-</p></td><td id="2703906c7c0cq" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="c62454c3b0da8">参考<a href="https://help.aliyun.com/zh/tingwu/custom-prompt#94461d6b78d8h" id="8c14e111545kh" title="" class="xref">自定义<span class="help-letter-space"></span>prompt<span class="help-letter-space"></span>参数对象</a>由客户自主定义大模型提示词，引导大模型完成客户定义的各类任务。</p></td></tr></tbody></table></section><section id="fb587ab078l0p" class="section"><h4 uuid="lob944gg5q3uc7lfu2m" id="902d3af0783zs">代码示例</h4><p id="cda881e083uza"></p><div outputclass="tabbed-codeblock" data-tag="fig" id="cf545d2083p5r" class="tabbed-codeblock-box"><div class="tab-box"></div><input type="radio" name="check-cf545d2083p5r" id="cf545d2083p5r-java-tab" checked=""><label for="cf545d2083p5r-java-tab">Java</label><div class="codeblock-item"><pre id="cf54ab40830ah" data-tag="codeblock" outputclass="language-java" code-type="xCode" class="pre codeblock language-java"><code>package com.alibaba.tingwu.client.demo.realtimemeeting;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyuncs.CommonRequest;
+import com.aliyuncs.CommonResponse;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.http.FormatType;
+import com.aliyuncs.http.MethodType;
+import com.aliyuncs.http.ProtocolType;
+import com.aliyuncs.profile.DefaultProfile;
+import org.junit.Test;
+
+/**
+ * @author tingwu2023
+ * @desc 演示了通过OpenAPI 创建实时记录的调用方式。
+ */
+public class SubmitRealtimeMeetingTaskTest {
+
+    @Test
+    public void testSummitRealtimeMeetingTask() throws ClientException {
+        CommonRequest request = createCommonRequest("tingwu.cn-beijing.aliyuncs.com", "2023-09-30", ProtocolType.HTTPS, MethodType.PUT, "/openapi/tingwu/v2/tasks");
+        request.putQueryParameter("type", "realtime");
+
+        JSONObject root = new JSONObject();
+        root.put("AppKey", "输入您在听悟管控台创建的Appkey");
+
+        JSONObject input = new JSONObject();
+        input.fluentPut("SourceLanguage", "cn").fluentPut("Format", "pcm").fluentPut("SampleRate", 16000).fluentPut("TaskKey", "task" + System.currentTimeMillis());
+        root.put("Input", input);
+
+        JSONObject parameters = initRequestParameters();
+        root.put("Parameters", parameters);
+
+        System.out.println(root.toJSONString());
+        request.setHttpContent(root.toJSONString().getBytes(), "utf-8", FormatType.JSON);
+
+        // TODO 请通过环境变量设置您的AccessKeyId、AccessKeySecret
+        DefaultProfile profile = DefaultProfile.getProfile("cn-beijing", System.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID"), System.getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET"));
+        IAcsClient client = new DefaultAcsClient(profile);
+        CommonResponse response = client.getCommonResponse(request);
+        System.out.println(response.getData());
+        JSONObject body = JSONObject.parseObject(response.getData());
+        JSONObject data = (JSONObject) body.get("Data");
+        System.out.println("TaskId = " + data.getString("TaskId"));
+        System.out.println("MeetingJoinUrl = " + data.getString("MeetingJoinUrl"));
+    }
+
+    private static JSONObject initRequestParameters() {
+        JSONObject parameters = new JSONObject();
+
+        // 音视频转换： 可选
+        JSONObject transcoding = new JSONObject();
+        //transcoding.put("TargetAudioFormat", "mp3");
+        //transcoding.put("SpectrumEnabled", false);
+        parameters.put("Transcoding", transcoding);
+
+        // 语音识别
+        JSONObject transcription = new JSONObject();
+        transcription.put("DiarizationEnabled", true);
+        JSONObject speakerCount = new JSONObject();
+        speakerCount.put("SpeakerCount", 2);
+        transcription.put("Diarization", speakerCount);
+        parameters.put("Transcription", transcription);
+
+        // 翻译： 可选
+        JSONObject translation = new JSONObject();
+        JSONArray langArry = new JSONArray();
+        langArry.add("en");
+        translation.put("TargetLanguages", langArry);
+        parameters.put("Translation", translation);
+        parameters.put("TranslationEnabled", true);
+
+        // 章节速览： 可选
+        parameters.put("AutoChaptersEnabled", false);
+
+        // 智能纪要： 可选
+        parameters.put("MeetingAssistanceEnabled", false);
+
+        // 摘要相关： 可选
+        parameters.put("SummarizationEnabled", true);
+        JSONObject summarization = new JSONObject();
+        JSONArray types = new JSONArray().fluentAdd("Paragraph").fluentAdd("Conversational").fluentAdd("QuestionsAnswering").fluentAdd("MindMap");
+        summarization.put("Types", types);
+        parameters.put("Summarization", summarization);
+
+        // PPT抽取： 不可选，实时记录没有视频信息，无法进行ppt功能
+        // parameters.put("PptExtractionEnabled", false);
+      	
+	// 口语书面化：可选
+        parameters.put("TextPolishEnabled", false);
+
+        return parameters;
+    }
+    public static CommonRequest createCommonRequest(String domain, String version, ProtocolType protocolType, MethodType method, String uri) {
+        CommonRequest request = new CommonRequest();
+        request.setSysDomain(domain);
+        request.setSysVersion(version);
+        request.setSysProtocol(protocolType);
+        request.setSysMethod(method);
+        request.setSysUriPattern(uri);
+        request.setHttpContentType(FormatType.JSON);
+        return request;
+    }
+}</code></pre></div><input type="radio" name="check-cf545d2083p5r" id="cf545d2083p5r-go-tab"><label for="cf545d2083p5r-go-tab">Go</label><div class="codeblock-item"><pre id="dccd27c0833ok" data-tag="codeblock" outputclass="language-go" code-type="xCode" class="pre codeblock language-go"><code>package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+	"time"
+
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
+)
+
+type TranscodeingParam struct {
+	TargetAudioFormat     string `json:"TargetAudioFormat,omitempty"`
+	TargetVideoFormat     string `json:"TargetVideoFormat,omitempty"`
+	VideoThumbnailEnabled bool   `json:"VideoThumbnailEnabled,omitempty"`
+	SpectrumEnabled       bool   `json:"SpectrumEnabled,omitempty"`
+}
+
+type DiarizationParam struct {
+	SpeakerCount int `json:"SpeakerCount,omitempty"`
+}
+
+type TranscriptionParam struct {
+	AudioEventDetectionEnabled bool              `json:"AudioEventDetectionEnabled,omitempty"`
+	DiarizationEnabled         bool              `json:"DiarizationEnabled,omitempty"`
+	Diarization                *DiarizationParam `json:"Diarization,omitempty"`
+}
+
+type TranslationParam struct {
+	TargetLanguages []string `json:"TargetLanguages,omitempty"`
+}
+
+type SummarizationParam struct {
+	Types []string `json:"Types,omitempty"`
+}
+
+type ExtraParamerters struct {
+	Transcoding              *TranscodeingParam  `json:"Transcoding,omitempty"`
+	Transcription            *TranscriptionParam `json:"Transcription,omitempty"`
+	TranslationEnabled       bool                `json:"TranslationEnabled,omitempty"`
+	Translation              *TranslationParam   `json:"Translation,omitempty"`
+	AutoChaptersEnabled      bool                `json:"AutoChaptersEnabled,omitempty"`
+	MeetingAssistanceEnabled bool                `json:"MeetingAssistanceEnabled,omitempty"`
+	SummarizationEnabled     bool                `json:"SummarizationEnabled,omitempty"`
+	Summarization            *SummarizationParam `json:"Summarization,omitempty"`
+  TextPolishEnabled        bool                `json:"TextPolishEnabled,omitempty"`
+}
+
+type InputParam struct {
+	SourceLanguage string `json:"SourceLanguage"`
+	FileUrl        string `json:"FileUrl,omitempty"`
+	TaskKey        string `json:"TaskKey,omitempty"`
+	Format         string `json:"Format,omitempty"`
+	SampleRate     int    `json:"SampleRate,omitempty"`
+}
+
+type TaskBodyParam struct {
+	Appkey      string            `json:"AppKey"`
+	Input       InputParam        `json:"Input"`
+	Paramerters *ExtraParamerters `json:"Parameters,omitempty"`
+}
+
+type CreateTaskResponse struct {
+	RequestId string `json:"RequestId"`
+	Code      string `json:"Code"`
+	Message   string `json:"Message"`
+	Data      struct {
+		TaskId         string `json:"TaskId"`
+		TaskKey        string `json:"TaskKey"`
+		MeetingJoinUrl string `json:"MeetingJoinUrl,omitempty"`
+	} `json:"Data"`
+}
+
+func init_request_param() *ExtraParamerters {
+	param := new(ExtraParamerters)
+	param.Transcoding = new(TranscodeingParam)
+
+	transcription := new(TranscriptionParam)
+	transcription.Diarization = new(DiarizationParam)
+	transcription.Diarization.SpeakerCount = 2
+	transcription.DiarizationEnabled = true
+	param.Transcription = transcription
+
+	translation := new(TranslationParam)
+	translation.TargetLanguages = []string{"en"}
+	param.Translation = translation
+	param.TranslationEnabled = true
+	param.AutoChaptersEnabled = false
+	param.MeetingAssistanceEnabled = false
+	param.SummarizationEnabled = true
+
+	summarization := new(SummarizationParam)
+	summarization.Types = []string{"Paragraph", "Conversational", "QuestionsAnswering", "MindMap"}
+	param.Summarization = summarization
+  param.TextPolishEnabled = false
+
+	return param
+}
+
+func test_submit_realtime_meeting_task() string {
+	akkey := os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_ID")
+	aksecret := os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET")
+	client, err := sdk.NewClientWithAccessKey("cn-beijing", akkey, aksecret)
+	if err != nil {
+		log.Default().Fatalln(err)
+		return ""
+	}
+
+	request := requests.NewCommonRequest()
+	request.Method = "PUT"
+	request.Domain = "tingwu.cn-beijing.aliyuncs.com"
+	request.Version = "2023-09-30"
+	request.SetContentType("application/json")
+	request.PathPattern = "/openapi/tingwu/v2/tasks"
+	request.QueryParams["type"] = "realtime"
+
+	param := new(TaskBodyParam)
+	param.Appkey = "输入您在听悟管控台创建的Appkey"
+	param.Input.SourceLanguage = "cn"
+	param.Input.Format = "pcm"
+	param.Input.SampleRate = 16000
+	param.Input.TaskKey = "task_" + fmt.Sprint(time.Now().Unix())
+	param.Paramerters = init_request_param()
+
+	b, _ := json.Marshal(param)
+	log.Default().Print("request body:\n", string(b))
+	request.SetContent(b)
+	request.SetScheme("https")
+
+	response, err := client.ProcessCommonRequest(request)
+	if err != nil {
+		log.Default().Fatalln(err)
+		return ""
+	}
+
+	log.Default().Print("response body:\n", string(response.GetHttpContentBytes()))
+
+	var resp CreateTaskResponse
+	err = json.Unmarshal(response.GetHttpContentBytes(), &amp;resp)
+	if err != nil {
+		log.Default().Fatalln(err)
+		return ""
+	}
+
+	log.Default().Println("TaskId:", resp.Data.TaskId)
+	log.Default().Println("MeetingJoinUrl:", resp.Data.MeetingJoinUrl)
+
+	return resp.Data.MeetingJoinUrl
+}
+
+func main() {
+	test_submit_realtime_meeting_task()
+}
+</code></pre></div><input type="radio" name="check-cf545d2083p5r" id="cf545d2083p5r-c++-tab"><label for="cf545d2083p5r-c++-tab">C++</label><div class="codeblock-item"><pre id="dec0d78435iwa" data-tag="codeblock" outputclass="language-c++" code-type="xCode" class="pre codeblock language-c++"><code>#include &lt;cstdlib&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;alibabacloud/core/AlibabaCloud.h&gt;
+#include &lt;alibabacloud/core/CommonRequest.h&gt;
+#include &lt;alibabacloud/core/CommonClient.h&gt;
+#include &lt;alibabacloud/core/CommonResponse.h&gt;
+#include "jsoncpp/json.h"
+/**
+ * @author tingwu2023
+ * @desc 演示了通过OpenAPI 创建实时转写记录 的调用方式。
+ */
+int main( int argc, char** argv ) {
+    AlibabaCloud::InitializeSdk();
+    AlibabaCloud::ClientConfiguration configuration( "cn-beijing" );
+    // specify timeout when create client.
+    configuration.setConnectTimeout(1500);
+    configuration.setReadTimeout(4000);
+    // Please ensure that the environment variables ALIBABA_CLOUD_ACCESS_KEY_ID and ALIBABA_CLOUD_ACCESS_KEY_SECRET are set.
+    AlibabaCloud::Credentials credential( getenv("ALIBABA_CLOUD_ACCESS_KEY_ID"), getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET") );
+    AlibabaCloud::CommonClient client( credential, configuration );
+    AlibabaCloud::CommonRequest request(AlibabaCloud::CommonRequest::RequestPattern::RoaPattern);
+    request.setHttpMethod(AlibabaCloud::HttpRequest::Method::Put);
+    request.setDomain("tingwu.cn-beijing.aliyuncs.com");
+    request.setVersion("2023-09-30");
+    request.setResourcePath("/openapi/tingwu/v2/tasks");
+    request.setQueryParameter("type", "realtime");
+    request.setHeaderParameter("Content-Type", "application/json");
+    
+    Json::Value root;
+    root["Appkey"] = "输入您在听悟管控台创建的Appkey";
+    root["Appkey"] = "tEA3SDcxTKire0ut";
+
+    Json::Value input;
+    input["SourceLanguage"] = "cn";
+    input["Format"]         = "pcm";
+    input["SampleRate"]     = "16000";
+    input["SourceLanguage"] = "cn";
+    input["TaskKey"] = "输入您为该次请求自定义的标识";
+    root["Input"] = input;
+
+    Json::Value parameters;
+    // 音视频文件转换 通常来说，不需要设置此参数
+    // Json::Value transcoding;
+    // transcoding["TargetAudioFormat"] = "mp3";
+    // parameters["Transcoding"] = transcoding;
+
+    // 语音转写: 以下是开启说话人分离功能(角色分离)，若您不需要，则无须设置
+    Json::Value transcription;
+    transcription["DiarizationEnabled"] = true;
+    Json::Value speakerCount;
+    speakerCount["SpeakerCount"] = 2;
+    transcription["Diarization"] = speakerCount;
+    parameters["Transcription"] = transcription;
+
+    // 翻译： 可选
+    Json::Value translation;
+    Json::Value langauges;
+    langauges.append("en");
+    translation["TargetLanguages"] = langauges;
+    parameters["Translation"] = translation;
+    parameters["TranslationEnabled"] = true;
+
+    // 章节速览： 可选
+    parameters["AutoChaptersEnabled"] = true;
+
+    // 智能纪要： 可选，包括： 待办、关键信息(关键词、重点内容、场景识别)
+    parameters["MeetingAssistanceEnabled"] = true;
+    Json::Value meetingAssistance;
+    Json::Value meetingAssistanceTypeList;
+    meetingAssistanceTypeList.append("Actions");
+    meetingAssistanceTypeList.append("KeyInformation");
+    meetingAssistance["Types"] = meetingAssistanceTypeList;
+    parameters["MeetingAssistanceTypeList"] = meetingAssistanceTypeList;
+
+    // 摘要相关： 可选， 以下设置将3种摘要类型都启用了，您可以按需增删
+    parameters["SummarizationEnabled"] = true;
+    Json::Value summarization;
+    Json::Value summarizationTypeList;
+    summarizationTypeList.append("Paragraph");
+    summarizationTypeList.append("Conversational");
+    summarizationTypeList.append("QuestionsAnswering");
+    summarizationTypeList.append("MindMap");
+    summarization["Types"] = summarizationTypeList;
+    parameters["Summarization"] = summarization;
+  	
+    // 口语书面化： 可选
+    parameters["TextPolishEnabled"] = true;
+
+    root["Parameters"] = parameters;
+
+    Json::FastWriter writer;
+    std::string body = writer.write(root);
+    printf("input json: [%s]\n", body.c_str());
+    request.setContent(body.c_str(), body.size());
+
+    auto response = client.commonResponse(request);
+    if (response.isSuccess()) {
+        printf("request success.\n");
+        printf("result: %s\n", response.result().payload().c_str());
+    } else {
+        printf("error: %s\n", response.error().errorMessage().c_str());
+        printf("request id: %s\n", response.error().requestId().c_str());
+    }
+      
+    AlibabaCloud::ShutdownSdk();
+    return 0;
+} </code></pre></div><input type="radio" name="check-cf545d2083p5r" id="cf545d2083p5r-python-tab"><label for="cf545d2083p5r-python-tab">Python</label><div class="codeblock-item"><pre code-type="xCode" id="5427a02ae64td" data-tag="codeblock" outputclass="language-python" class="pre codeblock language-python"><code>#!/usr/bin/env python
+#coding=utf-8
+
+import os
+import json
+import datetime
+from aliyunsdkcore.client import AcsClient
+from aliyunsdkcore.request import CommonRequest
+from aliyunsdkcore.auth.credentials import AccessKeyCredential
+
+def create_common_request(domain, version, protocolType, method, uri):
+    request = CommonRequest()
+    request.set_accept_format('json')
+    request.set_domain(domain)
+    request.set_version(version)
+    request.set_protocol_type(protocolType)
+    request.set_method(method)
+    request.set_uri_pattern(uri)
+    request.add_header('Content-Type', 'application/json')
+    return request
+
+def init_parameters():
+    body = dict()
+    body['AppKey'] = '输入您在听悟管控台创建的Appkey'
+
+    # 基本请求参数
+    input = dict()
+
+    #输入语音流格式和采样率和以下参数设置保持一致
+    input['Format'] = 'pcm'
+    input['SampleRate'] = 16000
+    input['SourceLanguage'] = 'cn'
+    input['TaskKey'] = 'task' + datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    input['ProgressiveCallbacksEnabled'] = False
+    body['Input'] = input
+
+    # AI相关参数，按需设置即可
+    parameters = dict()
+
+    # 音视频转换相关
+    transcoding = dict()
+    # 将原音视频文件转成mp3文件，用以后续浏览器播放
+    # transcoding['TargetAudioFormat'] = 'mp3'
+    # transcoding['SpectrumEnabled'] = False
+    # parameters['Transcoding'] = transcoding
+
+    # 语音识别控制相关
+    transcription = dict()
+    # 角色分离 ： 可选
+    transcription['DiarizationEnabled'] = True
+    diarization = dict()
+    diarization['SpeakerCount'] = 2
+    transcription['Diarization'] = diarization
+    parameters['Transcription'] = transcription
+
+    # 文本翻译控制相关 ： 可选
+    parameters['TranslationEnabled'] = True
+    translation = dict()
+    translation['TargetLanguages'] = ['en'] # 假设翻译成英文
+    parameters['Translation'] = translation
+
+    # 章节速览相关 ： 可选，包括： 标题、议程摘要
+    parameters['AutoChaptersEnabled'] = True
+
+    # 智能纪要相关 ： 可选，包括： 待办、关键信息(关键词、重点内容、场景识别)
+    parameters['MeetingAssistanceEnabled'] = True
+    meetingAssistance = dict()
+    meetingAssistance['Types'] = ['Actions', 'KeyInformation']
+    parameters['MeetingAssistance'] = meetingAssistance
+
+    # 摘要控制相关 ： 可选，包括： 全文摘要、发言人总结摘要、问答摘要(问答回顾)
+    parameters['SummarizationEnabled'] = True
+    summarization = dict()
+    summarization['Types'] = ['Paragraph', 'Conversational', 'QuestionsAnswering', 'MindMap']
+    parameters['Summarization'] = summarization
+
+    # ppt抽取和ppt总结 ： 可选
+    parameters['PptExtractionEnabled'] = True
+    
+    # 口语书面化 ： 可选
+    parameters['TextPolishEnabled'] = True
+
+    body['Parameters'] = parameters
+    return body
+
+body = init_parameters()
+print(body)
+
+# TODO  请通过环境变量设置您的 AccessKeyId 和 AccessKeySecret
+credentials = AccessKeyCredential(os.environ['ALIBABA_CLOUD_ACCESS_KEY_ID'], os.environ['ALIBABA_CLOUD_ACCESS_KEY_SECRET'])
+client = AcsClient(region_id='cn-beijing', credential=credentials)
+
+request = create_common_request('tingwu.cn-beijing.aliyuncs.com', '2023-09-30', 'https', 'PUT', '/openapi/tingwu/v2/tasks')
+request.add_query_param('type', 'realtime')
+
+request.set_content(json.dumps(body).encode('utf-8'))
+response = client.do_action_with_exception(request)
+print("response: \n" + json.dumps(json.loads(response), indent=4, ensure_ascii=False))
+</code></pre></div></div></section><section id="0a0ef57078q40" class="section"><h4 id="0c05fdd5783fk" uuid="lob944gg5q3uc7lfu2m"><b>示例输出</b></h4><pre id="xqlaqt" title="" uuid="lofd4u9pgxvnp9v7hnk" data-tag="codeblock" outputclass="language-json" code-type="xCode" class="pre codeblock language-json"><code>{
+    "Code":"0",
+    "Data":{
+        "TaskId":"3190978427bb43z09c01dfff********",
+        "TaskKey":"task16988********",
+        "MeetingJoinUrl":"wss://tingwu-realtime-cn-beijing.aliyuncs.com/api/ws/v1?mc=g9ySw5kiwXM4K7tBnIajKq6Fh9G1aUokzkptBIFixj7e7zv6c8AKxUDTW2Oz8AFFONWXtTQedh-NpKZUffqIYdW7yAlivqlo9B0TdeM88fzgWaYk2Ifg********"
+    },
+    "Message":"success",
+    "RequestId":"6582c654-cc37-4f2d-b80d-e5e7********"
+}</code></pre></section><section id="0fdbcaa078v4d" class="section"><h4 id="0c0624d078bei" uuid="loa56taovbapcyeh2"><b>协议解析</b></h4><p uuid="lob8knfbahkypmk6a9j" id="bfb54f0279m4c">具体字段定义如下。</p><table id="0c0624d278jpi" tablewidth="713" tablecolswidth="158 104 451" autofit="true" class="table"><colgroup colwidth="0.67*" style="width:22.16%"></colgroup><colgroup colwidth="0.44*" style="width:14.59%"></colgroup><colgroup colwidth="1.9*" style="width:63.25%"></colgroup><tbody class="tbody"><tr id="0c0624d378vjf"><td id="0c0624d478bov" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lob8t2lgt6097cmcpfn" id="bfb54f0379scd"><b>参数名</b></p></td><td id="0c0624d678659" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lob8t2lgvb4z768cxns" id="bfb54f0479bp9"><b>类型</b></p></td><td id="0c0624d878m8m" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lob8t2lgpw0grwy389" id="bfb54f0579q2k"><b>说明</b></p></td></tr><tr id="0c0624da78ydy"><td id="0c0624db7862r" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8t2lg5cjn531tm9o" id="bfb54f0679q6p">TaskId</p></td><td id="0c064be078crj" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8t2lg1eojponjvu3" id="bfb54f07793ca">string</p></td><td id="0c064be278khq" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8t2lgypmlgyntij" id="ee656dc4788dx">创建任务时生成的<span class="help-letter-space"></span>TaskId，用于查询任务状态、结果以及排查问题时使用。</p></td></tr><tr id="0c064be4788aj"><td id="0c064be578pxm" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofdgy1qo5fbasvh5kg" id="bfb54f0979rwp">TaskKey</p></td><td id="0c064be778fxj" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofdgy1qgwpj84p97mj" id="bfb57610791yn">string</p></td><td id="0c064be978bj0" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofdgy1rsb9m409zp0d" id="bfb57611799mw">您创建任务时设置的<span class="help-letter-space"></span>TaskKey</p></td></tr><tr id="0c064beb78pd6"><td id="0c064bec78hkl" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofhjo6re3vm7l6aqod" id="bfb5761279540">MeetingJoinUrl</p></td><td id="0c064bee783py" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofhjo6r7i1l2a9018s" id="bfb5761379c6h">string</p></td><td id="0c064bf078tsk" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lofhjo6r1mncxwbogc4" id="bfb576147971h">实时记录场景下生成的音频流推送地址，您可以在后续实时音频流识别时通过该地址进行</p></td></tr><tr id="0c064bf278gnj"><td id="0c064bf378bat" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8ynm0rhoi4nkkat" id="bfb57615793sl">RequestId</p></td><td id="0c064bf578og2" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8ynm0r4hxwfiptk" id="bfb5761679078">string</p></td><td id="0c0672f078x6w" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8ynm0nyjo509r7s" id="bfb5761779uc8">RequestId<span class="help-letter-space"></span>用于排查问题使用。</p></td></tr></tbody></table></section></section><section id="18bff38ce3xu5" class="section"><h3 uuid="lofnv4fpz2t7fwv5q5i" id="ec838d6078h3g">实时记录语音推流</h3><p id="2777d89571jox">在完成记录创建后，便可通过听悟提供的<a href="https://help.aliyun.com/zh/tingwu/real-time-stream-push" id="dfc9b1802egkd" title="" class="xref">交互流程与实现</a>进行会中实时语音推流并接收实时识别结果和翻译结果。</p></section><section id="0de5549079i0x" class="section"><h3 id="5502e80078fte"><b>结束实时记录</b></h3><p id="1735d24079h5j">当该记录结束时，您<b>务必参考如下内容</b>及时调用<span class="help-letter-space"></span>API<span class="help-letter-space"></span>结束该记录。若您之前在创建实时记录时设置了后续的比如摘要、章节速览、智能纪要等功能参数，那么在结束记录之后，该实时记录状态并不是<span class="help-letter-space"></span>COMPLETED，而是<span class="help-letter-space"></span>ONGOING，表示此时进入到后处理阶段。</p><div type="note" id="5f71007a4b52c" class="note note-note"><div class="note-icon-wrapper"><i class="icon-note note note"></i></div><div class="noteContentSpan"><strong>说明 </strong><p id="a83f5fc0c16j5">结束实时记录操作，此时进入到后处理阶段，对后处理相关的<span class="help-letter-space"></span>AI<span class="help-letter-space"></span>模型能力产生计费，若重复结束，则会触发多次会后大模型能力计费，建议不要对同一个<span class="help-letter-space"></span>TaskId<span class="help-letter-space"></span>进行多次的“结束实时记录”操作。</p></div></div><section id="eb589a9078bqf" class="section"><h4 id="152225027823d" uuid="lofcyajxp9zk67vy8he"><b>请求参数</b></h4><table id="a6892fdcedt25" tablewidth="100" tablecolswidth="18.43 16.55 13.5 9.58 41.94" autofit="true" class="table"><colgroup colwidth="0.92*" style="width:18.43%"></colgroup><colgroup colwidth="0.83*" style="width:16.55%"></colgroup><colgroup colwidth="0.68*" style="width:13.50%"></colgroup><colgroup colwidth="0.48*" style="width:9.58%"></colgroup><colgroup colwidth="2.1*" style="width:41.94%"></colgroup><tbody class="tbody"><tr id="c04af33b2fp0y"><td id="52ba637270uwk" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lofh6jx5ackhq31sg8" id="5996f2fc6fv58"><b>名称</b></p></td><td id="be7e02b72f0xw" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lofh6jx5oja0h3ovvv" id="f89cf942150wx"><b>参数</b></p></td><td id="0a3a43a740jdi" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lofh6jx53yy3lbc5x19" id="910d45dc104q4"><b>类型</b></p></td><td id="071fa7b64awab" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p id="8cf1c0f716key"><b>默认值</b></p></td><td id="35cd9a745b98g" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lofh6jx5t8uyt94vxco" id="14b5dc65802da"><b>说明</b></p></td></tr><tr id="cbd4906e19bol"><td id="a335f8840cizs" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="loa744twbvdt35m2sge" id="b081df27c4jox">TaskId</p></td><td id="79ce84be44wjn" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="loa744twbvdt35m2sge" id="4185a80162hsi">TaskId</p></td><td id="55dcaf0689a5e" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="b59c11c33a23f"><span style="color:rgb(24, 24, 24)">string</span></p></td><td id="7fde127bd3553" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p id="017c83f2c2cas">-</p></td><td id="550e5174c7xdt" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="loa761sg4dv4ntdfq05" id="2927db3d2axwh"><b>必选，</b>您提交任务时返回的<span class="help-letter-space"></span>TaskId<span class="help-letter-space"></span>信息</p></td></tr></tbody></table></section><section id="8eddb7e078u8v" class="section"><h4 uuid="lob944gg5q3uc7lfu2m" id="d676a9807dicn">代码示例</h4><div outputclass="tabbed-codeblock" data-tag="fig" id="9a78259078yfp" class="tabbed-codeblock-box"><div class="tab-box"></div><input type="radio" name="check-9a78259078yfp" id="9a78259078yfp-java-tab" checked=""><label for="9a78259078yfp-java-tab">Java</label><div class="codeblock-item"><pre id="9ff02400783ro" data-tag="codeblock" outputclass="language-java" code-type="xCode" class="pre codeblock language-java"><code>package com.alibaba.tingwu.client.demo.realtimemeeting;
+
+import com.alibaba.fastjson.JSONObject;
+import com.aliyuncs.CommonRequest;
+import com.aliyuncs.CommonResponse;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.http.FormatType;
+import com.aliyuncs.http.MethodType;
+import com.aliyuncs.http.ProtocolType;
+import com.aliyuncs.profile.DefaultProfile;
+import org.junit.Test;
+
+/**
+ * @author tingwu2023
+ * @desc 演示了通过OpenAPI 结束实时会议 的调用方式。
+ */
+public class StopRealtimeMeetingTaskTest {
+
+    @Test
+    public void stopTask() throws ClientException {
+        CommonRequest request = createCommonRequest("tingwu.cn-beijing.aliyuncs.com", "2023-09-30", ProtocolType.HTTPS, MethodType.PUT, "/openapi/tingwu/v2/tasks");
+        request.putQueryParameter("type", "realtime");
+        // 必须设置 operation=stop
+        request.putQueryParameter("operation", "stop");
+
+        JSONObject root = new JSONObject();
+        JSONObject input = new JSONObject();
+        input.put("TaskId", "请输入实时会议的TaskId");
+        root.put("Input", input);
+        System.out.println(root.toJSONString());
+        request.setHttpContent(root.toJSONString().getBytes(), "utf-8", FormatType.JSON);
+
+        // TODO 请通过环境变量设置您的AccessKeyId、AccessKeySecret
+        DefaultProfile profile = DefaultProfile.getProfile("cn-beijing", System.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID"), System.getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET"));
+        IAcsClient client = new DefaultAcsClient(profile);
+        CommonResponse response = client.getCommonResponse(request);
+        System.out.println(response.getData());
+    }
+  
+    public static CommonRequest createCommonRequest(String domain, String version, ProtocolType protocolType, MethodType method, String uri) {
+        CommonRequest request = new CommonRequest();
+        request.setSysDomain(domain);
+        request.setSysVersion(version);
+        request.setSysProtocol(protocolType);
+        request.setSysMethod(method);
+        request.setSysUriPattern(uri);
+        request.setHttpContentType(FormatType.JSON);
+        return request;
+    }
+}</code></pre></div><input type="radio" name="check-9a78259078yfp" id="9a78259078yfp-go-tab"><label for="9a78259078yfp-go-tab">Go</label><div class="codeblock-item"><pre id="17e15ca083pcp" data-tag="codeblock" outputclass="language-go" code-type="xCode" class="pre codeblock language-go"><code>package main
+
+import (
+	"encoding/json"
+	"log"
+	"os"
+
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
+)
+
+type TranscodeingParam struct {
+	TargetAudioFormat     string `json:"TargetAudioFormat,omitempty"`
+	TargetVideoFormat     string `json:"TargetVideoFormat,omitempty"`
+	VideoThumbnailEnabled bool   `json:"VideoThumbnailEnabled,omitempty"`
+	SpectrumEnabled       bool   `json:"SpectrumEnabled,omitempty"`
+}
+
+type DiarizationParam struct {
+	SpeakerCount int `json:"SpeakerCount,omitempty"`
+}
+
+type TranscriptionParam struct {
+	AudioEventDetectionEnabled bool              `json:"AudioEventDetectionEnabled,omitempty"`
+	DiarizationEnabled         bool              `json:"DiarizationEnabled,omitempty"`
+	Diarization                *DiarizationParam `json:"Diarization,omitempty"`
+}
+
+type TranslationParam struct {
+	TargetLanguages []string `json:"TargetLanguages,omitempty"`
+}
+
+type SummarizationParam struct {
+	Types []string `json:"Types,omitempty"`
+}
+
+type ExtraParamerters struct {
+	Transcoding              *TranscodeingParam  `json:"Transcoding,omitempty"`
+	Transcription            *TranscriptionParam `json:"Transcription,omitempty"`
+	TranslationEnabled       bool                `json:"TranslationEnabled,omitempty"`
+	Translation              *TranslationParam   `json:"Translation,omitempty"`
+	AutoChaptersEnabled      bool                `json:"AutoChaptersEnabled,omitempty"`
+	MeetingAssistanceEnabled bool                `json:"MeetingAssistanceEnabled,omitempty"`
+	SummarizationEnabled     bool                `json:"SummarizationEnabled,omitempty"`
+	Summarization            *SummarizationParam `json:"Summarization,omitempty"`
+}
+
+type InputParam struct {
+	SourceLanguage string `json:"SourceLanguage"`
+	FileUrl        string `json:"FileUrl,omitempty"`
+	TaskKey        string `json:"TaskKey,omitempty"`
+	TaskId         string `json:"TaskId,omitempty"`
+	Format         string `json:"Format,omitempty"`
+	SampleRate     int    `json:"SampleRate,omitempty"`
+}
+
+type TaskBodyParam struct {
+	Appkey      string            `json:"AppKey"`
+	Input       InputParam        `json:"Input"`
+	Paramerters *ExtraParamerters `json:"Parameters,omitempty"`
+}
+
+type CreateTaskResponse struct {
+	RequestId string `json:"RequestId"`
+	Code      string `json:"Code"`
+	Message   string `json:"Message"`
+	Data      struct {
+		TaskId         string `json:"TaskId"`
+		TaskKey        string `json:"TaskKey"`
+		MeetingJoinUrl string `json:"MeetingJoinUrl,omitempty"`
+	} `json:"Data"`
+}
+
+func test_stop_realtime_meeting_task() {
+	akkey := os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_ID")
+	aksecret := os.Getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET")
+	client, err := sdk.NewClientWithAccessKey("cn-beijing", akkey, aksecret)
+	if err != nil {
+		log.Default().Fatalln(err)
+		return
+	}
+
+	request := requests.NewCommonRequest()
+	request.Method = "PUT"
+	request.Domain = "tingwu.cn-beijing.aliyuncs.com"
+	request.Version = "2023-09-30"
+	request.SetContentType("application/json")
+	request.PathPattern = "/openapi/tingwu/v2/tasks"
+	request.QueryParams["type"] = "realtime"
+	request.QueryParams["operation"] = "stop"
+
+	param := new(TaskBodyParam)
+	param.Appkey = "输入您在听悟管控台创建的Appkey"
+	param.Input.TaskId = "请输入实时会议的TaskId"
+
+	b, _ := json.Marshal(param)
+	log.Default().Print("request body:\n", string(b))
+	request.SetContent(b)
+	request.SetScheme("https")
+
+	response, err := client.ProcessCommonRequest(request)
+	if err != nil {
+		log.Default().Fatalln(err)
+		return
+	}
+
+	log.Default().Print("response body:\n", string(response.GetHttpContentBytes()))
+	return
+}
+
+func main() {
+	test_stop_realtime_meeting_task()
+}
+</code></pre></div><input type="radio" name="check-9a78259078yfp" id="9a78259078yfp-c++-tab"><label for="9a78259078yfp-c++-tab">C++</label><div class="codeblock-item"><pre id="b0aa32b799ng4" data-tag="codeblock" outputclass="language-c++" code-type="xCode" class="pre codeblock language-c++"><code>#include &lt;cstdlib&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string.h&gt;
+#include &lt;alibabacloud/core/AlibabaCloud.h&gt;
+#include &lt;alibabacloud/core/CommonRequest.h&gt;
+#include &lt;alibabacloud/core/CommonClient.h&gt;
+#include &lt;alibabacloud/core/CommonResponse.h&gt;
+#include "jsoncpp/json.h"
+/**
+ * @author tingwu2023
+ * @desc 演示了通过OpenAPI 结束实时记录 的调用方式。
+ */
+int main( int argc, char** argv ) {
+    std::string taskId = "请输入创建任务(含离线转写、实时会议)的TaskId";
+
+    AlibabaCloud::InitializeSdk();
+    AlibabaCloud::ClientConfiguration configuration( "cn-beijing" );
+    // specify timeout when create client.
+    configuration.setConnectTimeout(1500);
+    configuration.setReadTimeout(4000);
+    // Please ensure that the environment variables ALIBABA_CLOUD_ACCESS_KEY_ID and ALIBABA_CLOUD_ACCESS_KEY_SECRET are set.
+    AlibabaCloud::Credentials credential( getenv("ALIBABA_CLOUD_ACCESS_KEY_ID"), getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET") );
+    AlibabaCloud::CommonClient client( credential, configuration );
+    AlibabaCloud::CommonRequest request(AlibabaCloud::CommonRequest::RequestPattern::RoaPattern);
+    request.setHttpMethod(AlibabaCloud::HttpRequest::Method::Put);
+    request.setDomain("tingwu.cn-beijing.aliyuncs.com");
+    request.setVersion("2023-09-30");
+    request.setResourcePath("/openapi/tingwu/v2/tasks");
+    request.setQueryParameter("type", "realtime");
+    request.setQueryParameter("operation", "stop");
+    request.setHeaderParameter("Content-Type", "application/json");
+
+    Json::Value root;
+    Json::Value input;
+    input["TaskId"] = taskId;
+    root["Input"] = input;
+
+    Json::FastWriter writer;
+    std::string body = writer.write(root);
+    printf("input json: [%s]\n", body.c_str());
+    request.setContent(body.c_str(), body.size());
+
+    auto response = client.commonResponse(request);
+    if (response.isSuccess()) {
+        printf("request success.\n");
+        printf("result: %s\n", response.result().payload().c_str());
+    } else {
+        printf("error: %s\n", response.error().errorMessage().c_str());
+        printf("request id: %s\n", response.error().requestId().c_str());
+    }
+      
+    AlibabaCloud::ShutdownSdk();
+    return 0;
+} </code></pre></div><input type="radio" name="check-9a78259078yfp" id="9a78259078yfp-python-tab"><label for="9a78259078yfp-python-tab">Python</label><div class="codeblock-item"><pre code-type="xCode" id="b89845eff8rxh" data-tag="codeblock" outputclass="language-python" class="pre codeblock language-python"><code>#!/usr/bin/env python
+#coding=utf-8
+
+import os
+import json
+import datetime
+from aliyunsdkcore.client import AcsClient
+from aliyunsdkcore.request import CommonRequest
+from aliyunsdkcore.auth.credentials import AccessKeyCredential
+
+def create_common_request(domain, version, protocolType, method, uri):
+    request = CommonRequest()
+    request.set_accept_format('json')
+    request.set_domain(domain)
+    request.set_version(version)
+    request.set_protocol_type(protocolType)
+    request.set_method(method)
+    request.set_uri_pattern(uri)
+    request.add_header('Content-Type', 'application/json')
+    return request
+
+def init_parameters():
+    body = dict()
+    body['AppKey'] = '输入您在听悟管控台创建的Appkey'
+
+    # 基本请求参数
+    input = dict()
+
+    #输入语音流格式和采样率和以下参数设置保持一致
+    input['TaskId'] = '请输入实时会议的TaskId'
+    body['Input'] = input
+
+    return body
+
+body = init_parameters()
+print(body)
+
+# TODO  请通过环境变量设置您的 AccessKeyId 和 AccessKeySecret
+credentials = AccessKeyCredential(os.environ['ALIBABA_CLOUD_ACCESS_KEY_ID'], os.environ['ALIBABA_CLOUD_ACCESS_KEY_SECRET'])
+client = AcsClient(region_id='cn-beijing', credential=credentials)
+
+request = create_common_request('tingwu.cn-beijing.aliyuncs.com', '2023-09-30', 'https', 'PUT', '/openapi/tingwu/v2/tasks')
+request.add_query_param('type', 'realtime')
+request.add_query_param('operation', 'stop')
+
+request.set_content(json.dumps(body).encode('utf-8'))
+response = client.do_action_with_exception(request)
+print("response: \n" + json.dumps(json.loads(response), indent=4, ensure_ascii=False))
+</code></pre></div></div></section><section id="af6078e078yyo" class="section"><h4 id="15224c22782a2" uuid="loa56nbek1r7h7uvvi"><b>示例输出</b></h4><p id="8e77e4307eewv">当仅使用实时语音识别时：</p><pre id="b0mqqk" title="" data-tag="codeblock" outputclass="language-json" uuid="lofddq0y7gmtmhp1f05" code-type="xCode" class="pre codeblock language-json"><code>{
+    "Code":"0",
+    "Data":{
+        "TaskId":"e8adc0b3bc4b42d898fcadb0a*******",
+        "TaskStatus":"COMPLETED"
+    },
+    "Message":"success",
+    "RequestId":"1b20e0d9-c55c-4cc3-85af-80b********"
+}</code></pre><p id="15224c2378qg5" uuid="lofdes2ghui9vraro9b">当开启语音识别的同时开启了摘要、章节速览、智能纪要等功能时：</p><pre uuid="lofd4u9pgxvnp9v7hnk" id="20dfe1b479lp2" title="" data-tag="codeblock" outputclass="language-json" code-type="xCode" class="pre codeblock language-json"><code>{
+    "Code":"0",
+    "Data":{
+        "TaskId":"e8adc0b3bc4b42d898fcadb0*******",
+        "TaskStatus":"ONGOING"
+    },
+    "Message":"success",
+    "RequestId":"5fa32fc6-441f-4dd1-bb86-c030*******"
+}</code></pre></section><section id="cc3b679078pum" class="section"><h4 uuid="loa56taovbapcyeh2" id="1522732278u6m"><b>协议解析</b></h4><p id="1522732378m3s" uuid="lob8knfbahkypmk6a9j">具体字段定义如下。</p><table id="1522732478wgv" tablewidth="100" tablecolswidth="21.48 21.19 57.33" autofit="true" class="table"><colgroup colwidth="0.65*" style="width:21.48%"></colgroup><colgroup colwidth="0.64*" style="width:21.19%"></colgroup><colgroup colwidth="1.74*" style="width:57.33%"></colgroup><tbody class="tbody"><tr id="15227325787ij"><td id="1522732678tsf" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lob8t2lgt6097cmcpfn" id="1522732778oyq"><b>参数名</b></p></td><td id="1522732878159" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lob8t2lgvb4z768cxns" id="1522732978f71"><b>类型</b></p></td><td id="1522732a788lb" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p uuid="lob8t2lgpw0grwy389" id="1522732b78yon"><b>说明</b></p></td></tr><tr id="1522732c78r22"><td id="15229a3078lkt" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8t2lg5cjn531tm9o" id="15229a3178vj9">TaskId</p></td><td id="15229a3278n76" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8t2lg1eojponjvu3" id="15229a3378srd">string</p></td><td id="15229a3478oyf" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8t2lgypmlgyntij" id="15229a3578kgo">创建任务时生成的<span class="help-letter-space"></span>TaskId</p></td></tr><tr id="15229a3678oo7"><td id="15229a3778kuq" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8t2lg9sz5d10hxc" id="15229a38784c2">TaskStatus</p></td><td id="15229a3978y48" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8t2lgbk2om97v605" id="15229a3a78yhj">string</p></td><td id="15229a3b784pi" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8t2lgyqvncqdkbb" id="15229a3c78thu">任务状态，包括：</p><ul id="15229a3d7868l"><li id="15229a3e78i07"><p id="15229a3f78np3">NEW： 刚创建状态，此时还未发送音频流</p></li><li id="c924bac800nx4"><p id="6ccc2aeffd6b1">ONGOING ：运行中</p></li><li id="8f4283cb0fnrb"><p id="4d6c985d85z8k">PAUSED：实时记录暂停，在发送音频流之后停止发送，此时状态为<span class="help-letter-space"></span>PAUSED</p></li><li id="15229a4078r59"><p id="15229a4178upc">COMPLETED : 已完成</p></li><li id="1522c14078oot"><p id="1522c1417805s">FAILED ： 任务失败</p></li><li id="1522c14278onv"><p id="1522c14378gqh">INVALID ：无效，可能是<span class="help-letter-space"></span>TaskId<span class="help-letter-space"></span>不存在</p></li></ul></td></tr><tr id="1522c14478i4h"><td id="1522c14578564" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8ynm0rhoi4nkkat" id="1522c146781yj">ErrorCode</p></td><td id="1522c147784sh" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8ynm0r4hxwfiptk" id="1522c14878n4h">string</p></td><td id="1522c14978bv8" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8ynm0nyjo509r7s" id="1522c14a78jqt">错误原因</p></td></tr><tr id="1522c14b78ghr"><td id="1522c14c781pu" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8ypq7t9yaa1n3n7l" id="1522c14d78qbi">ErrorMessage</p></td><td id="1522c14e78ycw" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8ypq7cmwqv9lsreu" id="1522c14f78i4b">string</p></td><td id="1522c15078t1z" rowspan="1" style="background-color:rgba(0, 0, 0, 0)" colspan="1"><p uuid="lob8ypq74bc2z2871ig" id="1522c15178bcf">错误详细信息</p></td></tr></tbody></table></section></section><section id="3381c76079rts" class="section"><h2 id="16bca7e078zko" uuid="loa56wzfwvj7kubg0a9">常见问题</h2><p id="33d11fe07907h"><b>相比离线转写，为什么实时记录参数里缺少了<span class="help-letter-space"></span>PPT<span class="help-letter-space"></span>提取功能参数？</b></p><p id="33d11fe179bvm">PPT<span class="help-letter-space"></span>提取（包括<span class="help-letter-space"></span>PPT<span class="help-letter-space"></span>抽取和<span class="help-letter-space"></span>PPT<span class="help-letter-space"></span>摘要）主要是针对在离线转写场景下，原文件是视频格式的情况下发挥作用的。不论是音频文件还是实时记录里的二进制音频流都没有视频信息，因此也不会产生<span class="help-letter-space"></span>PPT<span class="help-letter-space"></span>相关结果。</p><p id="21f2b0fe2468x"><b>为什么查询实时记录的状态是<span class="help-letter-space"></span>PAUSED？</b></p><p id="a4ee96f50dmjx">请确保您的实时记录交互顺序正确。实时记录正常交互流程是先创建实时记录，向实时记录服务返回的<span class="help-letter-space"></span>MeetingJoinUrl<span class="help-letter-space"></span>发送<span class="help-letter-space"></span>StartTranscription<span class="help-letter-space"></span>开始识别指令、推送语音帧、发送<span class="help-letter-space"></span>StopTranscription<span class="help-letter-space"></span>结束识别指令，然后关闭<span class="help-letter-space"></span>MeetingJoinUrl<span class="help-letter-space"></span>链接，再结束实时记录操作以及获取实时记录最终结果。MeetingJoinUrl<span class="help-letter-space"></span>链接可重复发送开始识别指令、推送语音帧、发送结束识别指令来实现实时记录的暂停。</p><p id="a9090b5a7ee0b"><b>语种该怎么选择？</b></p><ul id="c4f8e7c3dczk8"><li id="86b9dacfb8n6w"><p id="ca418140ff87d">常见语种场景示例如下：</p><table id="4703467419p1f" tablewidth="713" tablecolswidth="67 187 234 225" autofit="true" class="table"><colgroup colwidth="0.38*" style="width:9.40%"></colgroup><colgroup colwidth="1.05*" style="width:26.23%"></colgroup><colgroup colwidth="1.31*" style="width:32.82%"></colgroup><colgroup colwidth="1.26*" style="width:31.56%"></colgroup><tbody class="tbody"><tr id="65ca7c611bufq"><td id="104d27b6940px" rowspan="1" colspan="1"><p id="f064802d902g8">语种类型</p></td><td id="cad3ba472ektd" rowspan="1" colspan="1"><p id="17d49462cauiv">对应参数</p></td><td id="7fb2e7df59qq7" rowspan="1" colspan="1"><p id="a7995833c48vi">适用场景（实时记录）</p></td><td id="d0d3250663xlt" rowspan="1" colspan="1"><p id="3e1e850ebeafd">参考示例</p></td></tr><tr id="dbe871a48d2sb"><td id="04fc198244xfu" rowspan="1" colspan="1"><p id="4d8c2f42c6c4y">单语种</p><p id="b4017e5ea5eb3">（已知语种）</p></td><td id="f77147849d2ai" rowspan="1" colspan="1"><p id="f36c332690hb6">参数名：Input.SourceLanguage</p><p id="8109df239dtqj">参数值可配置（单选）：中文（cn）、 英语（en）、粤语（yue）、日语（ja）、韩语（ko）</p></td><td id="5451d90e3e4n4" rowspan="1" colspan="1"><ul id="876a3a7ff3hiy"><li id="e597ce8a38kic"><p id="15fec02d334ct">单语种语音识别模型。</p></li><li id="33922a2298dr5"><p id="cd2c08f928wwz">中文支持<span class="help-letter-space"></span>8K<span class="help-letter-space"></span>和<span class="help-letter-space"></span>16K。</p></li><li id="66d414c5f2sro"><p id="d29a4ce559lae">英、日、粤、韩仅支持<span class="help-letter-space"></span>16K。</p></li></ul></td><td id="025c504b09fmi" rowspan="1" colspan="1"><p id="c4c2302478rk1"><b>示例<span class="help-letter-space"></span>1：</b></p><p id="cce02c500fl0p">若已知语音的语种是中文</p><p id="6d4b2328b4r3b">Input.SourceLanguage="cn"</p><p id="0bd06af6ccl96">识别结果：感谢您使用通义听悟。</p><p id="bed3fb2f3f8wd"><b>示例<span class="help-letter-space"></span>2：</b></p><p id="661ed1aca2fzh">若已知语音的语种是英文</p><p id="320ea6ed77y2f">Input.SourceLanguage="en"</p><p id="5f927b304a60d">识别结果：Thank you for using Tongyi Tingwu.</p></td></tr><tr id="c49c0bf020mpj"><td id="d688a75a0d73d" rowspan="1" colspan="1"><p id="44b9a5011cuwh">多语种混合</p></td><td id="c8d9c9cc86bta" rowspan="1" colspan="1"><ul id="c38cec1f48ac1"><li id="97d3065a49osd"><p id="48dfe8faadpic">参数名<span class="help-letter-space"></span>1：Input.SourceLanguage</p><p id="91e61a7d1315q">参数值：multilingual</p></li><li id="e2e73bb910bvu"><p id="8f53bbfa22c4t">参数名<span class="help-letter-space"></span>2：Input.LanguageHints</p><p id="314c24381c1rb">参数值可配置（可多选）： 中文（cn）， 英语（en）， 粤语（yue）， 日语（ja）、韩语（ko）、德语（de）、法语（fr）、俄语（ru）</p></li></ul></td><td id="5ea4387ce8g70" rowspan="1" colspan="1"><ul id="8499685ef3cpu"><li id="5b0bd26f124pn"><p id="d93262e47chux">多语种语音识别。</p></li><li id="81c61c462bgwz"><p id="3b6334e7cacpa">仅支持<span class="help-letter-space"></span>16K。</p></li><li id="2cfe3a711c7eg"><p id="ac7bb536aaoem">支持同时识别出中文、英文、日语、粤语、韩语、德语、法语和俄语。</p></li><li id="e2fa4399d1rz4"><p id="7fcca103e1641">支持限定语种的范围。</p></li></ul></td><td id="ec4af2d109847" rowspan="1" colspan="1"><p id="27b085f0260hx"><b>示例<span class="help-letter-space"></span>1：</b></p><p id="ca9ace76e1xsl">若语音中的语种非单语种，涉及多个语种，直接识别对应语种的文字。</p><p id="81a9ba0b57bul">Input.SourceLanguage="multilingual"</p><p id="5c3798505d5mc">识别结果：hello, everyone. 感谢您使用通义听悟。</p><p id="0b851ee7f2om0"><b>示例<span class="help-letter-space"></span>2：</b></p><p id="21b1a905bc1cn">若语音中的语种非单语种，涉及多个语种，但已知语种的范围（如只有中、英、粤），直接识别对应语种的文字，同时避免误识别出日、法、俄等和场景无关的语种。</p><p id="7766b8c05dlew">Input.SourceLanguage="multilingual"</p><p id="2ff4e6b6a96wa">Input.LanguageHints=['cn', 'en', 'yue'] </p></td></tr></tbody></table></li></ul></section><p id="c4938ea078xtq" uuid="lofl0pzfzcup1vsteh"></p></div></main>
+
+</div></div><div class="aliyun-docs-pagination"><div class="NextPage--container--cfVcdEE"><span class="NextPage--paginationLeft--WTOmehr"><a href="/zh/tingwu/real-time-meeting-transcription/" data-spm-click="gostr=/aliyun;locaid=preDoc"><i class="iconfont icon-prev-arrow"></i>上一篇：实时记录</a></span><span class="NextPage--paginationRight--TgS6P1r"><a href="/zh/tingwu/real-time-stream-push-1/" data-spm-click="gostr=/aliyun;locaid=nextDoc">下一篇：实时推流<i class="iconfont icon-next-arrow"></i></a></span></div></div></div><div class="RecommendDoc--container--IhRK6Om"></div><div class="FeedbackButton--feedbackContainer--v2ywOOX aliyun-docs-feedback" id="help-doc-feedback"><div class="FeedbackButton--feedbackHelpTip--BFRvMbx">该文章对您有帮助吗？</div><div class="FeedbackButton--feedbackButtonContainer--MHnR42I"><div class="FeedbackButton--feedbackButtonBox--KiH2lHU"><button class="FeedbackButton--iconButton--v243wMx"><i class="help-iconfont help-icon-tag-empty"></i></button><button class="FeedbackButton--iconButton--v243wMx"><i class="help-iconfont help-icon-tag-empty" style="display:inline-block;transform:rotateX(-180deg)"></i></button><button class="FeedbackButton--clickButton--ZUiZLGR"><i class="help-iconfont help-icon-bianji"></i>反馈</button></div></div></div></section><div class="aliyun-docs-side" id="aliyun-docs-side"><div id="aliyun-docs-side-content" class="aliyun-docs-side-content ProductDetail--rightBox--GGLE5sH"><ul class="Outline--synopsisBox--xky1vdf"></ul></div><div id="aliyun-docs-side-blank" class="aliyun-docs-side-blank"></div></div></div></main></div></div><div id="aliyun-docs-selection-div"></div></div></div>
+  <footer><div id="00e7ebe8752948e09c244de09cd37608"><div class="_18a32969382a277c44015217fbc5cb5a_box"><footer class="_49ada0cd752f65901c49f2eed0d6c3d5_container" aria-label="PC 端页尾"><div class="_49ada0cd752f65901c49f2eed0d6c3d5_inner"><div class="b34f022d45e42bd104ce1362bc0808b1_services"><nav class="b34f022d45e42bd104ce1362bc0808b1_homepage-footer-main-services" aria-label="页脚导航"><section class="a52e48969cced2d562e47543eeb73ebb_ali-main-services"><h3 class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-title">为什么选择阿里云</h3><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/about/what-is-cloud-computing" target="_blank">什么是云计算</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://infrastructure.aliyun.com/" target="_blank">全球基础设施</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/why-us/leading-technology" target="_blank">技术领先</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/why-us/reliability" target="_blank">稳定可靠</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/why-us/security-compliance" target="_blank">安全合规</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/analyst-reports" target="_blank">分析师报告</a></section><section class="a52e48969cced2d562e47543eeb73ebb_ali-main-services"><h3 class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-title">产品和定价</h3><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/product/list" target="_blank">全部产品</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://free.aliyun.com/" target="_blank">免费试用</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/product/news/" target="_blank">产品动态</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/price/detail" target="_blank">产品定价</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/price/cpq/list" target="_blank">配置报价器</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/price/cost-management" target="_blank">云上成本管理</a></section><section class="a52e48969cced2d562e47543eeb73ebb_ali-main-services"><h3 class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-title">解决方案</h3><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/solution/tech-solution" target="_blank">技术解决方案</a></section><section class="a52e48969cced2d562e47543eeb73ebb_ali-main-services"><h3 class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-title">文档与社区</h3><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://help.aliyun.com/" target="_blank">文档</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://developer.aliyun.com/" target="_blank">开发者社区</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://tianchi.aliyun.com/" target="_blank">天池大赛</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://edu.aliyun.com/" target="_blank">培训与认证</a></section><section class="a52e48969cced2d562e47543eeb73ebb_ali-main-services"><h3 class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-title">权益中心</h3><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://free.aliyun.com/" target="_blank">免费试用</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/solution/free" target="_blank">解决方案免费试用</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://university.aliyun.com/" target="_blank">高校计划</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/benefit/form/index" target="_blank">5亿算力补贴</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://dashi.aliyun.com/?ambRef=shouYeDaoHang2&amp;pageCode=yunparterIndex" target="_blank">推荐返现计划</a></section><section class="a52e48969cced2d562e47543eeb73ebb_ali-main-services"><h3 class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-title">支持与服务</h3><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/service" target="_blank">基础服务</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/service/supportplans" target="_blank">企业增值服务</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/service/devopsimpl/devopsimpl_cloudmigration_public_cn" target="_blank">迁云服务</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/notice/" target="_blank">官网公告</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://status.aliyun.com/" target="_blank">健康看板</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://security.aliyun.com/trust" target="_blank">信任中心</a></section></nav><article class="_7b44142961778903dda8af3f769cd06c_focus"><h3 class="_7b44142961778903dda8af3f769cd06c_ali-main-services-title">关注阿里云</h3><p class="_7b44142961778903dda8af3f769cd06c_ali-main-services-desc">关注阿里云公众号或下载阿里云APP，关注云资讯，随时随地运维管控云服务</p><img alt="阿里云APP" src="https://img.alicdn.com/imgextra/i4/O1CN01XLesV31fkf7pYNATb_!!6000000004045-2-tps-400-400.png" class="_7b44142961778903dda8af3f769cd06c_ali-official-code" loading="lazy"/><img alt="阿里云微信" src="https://img.alicdn.com/tfs/TB1AOdINW6qK1RjSZFmXXX0PFXa-258-258.jpg" class="_7b44142961778903dda8af3f769cd06c_ali-official-code" loading="lazy"/><p class="_7b44142961778903dda8af3f769cd06c_consult-text">联系我们：4008013260</p></article></div><div class="_4598709a854bea355ceb6ef9f23f10d4_about-link-wrap"><a href="https://help.aliyun.com/product/67275.html" class="_4598709a854bea355ceb6ef9f23f10d4_ali-about-link" target="_blank">法律声明</a><a href="https://terms.alicdn.com/legal-agreement/terms/platform_service/20220906101446934/20220906101446934.html" class="_4598709a854bea355ceb6ef9f23f10d4_ali-about-link" target="_blank">Cookies政策</a><a href="https://aliyun.jubao.alibaba.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-about-link" target="_blank">廉正举报</a><a href="https://report.aliyun.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-about-link" target="_blank">安全举报</a><a href="https://www.aliyun.com/contact" class="_4598709a854bea355ceb6ef9f23f10d4_ali-about-link" target="_blank">联系我们</a><a href="https://careers.aliyun.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-about-link" target="_blank">加入我们</a></div><section class="_4598709a854bea355ceb6ef9f23f10d4_friend-link-wrap"><h3 hidden="">友情链接</h3><a href="https://www.alibabagroup.com/cn/global/home" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">阿里巴巴集团</a><a href="https://www.taobao.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">淘宝网</a><a href="https://www.tmall.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">天猫</a><a href="https://www.aliexpress.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">全球速卖通</a><a href="https://www.alibaba.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">阿里巴巴国际交易市场</a><a href="https://www.1688.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">1688</a><a href="https://www.alimama.com/index.htm" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">阿里妈妈</a><a href="https://www.fliggy.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">飞猪</a><a href="https://www.aliyun.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">阿里云计算</a><a href="https://www.alios.cn/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">AliOS</a><a href="https://wanwang.aliyun.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">万网</a><a href="https://mobile.amap.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">高德</a><a href="https://www.uc.cn/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">UC</a><a href="https://www.umeng.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">友盟</a><a href="https://www.youku.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">优酷</a><a href="https://www.dingtalk.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">钉钉</a><a href="https://www.alipay.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">支付宝</a><a href="https://damo.alibaba.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">达摩院</a><a href="https://world.taobao.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">淘宝海外</a><a href="https://www.aliyundrive.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">阿里云盘</a><a href="https://www.ele.me/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">饿了么</a></section><p class="_4598709a854bea355ceb6ef9f23f10d4_ali-copyright-text">© 2009-2025 Aliyun.com 版权所有 增值电信业务经营许可证： <a href="http://beian.miit.gov.cn/" target="_blank">浙B2-20080101</a> 域名注册服务机构许可： <a href="https://domain.miit.gov.cn/域名注册服务机构/互联网域名/阿里云计算有限公司 " target="_blank">浙D3-20210002</a></p><p class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-wrap"><a href="https://zzlz.gsxt.gov.cn/businessCheck/verifKey.do?showType=p&amp;serial=91330106673959654P-SAIC_SHOW_10000091330106673959654P1710919400712&amp;signData=MEUCIQDEkCd8cK7%2Fyqe6BNMWvoMPtAnsgKa7FZetfPkjZMsvhAIgOX1G9YC6FKyndE7o7hL0KaBVn4f%20V%2Fiof3iAgpsV09o%3D" target="_blank" class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-link"><img src="//gw.alicdn.com/tfs/TB1GxwdSXXXXXa.aXXXXXXXXXXX-65-70.gif" class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-img" alt="" loading="lazy"/></a><a href="http://www.beian.gov.cn/portal/registerSystemInfo" target="_blank" class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-link"><img src="//img.alicdn.com/tfs/TB1..50QpXXXXX7XpXXXXXXXXXX-40-40.png" class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-img" alt="浙公网安备 33010602009975号" loading="lazy"/><span class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-link-text">浙公网安备 33010602009975号</span></a><a href="https://beian.miit.gov.cn/" target="_blank" class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-link"><span class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-link-text _4598709a854bea355ceb6ef9f23f10d4_ali-report-link-text-unique">浙B2-20080101-4</span></a></p></div></footer><footer class="_4b41e3343c851a7a8833c9165b249eb2_container" aria-label="移动端页尾"></footer></div></div></footer>
+
+
+
+<script>
+
+  // 白屏时间埋点
+  window.firstPaint = Date.now();
+  const ssrFistPaintTime = firstPaint-performance.timing.navigationStart;
+  var ssrTime = {
+  product: 'help.aliyun.com', // 站点
+  ua: navigator.userAgent, // ua
+  device: 'pc', // 设备
+  page: 'documentDetail', // 页面
+  lang: 'zh', //站点语言
+  cna: '', // 用户标识
+  url: window.location.href,
+  action: 'ssrFirstPaint',
+  userParams1: ssrFistPaintTime,
+  userParams2: window.firstPaint,
+  userParams3: performance.timing.navigationStart
+  };
+  let queryStr = Object.keys(ssrTime).map(key => ssrTime[key] &&
+    `${encodeURIComponent(key)}=${encodeURIComponent(ssrTime[key])}`).join('&');
+  fetch('https://help-new.cn-wulanchabu.log.aliyuncs.com/logstores/web-tracking/track?APIVersion=0.6.0&' +
+  queryStr);
+
+  document.addEventListener("DOMContentLoaded", function(event) {
+    // pcp上报
+    window.ALIYUN_PERF && window.ALIYUN_PERF.report();
+  window.ALIYUN_PERF && window.ALIYUN_PERF.getPCP().then(rst => {
+    // pcp埋点
+    var data = {
+      product: 'help.aliyun.com', // 站点
+      ua: navigator.userAgent, // ua
+      device: 'pc', // 设备
+      page: 'index', // 页面
+      lang: 'zh', //站点语言
+      cna: '', // 用户标识
+      url: window.location.href,
+      action: 'pcp',
+      userParams1: rst || 0,
+    };
+    let queryStr = Object.keys(data).map(key => data[key] &&
+      `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`).join('&');
+    fetch('https://help-new.cn-wulanchabu.log.aliyuncs.com/logstores/web-tracking/track?APIVersion=0.6.0&' +
+      queryStr);
+    });
+  });
+</script>
+
+<script crossorigin="" src="https://g.alicdn.com/code/lib/??react/16.8.6/umd/react.production.min.js,react-dom/16.8.6/umd/react-dom.production.min.js"></script>
+<script src="https://g.alicdn.com/code/lib/lodash.js/4.17.21/lodash.min.js" crossorigin="anonymous"></script>
+
+<script>
+  window.resourceBaseUrl="https://g.alicdn.com/aliyun-help/help-portal-fe/0.12.2/"
+</script>
+<script defer="" src="https://g.alicdn.com/aliyun-help/help-portal-fe/0.12.2/js/index.js"></script>
+<script defer src="https://g.alicdn.com/aliyun-help/help-portal-fe/0.12.2/js/vendor.js"></script>
+<script async="" src="https://g.alicdn.com/dawn/assets-loader/scripts/fast-login.js?tenantName=help-new-aliyun-com"></script>
+<script defer="" src="https://cloud-assets.alicdn.com/website.js"></script>
+<script async="" src="https://g.alicdn.com/aliyun/perf/js/index.js"></script>
+<script src="https://g.alicdn.com/code/npm/@ali/??biu-loader/0.1.2/index.js,hmod-preact/0.0.1/index.js,hmod-preact-hooks/0.0.1/index.js,hmod-preact-compat/0.0.1/index.js,hmod-preact-bridge/0.1.4/index.js,hmod-ace-service-loader/0.1.1/index.js"></script>
+<script src="https://g.alicdn.com/aliyun-com/lowcode-engine/0.1.73/renderer/build/js/index.js"></script>
+<script src="https://g.alicdn.com/code/npm/@ali??hmod-ace-2023-box/0.1.0/index.js,hmod-aliyun-com-floating-toolbar/0.2.4/index.js,hmod-aliyun-com-global-nav-search/0.7.13/index.js,hmod-aliyun-com-global-nav/0.2.46/index.js"></script>
+<script src="https://cloud-assets.alicdn.com/lowcode/entry/prod/d8089f2b5bb92f5a418c8edb0557719d.js"></script>
+<script src="https://g.alicdn.com/code/npm/@ali??hmod-ace-2023-box/0.1.0/index.js,hmod-ace-2024-global-footer/0.1.2/index.js,hmod-lowcode-normal-page/0.1.0/index.js"></script>
+<script src="https://cloud-assets.alicdn.com/lowcode/entry/prod/00e7ebe8752948e09c244de09cd37608.js"></script>
+<script src="https://cloud-assets.alicdn.com/website.js"></script>
+</body></html>
+

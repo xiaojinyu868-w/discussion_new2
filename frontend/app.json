@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Meeting Snapshot",
+    "slug": "meeting-snapshot",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.meeting.snapshot"
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": ""
+    }
+  }
+}

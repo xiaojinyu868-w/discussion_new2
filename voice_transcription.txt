@@ -1,0 +1,316 @@
+﻿==== voice_transcription.html ====
+语音转写
+本文主要介绍语音转写的
+语音转写是通义听悟的核心功能， 用以将音视频文件或实时音频流中的语音转写成文字。语音转写是通义听悟
+请求参数
+Transcription
+object
+否
+语音识别控制参数对象。
+Transcription.DiarizationEnabled
+boolean
+否
+是否在转写过程中开启发言人区分（说话人分离）功能。
+Transcription.Diarization
+object
+否
+说话人分离功能对象。
+Transcription.Diarization.SpeakerCount
+int
+否
+0：说话人角色区分结果为不定人数。
+2：说话人角色区分结果为
+Transcription.PhraseId
+string
+否
+热词词表
+Transcription.Model
+string
+否
+"domain-automotive"：汽车领域销售对话语音识别模型，可适用于实时和离线转写任务；
+"domain-education"：教育领域网课场景语音识别模型，仅适用于离线转写任务；
+其他领域语音识别模型即将上线，敬请期待。
+其他请求参数的含义，请根据实时或离线场景查阅对应文档：
+Transcription.Model
+汽车领域销售对话语音识别模型
+domain-automotive
+中文
+16k
+离线
+适用于汽车行业，包括门店接待、汽车试驾、车型推销等场景下的语音识别
+教育领域网课场景语音识别模型
+domain-education
+中文
+16k
+离线
+适用于教育行业，包括网课等场景下的语音识别
+// 完全不设置
+{
+    "Input":{
+        ...
+    },
+    "Parameters":{
+
+    }
+}
+
+// 设置开启说话人分离功能
+{
+    "Input":{
+        ...
+    },
+    "Parameters":{
+        "Transcription":{
+            "DiarizationEnabled":true,
+            "Diarization":{
+                "SpeakerCount":2
+            }
+        }
+    }
+}
+#!/usr/bin/env python
+#coding=utf-8
+
+import os
+import json
+import datetime
+from aliyunsdkcore.client import AcsClient
+from aliyunsdkcore.request import CommonRequest
+from aliyunsdkcore.auth.credentials import AccessKeyCredential
+
+def create_common_request(domain, version, protocolType, method, uri):
+    request = CommonRequest()
+    request.set_accept_format('json')
+    request.set_domain(domain)
+    request.set_version(version)
+    request.set_protocol_type(protocolType)
+    request.set_method(method)
+    request.set_uri_pattern(uri)
+    request.add_header('Content-Type', 'application/json')
+    return request
+
+def init_parameters():
+    root = dict()
+    root['AppKey'] = '输入您在听悟管控台创建的Appkey'
+
+    # 基本请求参数
+    input = dict()
+    input['SourceLanguage'] = 'cn'
+    input['TaskKey'] = 'task' + datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    input['FileUrl'] = '输入待测试的音频url链接'
+    root['Input'] = input
+
+    # AI相关参数，按需设置即可
+    parameters = dict()
+
+    # 语音识别控制相关
+    transcription = dict()
+    # 角色分离
+    transcription['DiarizationEnabled'] = True
+    diarization = dict()
+    diarization['SpeakerCount'] = 2
+    transcription['Diarization'] = diarization
+    parameters['Transcription'] = transcription
+
+    root['Parameters'] = parameters
+    return root
+
+body = init_parameters()
+print(body)
+
+# TODO  请通过环境变量设置您的 AccessKeyId 和 AccessKeySecret
+credentials = AccessKeyCredential(os.environ['ALIBABA_CLOUD_ACCESS_KEY_ID'], os.environ['ALIBABA_CLOUD_ACCESS_KEY_SECRET'])
+client = AcsClient(region_id='cn-beijing', credential=credentials)
+
+request = create_common_request('tingwu.cn-beijing.aliyuncs.com', '2023-09-30', 'https', 'PUT', '/openapi/tingwu/v2/tasks')
+request.add_query_param('type', 'offline')
+
+request.set_content(json.dumps(body).encode('utf-8'))
+response = client.do_action_with_exception(request)
+print("response: \n" + json.dumps(json.loads(response), indent=4, ensure_ascii=False))
+package com.alibaba.tingwu.client.demo.aitest;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyuncs.CommonRequest;
+import com.aliyuncs.CommonResponse;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.http.FormatType;
+import com.aliyuncs.http.MethodType;
+import com.aliyuncs.http.ProtocolType;
+import com.aliyuncs.profile.DefaultProfile;
+import org.junit.Test;
+
+/**
+ * @author tingwu2023
+ */
+public class TranscriptionTest {
+
+    @Test
+    public void testFiletrans() throws ClientException {
+        CommonRequest request = createCommonRequest("tingwu.cn-beijing.aliyuncs.com", "2023-09-30", ProtocolType.HTTPS, MethodType.PUT, "/openapi/tingwu/v2/tasks");
+        request.putQueryParameter("type", "offline");
+
+        JSONObject root = new JSONObject();
+        root.put("AppKey", "输入您在听悟管控台创建的Appkey");
+
+        JSONObject input = new JSONObject();
+        input.fluentPut("FileUrl", "输入待测试的音频url链接")
+                .fluentPut("SourceLanguage", "cn")
+                .fluentPut("TaskKey", "task" + System.currentTimeMillis());
+        root.put("Input", input);
+
+        JSONObject parameters = new JSONObject();
+        JSONObject transcription = new JSONObject();
+        transcription.put("DiarizationEnabled", true);
+        JSONObject speakerCount = new JSONObject();
+        speakerCount.put("SpeakerCount", 2);
+        transcription.put("Diarization", speakerCount);
+        parameters.put("Transcription", transcription);
+        root.put("Parameters", parameters);
+        System.out.println(root.toJSONString());
+        request.setHttpContent(root.toJSONString().getBytes(), "utf-8", FormatType.JSON);
+
+        // TODO 请通过环境变量设置您的AccessKeyId、AccessKeySecret
+        DefaultProfile profile = DefaultProfile.getProfile("cn-beijing", System.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID"), System.getenv("ALIBABA_CLOUD_ACCESS_KEY_SECRET"));
+        IAcsClient client = new DefaultAcsClient(profile);
+        CommonResponse response = client.getCommonResponse(request);
+        System.out.println(response.getData());
+    }
+  
+    public static CommonRequest createCommonRequest(String domain, String version, ProtocolType protocolType, MethodType method, String uri) {
+        // 创建API请求并设置参数
+        CommonRequest request = new CommonRequest();
+        request.setSysDomain(domain);
+        request.setSysVersion(version);
+        request.setSysProtocol(protocolType);
+        request.setSysMethod(method);
+        request.setSysUriPattern(uri);
+        request.setHttpContentType(FormatType.JSON);
+        return request;
+    }
+}
+示例输出
+{
+    "Code":"0",
+    "Data":{
+        "TaskId":"10683ca4ad3f4f06bdf6e9dd********",
+        "TaskStatus":"COMPLETED",
+        "Result":{
+            "Transcription":"http://speech-swap.oss-cn-zhangjiakou.aliyuncs.com/tingwu_data/output/1738248129743478/10683ca4ad3f4f06bdf6e9dc1f3c1584/10683ca4ad3f4f06bdf6e9dc1f3c1584_Transcription_20231031165005.json?Expires=1698828606&amp;LTAI****************&amp;Signature=GMm%2BdN2tUPx*********ehu74%3D"
+        }
+    },
+    "Message":"success",
+    "RequestId":"7a63ee43-8a35-4ef2-8d5c-c76*********"
+}
+其中
+协议解析
+上述输出中的语音转写结果
+{
+    "TaskId":"10683ca4ad3f4f06bdf6e9dc*********",
+    "Transcription":{
+        "AudioInfo": {
+            "Size": 670663,
+            "Duration": 10394,
+            "SampleRate": 48000,
+            "Language": "cn"
+        },
+        "Paragraphs":[
+            {
+                "ParagraphId":"16987422100275*******",
+                "SpeakerId":"1",
+                "Words":[
+                    {
+                        "Id":10,
+                        "SentenceId":1,
+                        "Start":4970,
+                        "End":5560,
+                        "Text":"您好，"
+                    },
+                    {
+                        "Id":20,
+                        "SentenceId":1,
+                        "Start":5730,
+                        "End":6176,
+                        "Text":"我是"
+                    }
+                ]
+            }
+        ]
+        "AudioSegments": [
+            [12130, 16994],
+            [17000, 19720],
+            [19940, 28649]
+        ]
+    }
+}
+具体字段定义如下。
+TaskId
+string
+创建任务时生成的
+Transcription
+object
+语音转写结果对象。
+Transcription.Paragraphs
+list[]
+语音转写结构以段落形式组织的集合。
+Transcription.Paragraphs[i].ParagraphId
+string
+段落级别
+Transcription.Paragraphs[i].SpeakerId
+string
+发言人
+Transcription.Paragraphs[i].Words
+list[]
+该段落包含的
+Transcription.Paragraphs[i].Words[i].Id
+int
+word
+Transcription.Paragraphs[i].Words[i].SentenceId
+int
+句子
+Transcription.Paragraphs[i].Words[i].Start
+long
+该
+Transcription.Paragraphs[i].Words[i].End
+long
+该
+Transcription.Paragraphs[i].Words[i].Text
+string
+word
+Transcription.AudioInfo
+object
+音频信息对象。
+Transcription.AudioInfo.Size
+long
+音频大小，单位：字节。
+Transcription.AudioInfo.Duration
+long
+音频时长，单位：毫秒。（实时语音转写时，该字段不表示实际音频时长）
+Transcription.AudioInfo.SampleRate
+int
+音频采样率。
+Transcription.AudioInfo.Language
+string
+音频语种。
+Transcription.AudioSegments
+list[][]
+有效音频片断范围。
+Transcription.AudioSegments[i][0]
+int
+有效音频片段的开始时间，单位为毫秒。
+Transcription.AudioSegments[i][1]
+int
+有效音频片段的结束时间，单位为毫秒。
+您可以检查原始音视频文件是否存在有效人声、背景噪音过多等问题。
+为什么选择阿里云
+产品和定价
+解决方案
+文档与社区
+权益中心
+支持与服务
+关注阿里云
+关注阿里云公众号或下载阿里云APP，关注云资讯，随时随地运维管控云服务
+联系我们：4008013260
+友情链接
+© 2009-2025 Aliyun.com 版权所有 增值电信业务经营许可证：
