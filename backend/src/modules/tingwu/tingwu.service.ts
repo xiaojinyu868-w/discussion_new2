@@ -8,16 +8,24 @@ import TingwuClient, {
   CreateTaskRequestParametersSummarization,
   CreateTaskRequestParametersTranscription,
   CreateTaskRequestParametersTranscriptionDiarization,
+  CreateTranscriptionPhrasesRequest,
 } from "@alicloud/tingwu20230930";
 import * as $OpenApi from "@alicloud/openapi-client";
 import * as $Util from "@alicloud/tea-util";
 import OpenApiUtil from "@alicloud/openapi-util";
+import {
+  ScenePreset,
+  SCENE_HOTWORDS,
+  SCENE_LABELS,
+  normalizeScene,
+} from "./scene-presets";
 
 @Injectable()
 export class TingwuService {
   private readonly logger = new Logger(TingwuService.name);
   private readonly appKey: string;
   private readonly client: TingwuClient;
+  private readonly phraseIdCache = new Map<ScenePreset, string>();
 
   constructor(private readonly configService: ConfigService) {
     const config = this.configService.get("tingwu");
@@ -34,8 +42,14 @@ export class TingwuService {
     this.client = new TingwuClient(openApiConfig);
   }
 
-  async createRealtimeTask(body: { meetingId: string; topic?: string }) {//创建实时转写任务
+  async createRealtimeTask(body: {
+    meetingId: string;
+    topic?: string;
+    scene?: string;
+  }) {//创建实时转写任务
     try {
+      const scene = normalizeScene(body.scene);
+      const phraseId = await this.ensurePhraseId(scene);
       const request = new CreateTaskRequest({
         appKey: this.appKey,
         type: "realtime",
@@ -53,6 +67,7 @@ export class TingwuService {
               new CreateTaskRequestParametersTranscriptionDiarization({
                 speakerCount: 0, // 0表示自动识别说话人数量
               }),
+            phraseId,
             // 注意：实时转写采用严格模式，严格遵循语音输入，不进行自动修正
             // 修正功能仅在总结和分析部分使用
           }),
@@ -118,6 +133,53 @@ export class TingwuService {
       );
       throw new InternalServerErrorException("Create realtime task failed");
     }
+  }
+
+
+  private async ensurePhraseId(
+    scene: ScenePreset
+  ): Promise<string | undefined> {
+    if (scene === "default") {
+      return undefined;
+    }
+
+    const cached = this.phraseIdCache.get(scene);
+    if (cached) {
+      return cached;
+    }
+
+    const hotwords = SCENE_HOTWORDS[scene] ?? [];
+    if (hotwords.length === 0) {
+      return undefined;
+    }
+
+    try {
+      const request = new CreateTranscriptionPhrasesRequest({
+        name: `scene-${scene}-${Date.now()}`,
+        description: `Scene preset ${SCENE_LABELS[scene]}`,
+        wordWeights: this.buildWordWeights(hotwords),
+      });
+      const response = await this.client.createTranscriptionPhrases(request);
+      const phraseId =
+        response?.body?.data?.phraseId ??
+        response?.body?.Data?.PhraseId ??
+        response?.body?.Data?.phraseId;
+      if (phraseId) {
+        this.phraseIdCache.set(scene, phraseId);
+        return phraseId;
+      }
+      this.logger.warn(`Phrase created but missing phraseId for scene ${scene}`);
+    } catch (error) {
+      this.logger.warn(
+        `Failed to create phrase list for scene ${scene}`,
+        (error as any)?.body ?? error
+      );
+    }
+    return undefined;
+  }
+
+  private buildWordWeights(words: string[]): string {
+    return words.map((word) => `${word} 1`).join("\n");
   }
 
   async triggerCustomPrompt(taskId: string, type: "inner_os" | "brainstorm") {//触发自定义提示词

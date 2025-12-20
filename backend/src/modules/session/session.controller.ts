@@ -9,7 +9,12 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { SessionService } from "./session.service";
-import { CreateSessionDto, UploadAudioChunkDto, AskQuestionDto } from "./session.dto";
+import {
+  CreateSessionDto,
+  UploadAudioChunkDto,
+  AskQuestionDto,
+  VisualizationOptionConfirmDto,
+} from "./session.dto";
 import { SkillType } from "../skill/skill.service";
 
 @Controller("sessions")
@@ -57,9 +62,14 @@ export class SessionController {
   @UseInterceptors(FileInterceptor("file"))
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
-    @Body("meetingId") meetingId?: string
+    @Body("meetingId") meetingId?: string,
+    @Body("scene") scene?: string
   ) {
-    const result = await this.sessionService.uploadAudioFile(file, meetingId);
+    const result = await this.sessionService.uploadAudioFile(
+      file,
+      meetingId,
+      scene
+    );
     return { ok: true, ...result };
   }
 
@@ -118,6 +128,19 @@ export class SessionController {
     }
   ) {
     return this.sessionService.generateVisualization(id, body.type, body.chartType);
+  }
+
+  @Post(":id/visualization/options")
+  async getVisualizationOptions(@Param("id") id: string) {
+    return this.sessionService.getVisualizationOptions(id);
+  }
+
+  @Post(":id/visualization/confirm")
+  async confirmVisualization(
+    @Param("id") id: string,
+    @Body() body: VisualizationOptionConfirmDto
+  ) {
+    return this.sessionService.confirmVisualizationOption(id, body.optionId);
   }
 
   @Get(":id/visualizations")

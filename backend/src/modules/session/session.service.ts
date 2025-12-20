@@ -29,7 +29,7 @@ export class SessionService {
   private readonly logger = new Logger(SessionService.name);
   private sessions = new Map<
     string,
-    { taskId: string; meetingJoinUrl: string }
+    { taskId: string; meetingJoinUrl: string; scene?: string }
   >();
   private transcripts = new Map<string, Transcript[]>();
   private summaries = new Map<string, any[]>();
@@ -51,7 +51,11 @@ export class SessionService {
     const { taskId, meetingJoinUrl } =
       await this.tingwuService.createRealtimeTask(body);
 
-    this.sessions.set(sessionId, { taskId, meetingJoinUrl });
+    this.sessions.set(sessionId, {
+      taskId,
+      meetingJoinUrl,
+      scene: body.scene,
+    });
     this.taskStatuses.set(sessionId, "NEW");
     this.audioRelayService.create(sessionId, meetingJoinUrl);
     this.pollerService.registerTask(sessionId, taskId, async (payload) => {
@@ -126,6 +130,7 @@ export class SessionService {
     this.logger.log(`Refreshing realtime task for session ${sessionId}...`);
     const { taskId, meetingJoinUrl } = await this.tingwuService.createRealtimeTask({
       meetingId: `meeting-${Date.now()}`,
+      scene: session.scene,
     });
     
     // 更新 session 信息
@@ -252,7 +257,8 @@ export class SessionService {
 
   async uploadAudioFile(
     file: Express.Multer.File,
-    meetingId?: string
+    meetingId?: string,
+    scene?: string
   ): Promise<{ sessionId: string; taskId: string }> {
     if (!file?.buffer || file.size === 0) {
       throw new BadRequestException("文件为空");
@@ -260,6 +266,7 @@ export class SessionService {
 
     const session = await this.createRealtimeSession({
       meetingId: meetingId ?? `upload-${Date.now()}`,
+      scene,
     });
 
     await this.audioRelayService.ingestAudioFile(
@@ -453,6 +460,28 @@ ${context}
       type,
       chartType,
     });
+  }
+
+  async getVisualizationOptions(sessionId: string) {
+    if (!this.sessions.has(sessionId)) {
+      throw new NotFoundException("Session not found");
+    }
+
+    return {
+      sessionId,
+      options: this.visualizationService.getVisualizationOptions(sessionId),
+    };
+  }
+
+  async confirmVisualizationOption(sessionId: string, optionId: string) {
+    if (!this.sessions.has(sessionId)) {
+      throw new NotFoundException("Session not found");
+    }
+
+    return this.visualizationService.confirmVisualizationOption(
+      sessionId,
+      optionId
+    );
   }
 
   async getVisualizations(sessionId: string) {
