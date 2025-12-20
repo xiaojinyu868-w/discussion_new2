@@ -4,6 +4,7 @@ import { SessionModule } from "./session/session.module";
 import { ContextModule } from "./context/context.module";
 import { LLMModule } from "./llm/llm.module";
 import { AutoPushModule } from "./auto-push/auto-push.module";
+import { AgentModule } from "./agent/agent.module";
 import configuration from "../shared/configuration";
 
 @Module({
@@ -15,6 +16,7 @@ import configuration from "../shared/configuration";
     ContextModule,
     LLMModule,
     AutoPushModule,
+    AgentModule,
     SessionModule,
   ],
 })

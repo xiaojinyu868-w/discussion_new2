@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from "@nestjs/common";
@@ -11,10 +12,14 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { SessionService } from "./session.service";
 import { CreateSessionDto, UploadAudioChunkDto, AskQuestionDto } from "./session.dto";
 import { SkillType } from "../skill/skill.service";
+import { AgentService } from "../agent/agent.service";
 
 @Controller("sessions")
 export class SessionController {
-  constructor(private readonly sessionService: SessionService) {}
+  constructor(
+    private readonly sessionService: SessionService,
+    private readonly agentService: AgentService,
+  ) {}
 
   @Get("health")
   async health() {
@@ -139,5 +144,42 @@ export class SessionController {
     @Param("visId") visId: string
   ) {
     return this.sessionService.getVisualizationImage(id, visId);
+  }
+
+  // ===== Agent API (V3) =====
+
+  @Post(":id/agent/start")
+  async startAgent(@Param("id") id: string) {
+    this.agentService.startAgent(id);
+    return { success: true, message: "Agent started" };
+  }
+
+  @Post(":id/agent/stop")
+  async stopAgent(@Param("id") id: string) {
+    this.agentService.stopAgent(id);
+    return { success: true, message: "Agent stopped" };
+  }
+
+  @Get(":id/agent/status")
+  async getAgentStatus(@Param("id") id: string) {
+    return this.agentService.getAgentStatus(id);
+  }
+
+  @Get(":id/agent/insights")
+  async getAgentInsights(
+    @Param("id") id: string,
+    @Query("afterId") afterId?: string
+  ) {
+    const insights = afterId
+      ? this.agentService.getNewInsights(id, afterId)
+      : this.agentService.getAgentInsights(id);
+    console.log(`[Agent] getAgentInsights: sessionId=${id}, afterId=${afterId}, count=${insights.length}`);
+    return { insights };
+  }
+
+  @Post(":id/agent/trigger")
+  async triggerAgentAnalysis(@Param("id") id: string) {
+    const insights = await this.agentService.triggerAnalysis(id);
+    return { insights };
   }
 }

@@ -8,6 +8,7 @@ import { AutoPushModule } from "../auto-push/auto-push.module";
 import { ContextModule } from "../context/context.module";
 import { LLMModule } from "../llm/llm.module";
 import { VisualizationModule } from "../visualization/visualization.module";
+import { AgentModule } from "../agent/agent.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { VisualizationModule } from "../visualization/visualization.module";
     ContextModule,
     LLMModule,
     VisualizationModule,
+    AgentModule,
   ],
   controllers: [SessionController],
   providers: [SessionService],

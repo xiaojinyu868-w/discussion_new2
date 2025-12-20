@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>遇见会议 - Meeting Meeting</title>
+  <title>遇见会议 - Agent 联动测试 (V3)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1607,6 +1607,157 @@
       background: rgba(0, 212, 255, 0.3);
       color: white;
     }
+
+    /* ========== V3 Agent 联动样式 ========== */
+
+    /* Agent 开关提示 */
+    .agent-hint {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      padding-left: 4px;
+    }
+
+    /* 转写项关联标记 */
+    .transcript-item.has-insight {
+      border-left: 3px solid var(--aurora-purple);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .transcript-item.has-insight::before {
+      display: none;
+    }
+
+    .transcript-item.has-insight:hover {
+      background: rgba(168, 85, 247, 0.1);
+    }
+
+    .transcript-link-badge {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.9rem;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .transcript-item.has-insight:hover .transcript-link-badge {
+      opacity: 1;
+    }
+
+    /* 洞察来源引用 */
+    .insight-card__source {
+      padding: 8px 12px;
+      background: rgba(168, 85, 247, 0.1);
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .insight-card__source:hover {
+      background: rgba(168, 85, 247, 0.2);
+    }
+
+    .source-label {
+      font-size: 0.75rem;
+      color: var(--aurora-purple);
+      font-weight: 500;
+    }
+
+    .source-text {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* 自动洞察徽章 */
+    .insight-card__badge {
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      margin-left: 8px;
+    }
+
+    .insight-card__badge.auto {
+      background: linear-gradient(135deg, var(--aurora-purple), var(--aurora-pink));
+      color: white;
+    }
+
+    /* 新洞察入场动画 */
+    @keyframes insightSlideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .insight-card.auto-insight {
+      animation: insightSlideIn 0.4s var(--ease-spring);
+    }
+
+    /* 高亮闪烁效果 */
+    @keyframes highlightPulse {
+      0%, 100% { background: transparent; }
+      50% { background: rgba(168, 85, 247, 0.2); }
+    }
+
+    .highlight-pulse {
+      animation: highlightPulse 1s ease-in-out 2;
+    }
+
+    /* Agent 洞察类型样式 */
+    .insight-card[data-type="data_chart"] { border-left: 3px solid var(--aurora-cyan); }
+    .insight-card[data-type="chart_generated"] { border-left: 3px solid var(--aurora-cyan); }
+    .insight-card[data-type="skill_result"] { border-left: 3px solid var(--aurora-purple); }
+    .insight-card[data-type="visualization_generated"] { border-left: 3px solid var(--aurora-pink); }
+    .insight-card[data-type="focus_reminder"] { border-left: 3px solid var(--aurora-pink); }
+    .insight-card[data-type="redundancy_hint"] { border-left: 3px solid var(--color-warning); }
+    .insight-card[data-type="decision_record"] { border-left: 3px solid var(--color-success); }
+    .insight-card[data-type="periodic_summary"] { border-left: 3px solid var(--aurora-purple); }
+
+    .insight-card[data-type="data_chart"] .insight-card__icon { background: rgba(0, 212, 255, 0.15); }
+    .insight-card[data-type="chart_generated"] .insight-card__icon { background: rgba(0, 212, 255, 0.15); }
+    .insight-card[data-type="skill_result"] .insight-card__icon { background: rgba(139, 92, 246, 0.15); }
+    .insight-card[data-type="visualization_generated"] .insight-card__icon { background: rgba(255, 107, 157, 0.15); }
+    .insight-card[data-type="focus_reminder"] .insight-card__icon { background: rgba(255, 107, 157, 0.15); }
+    .insight-card[data-type="redundancy_hint"] .insight-card__icon { background: rgba(251, 191, 36, 0.15); }
+    .insight-card[data-type="decision_record"] .insight-card__icon { background: rgba(0, 255, 200, 0.15); }
+    .insight-card[data-type="periodic_summary"] .insight-card__icon { background: rgba(168, 85, 247, 0.15); }
+
+    /* 数据点样式 */
+    .data-points {
+      font-size: 0.8rem;
+      color: var(--aurora-cyan);
+      padding: 6px 10px;
+      background: rgba(0, 212, 255, 0.1);
+      border-radius: var(--radius-sm);
+      margin: 8px 0;
+    }
+
+    .suggestion {
+      font-size: 0.85rem;
+      color: var(--color-success);
+      font-style: italic;
+    }
+
+    /* 洞察卡片内的可视化图片 */
+    .insight-card__visualization {
+      margin-top: 12px;
+    }
+
+    .insight-card__visualization img {
+      width: 100%;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      border: 1px solid var(--border-subtle);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .insight-card__visualization img:hover {
+      border-color: var(--border-glow);
+      box-shadow: var(--shadow-glow);
+    }
   </style>
 </head>
 <body>
@@ -1794,6 +1945,12 @@
             <span class="auto-push-label">自动推送分析</span>
             <div class="toggle-switch active" id="autoPushToggle" onclick="toggleAutoPush()"></div>
           </div>
+          
+          <div class="auto-push-row">
+            <span class="auto-push-label">🤖 Agent 智能联动</span>
+            <div class="toggle-switch active" id="agentToggle" onclick="toggleAgent()"></div>
+          </div>
+          <div class="agent-hint">自动检测数据/跑题，联动生成洞察和图表</div>
         </div>
 
         <!-- 视觉化 -->
@@ -1865,6 +2022,12 @@
       apiBaseUrl: localStorage.getItem('apiBaseUrl') || 'http://localhost:4000',
       currentVisualizationType: 'chart',
       currentChartType: 'radar',
+      // V3 Agent 状态
+      agentEnabled: true,
+      agentPollingInterval: null,
+      agentInsights: [],
+      lastInsightId: null,
+      transcriptInsightMap: {}, // 转写ID -> 洞察ID 映射
     };
 
     // ========== DOM Elements ==========
@@ -1901,6 +2064,8 @@
       chartTypeSelect: $('chartTypeSelect'),
       visualizationList: $('visualizationList'),
       downloadDropdown: $('downloadDropdown'),
+      // V3 Agent 元素
+      agentToggle: $('agentToggle'),
     };
 
     // ========== Initialize ==========
@@ -2102,6 +2267,11 @@
         if (state.autoPushEnabled) {
           startAutoPush();
         }
+
+        // V3: 如果 Agent 已开启，启动 Agent
+        if (state.agentEnabled) {
+          startAgent();
+        }
         
         showToast('🎙️ 录音已开始', 'success');
       } catch (error) {
@@ -2126,6 +2296,7 @@
       stopWaveformAnimation();
       stopTimerUpdate();
       stopAutoPush(); // 停止自动推送
+      stopAgent(); // V3: 停止 Agent
       // 停止录音时停止实时轮询，但保留 sessionId 以便后续获取结果
       stopPolling();
       updateRecordingUI();
@@ -2297,12 +2468,21 @@
         return;
       }
       
-      const html = state.transcription.map(item => `
-        <div class="transcript-item">
-          <div class="transcript-time">${formatTime(item.startMs)}</div>
-          <div class="transcript-text">${escapeHtml(item.text)}</div>
-        </div>
-      `).join('');
+      // V3: 为每个转写项添加唯一 ID，支持关联
+      const html = state.transcription.map((item, index) => {
+        const transcriptId = `transcript-${index}`;
+        const hasInsight = state.transcriptInsightMap[transcriptId];
+        const insightClass = hasInsight ? 'has-insight' : '';
+        const badge = hasInsight ? '<span class="transcript-link-badge" title="点击查看相关洞察">💡</span>' : '';
+        
+        return `
+          <div class="transcript-item ${insightClass}" data-transcript-id="${transcriptId}" ${hasInsight ? `onclick="scrollToInsight('${state.transcriptInsightMap[transcriptId]}')"` : ''}>
+            <div class="transcript-time">${formatTime(item.startMs)}</div>
+            <div class="transcript-text">${escapeHtml(item.text)}</div>
+            ${badge}
+          </div>
+        `;
+      }).join('');
       
       // 检查是否已在底部
       const wasAtBottom = elements.transcriptionList.scrollHeight - elements.transcriptionList.scrollTop - elements.transcriptionList.clientHeight < 100;
@@ -2327,21 +2507,52 @@
     };
 
     function renderSummaries() {
-      elements.insightCount.textContent = state.summaries.length;
+      // 计算总数：手动技能洞察 + Agent 洞察
+      const totalCount = state.summaries.length + state.agentInsights.length;
+      elements.insightCount.textContent = totalCount;
       
-      if (state.summaries.length === 0) {
-        // 清空洞察列表，显示空状态
-        elements.summaryList.innerHTML = `
-          <div class="empty-state" id="insightEmptyState">
-            <div class="empty-state__icon">💡</div>
-            <p class="empty-state__text">触发 AI 技能后，洞察将显示在这里</p>
-          </div>
-          <div id="visualizationList"></div>
-        `;
-        elements.visualizationList = $('visualizationList');
+      console.log('renderSummaries called:', { 
+        summaries: state.summaries.length, 
+        agentInsights: state.agentInsights.length,
+        totalCount 
+      });
+      
+      // 如果没有任何内容，显示空状态（但不清除已有的 Agent 洞察 DOM）
+      if (state.summaries.length === 0 && state.agentInsights.length === 0) {
+        // 检查 DOM 中是否有 Agent 洞察卡片
+        const existingAgentCards = elements.summaryList.querySelectorAll('.auto-insight');
+        if (existingAgentCards.length === 0) {
+          // 清空洞察列表，显示空状态
+          elements.summaryList.innerHTML = `
+            <div class="empty-state" id="insightEmptyState">
+              <div class="empty-state__icon">💡</div>
+              <p class="empty-state__text">触发 AI 技能后，洞察将显示在这里</p>
+            </div>
+            <div id="visualizationList"></div>
+          `;
+          elements.visualizationList = $('visualizationList');
+          elements.insightEmptyState = $('insightEmptyState');
+        }
         return;
       }
       
+      // 隐藏空状态
+      const emptyState = document.getElementById('insightEmptyState');
+      if (emptyState) {
+        emptyState.style.display = 'none';
+      }
+      
+      // 只更新手动技能洞察部分，不影响 Agent 洞察
+      // 查找或创建手动洞察容器
+      let manualInsightsContainer = document.getElementById('manualInsightsContainer');
+      if (!manualInsightsContainer) {
+        manualInsightsContainer = document.createElement('div');
+        manualInsightsContainer.id = 'manualInsightsContainer';
+        // 插入到 summaryList 的开头
+        elements.summaryList.insertBefore(manualInsightsContainer, elements.summaryList.firstChild);
+      }
+      
+      // 渲染手动技能洞察
       const html = state.summaries.map(card => {
         const typeInfo = INSIGHT_TYPES[card.type] || INSIGHT_TYPES.auto_analysis;
         const content = formatInsightContent(card.content, card.type);
@@ -2359,16 +2570,14 @@
         `;
       }).join('');
       
-      // 检查是否已在底部
-      const wasAtBottom = elements.summaryList.scrollHeight - elements.summaryList.scrollTop - elements.summaryList.clientHeight < 100;
+      manualInsightsContainer.innerHTML = html;
       
-      const existingVis = elements.visualizationList?.innerHTML || '';
-      elements.summaryList.innerHTML = html + '<div id="visualizationList">' + existingVis + '</div>';
-      elements.visualizationList = $('visualizationList');
-      
-      // 如果之前在底部，自动滚动到底部
-      if (wasAtBottom) {
-        elements.summaryList.scrollTop = elements.summaryList.scrollHeight;
+      // 确保 visualizationList 存在
+      if (!document.getElementById('visualizationList')) {
+        const visList = document.createElement('div');
+        visList.id = 'visualizationList';
+        elements.summaryList.appendChild(visList);
+        elements.visualizationList = visList;
       }
       
       // 更新滚动按钮状态
@@ -2676,6 +2885,400 @@
       }
     }
 
+    // ========== V3 Agent 联动功能 ==========
+    
+    // 切换 Agent 开关
+    async function toggleAgent() {
+      state.agentEnabled = !state.agentEnabled;
+      elements.agentToggle.classList.toggle('active', state.agentEnabled);
+
+      if (state.agentEnabled) {
+        if (state.isRecording && state.sessionId) {
+          startAgent();
+        }
+        showToast('🤖 Agent 智能联动已开启', 'success');
+      } else {
+        stopAgent();
+        showToast('Agent 智能联动已关闭', 'info');
+      }
+    }
+
+    // 启动 Agent
+    async function startAgent() {
+      if (!state.sessionId || !state.agentEnabled) return;
+
+      try {
+        await apiCall('POST', `/sessions/${state.sessionId}/agent/start`);
+        console.log('Agent started');
+        
+        // 开始轮询 Agent 洞察
+        startAgentPolling();
+      } catch (error) {
+        console.warn('启动 Agent 失败:', error);
+      }
+    }
+
+    // 停止 Agent
+    async function stopAgent() {
+      if (!state.sessionId) return;
+
+      try {
+        await apiCall('POST', `/sessions/${state.sessionId}/agent/stop`);
+        console.log('Agent stopped');
+      } catch (error) {
+        console.warn('停止 Agent 失败:', error);
+      }
+
+      stopAgentPolling();
+    }
+
+    // 开始轮询 Agent 洞察
+    function startAgentPolling() {
+      if (state.agentPollingInterval) return;
+
+      console.log('Starting Agent polling...');
+      
+      // 立即执行一次
+      pollAgentInsights();
+
+      state.agentPollingInterval = setInterval(async () => {
+        await pollAgentInsights();
+      }, 5000); // 每 5 秒轮询一次
+    }
+    
+    // 轮询 Agent 洞察
+    async function pollAgentInsights() {
+      if (!state.sessionId || !state.agentEnabled) return;
+
+      try {
+        const url = state.lastInsightId 
+          ? `/sessions/${state.sessionId}/agent/insights?afterId=${state.lastInsightId}`
+          : `/sessions/${state.sessionId}/agent/insights`;
+        
+        console.log('Polling Agent insights:', url);
+        const response = await apiCall('GET', url);
+        console.log('Agent insights response:', response);
+        
+        if (response.insights && response.insights.length > 0) {
+          console.log(`Received ${response.insights.length} new insights`);
+          response.insights.forEach(insight => {
+            addAgentInsight(insight);
+          });
+          // 更新最后的洞察 ID
+          state.lastInsightId = response.insights[response.insights.length - 1].id;
+        }
+      } catch (error) {
+        console.warn('获取 Agent 洞察失败:', error);
+      }
+    }
+
+    // 停止轮询 Agent 洞察
+    function stopAgentPolling() {
+      if (state.agentPollingInterval) {
+        clearInterval(state.agentPollingInterval);
+        state.agentPollingInterval = null;
+      }
+    }
+
+    // 添加 Agent 洞察到右侧面板
+    function addAgentInsight(insight) {
+      // 检查是否已存在（避免重复）
+      if (state.agentInsights.some(i => i.id === insight.id)) {
+        return;
+      }
+      
+      state.agentInsights.push(insight);
+      
+      // 如果有关联的转写段落，建立映射
+      // 后端返回的是 triggerSegmentIds，格式为 "seg-{sessionId}-{index}"
+      if (insight.triggerSegmentIds && insight.triggerSegmentIds.length > 0) {
+        insight.triggerSegmentIds.forEach(segId => {
+          // 从后端的 segment ID 提取索引，转换为前端的 transcript ID
+          const match = segId.match(/seg-[^-]+-(\d+)/);
+          if (match) {
+            const frontendId = `transcript-${match[1]}`;
+            state.transcriptInsightMap[frontendId] = insight.id;
+          }
+        });
+        // 更新转写列表中的关联标记
+        updateTranscriptLinks();
+      }
+
+      // 直接渲染洞察卡片到 DOM（不依赖 renderSummaries）
+      renderAgentInsightCard(insight);
+      
+      console.log('Agent insight added:', insight.type, insight.id);
+    }
+
+    // 渲染 Agent 洞察卡片
+    function renderAgentInsightCard(insight) {
+      const card = document.createElement('div');
+      card.className = 'insight-card auto-insight';
+      card.dataset.type = insight.type;
+      card.dataset.insightId = insight.id;
+
+      const typeIcons = {
+        'data_chart': '📊',
+        'chart_generated': '📊',
+        'skill_result': '🎭',
+        'visualization_generated': '🎨',
+        'focus_reminder': '🎯',
+        'redundancy_hint': '🔄',
+        'decision_record': '✅',
+        'periodic_summary': '📋'
+      };
+
+      const typeLabels = {
+        'data_chart': '数据洞察',
+        'chart_generated': '数据图表',
+        'skill_result': 'AI技能',
+        'visualization_generated': '视觉化',
+        'focus_reminder': '聚焦提醒',
+        'redundancy_hint': '冗余提示',
+        'decision_record': '决策记录',
+        'periodic_summary': '阶段总结'
+      };
+
+      const icon = typeIcons[insight.type] || '💡';
+      const label = typeLabels[insight.type] || '智能洞察';
+
+      // 处理 content 对象
+      const content = insight.content || {};
+      const title = content.title || label;
+      const summary = content.summary || content.hint || '';
+      const dataPoints = content.dataPoints || [];
+      const suggestion = content.suggestion || '';
+      const decision = content.decision || '';
+      const nextSteps = content.nextSteps || [];
+      const reason = content.reason || '';
+
+      // 来源文本（从触发段落获取）
+      let sourceHtml = '';
+      if (insight.triggerSegmentIds && insight.triggerSegmentIds.length > 0) {
+        // 后端返回的是 "seg-{sessionId}-{index}" 格式，需要提取索引
+        let sourceIndex = -1;
+        for (const segId of insight.triggerSegmentIds) {
+          const match = segId.match(/seg-[^-]+-(\d+)/);
+          if (match) {
+            sourceIndex = parseInt(match[1], 10);
+            break;
+          }
+        }
+        
+        if (sourceIndex >= 0 && sourceIndex < state.transcription.length) {
+          const sourceSegment = state.transcription[sourceIndex];
+          sourceHtml = `
+            <div class="insight-card__source" onclick="scrollToTranscript('transcript-${sourceIndex}')">
+              <span class="source-label">📌 来源</span>
+              <div class="source-text">"${sourceSegment.text.substring(0, 100)}${sourceSegment.text.length > 100 ? '...' : ''}"</div>
+            </div>
+          `;
+        }
+      }
+
+      // 数据点
+      let dataPointsHtml = '';
+      if (dataPoints.length > 0) {
+        dataPointsHtml = `<div class="data-points">📈 关键数据: ${dataPoints.join(', ')}</div>`;
+      }
+
+      // 建议
+      let suggestionHtml = '';
+      if (suggestion) {
+        suggestionHtml = `<div class="suggestion">💡 ${suggestion}</div>`;
+      }
+
+      // 原因
+      let reasonHtml = '';
+      if (reason) {
+        reasonHtml = `<div class="suggestion" style="color: var(--text-secondary);">📝 ${reason}</div>`;
+      }
+
+      // 决策和后续步骤
+      let decisionHtml = '';
+      if (decision) {
+        decisionHtml = `<div class="data-points" style="background: rgba(0, 255, 200, 0.1); color: var(--color-success);">📋 决策: ${decision}</div>`;
+        if (nextSteps.length > 0) {
+          decisionHtml += `<div class="suggestion">📌 后续: ${nextSteps.join('; ')}</div>`;
+        }
+      }
+
+      // 技能结果特殊处理（潜台词、灵感等）
+      let skillContentHtml = '';
+      if (insight.type === 'skill_result') {
+        const skillType = content.skillType;
+        if (skillType === 'inner_os' && content.quote) {
+          skillContentHtml = `
+            <div class="skill-content" style="margin-top: 8px; padding: 12px; background: rgba(139, 92, 246, 0.1); border-radius: 8px;">
+              <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">💬 原话</div>
+              <div style="font-style: italic; margin-bottom: 8px;">"${content.quote}"</div>
+              <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">🎭 内心OS</div>
+              <div style="color: var(--aurora-purple);">${content.innerThought || ''}</div>
+              ${content.emotion ? `<div style="margin-top: 4px; font-size: 12px; color: var(--text-muted);">情绪: ${content.emotion}</div>` : ''}
+            </div>
+          `;
+        } else if (skillType === 'brainstorm' && content.idea) {
+          skillContentHtml = `
+            <div class="skill-content" style="margin-top: 8px; padding: 12px; background: rgba(251, 191, 36, 0.1); border-radius: 8px;">
+              <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">💡 创意</div>
+              <div style="color: var(--color-warning); font-weight: 500; margin-bottom: 8px;">${content.idea}</div>
+              ${content.rationale ? `<div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">📖 ${content.rationale}</div>` : ''}
+              ${content.challenge ? `<div style="font-size: 12px; color: var(--text-muted);">🎯 挑战: ${content.challenge}</div>` : ''}
+            </div>
+          `;
+        } else if (skillType === 'stop_talking') {
+          skillContentHtml = `
+            <div class="skill-content" style="margin-top: 8px; padding: 12px; background: rgba(255, 107, 157, 0.1); border-radius: 8px;">
+              ${content.mainTopic ? `<div style="margin-bottom: 4px;"><span style="color: var(--text-secondary);">主题:</span> ${content.mainTopic}</div>` : ''}
+              ${content.deviation ? `<div style="margin-bottom: 4px; color: var(--color-warning);"><span style="color: var(--text-secondary);">偏离:</span> ${content.deviation}</div>` : ''}
+              ${content.reminder ? `<div style="color: var(--aurora-pink);">💬 ${content.reminder}</div>` : ''}
+            </div>
+          `;
+        }
+      }
+
+      // 可视化图片
+      let visualizationHtml = '';
+      if (insight.visualization && (insight.visualization.imageUrl || insight.visualization.imageBase64)) {
+        const imgSrc = insight.visualization.imageUrl || `data:image/png;base64,${insight.visualization.imageBase64}`;
+        visualizationHtml = `
+          <div class="insight-card__visualization">
+            <img src="${imgSrc}" 
+                 alt="数据图表" 
+                 onclick="showImageModal(this.src)" />
+          </div>
+        `;
+      }
+
+      // 时间戳
+      const timestamp = insight.createdAt ? new Date(insight.createdAt) : new Date();
+
+      card.innerHTML = `
+        <div class="insight-card__header">
+          <span class="insight-card__icon">${icon}</span>
+          <span class="insight-card__title">${title}</span>
+          <span class="insight-card__badge auto">自动</span>
+          <span class="insight-card__time">${timestamp.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
+        ${sourceHtml}
+        <div class="insight-card__content">
+          ${summary}
+        </div>
+        ${dataPointsHtml}
+        ${reasonHtml}
+        ${suggestionHtml}
+        ${decisionHtml}
+        ${skillContentHtml}
+        ${visualizationHtml}
+      `;
+
+      // 添加到洞察列表（在 visualizationList 之前）
+      const visList = document.getElementById('visualizationList');
+      if (visList) {
+        elements.summaryList.insertBefore(card, visList);
+      } else {
+        elements.summaryList.appendChild(card);
+      }
+      
+      // 滚动到底部
+      elements.summaryList.scrollTop = elements.summaryList.scrollHeight;
+
+      // 隐藏空状态（重新获取元素，因为可能被 renderSummaries 重建）
+      const emptyState = document.getElementById('insightEmptyState');
+      if (emptyState) {
+        emptyState.style.display = 'none';
+      }
+      elements.insightEmptyState = emptyState;
+
+      // 更新计数
+      updateInsightCount();
+      
+      console.log('Agent insight card rendered:', insight.type, 'to summaryList');
+    }
+
+    // 更新转写列表中的关联标记
+    function updateTranscriptLinks() {
+      document.querySelectorAll('.transcript-item').forEach(item => {
+        const transcriptId = item.dataset.transcriptId;
+        if (state.transcriptInsightMap[transcriptId]) {
+          item.classList.add('has-insight');
+          
+          // 添加关联徽章（如果还没有）
+          if (!item.querySelector('.transcript-link-badge')) {
+            const badge = document.createElement('span');
+            badge.className = 'transcript-link-badge';
+            badge.textContent = '💡';
+            badge.title = '点击查看相关洞察';
+            item.appendChild(badge);
+          }
+
+          // 添加点击事件
+          item.onclick = () => scrollToInsight(state.transcriptInsightMap[transcriptId]);
+        }
+      });
+    }
+
+    // 滚动到指定洞察卡片
+    function scrollToInsight(insightId) {
+      const card = document.querySelector(`.insight-card[data-insight-id="${insightId}"]`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('highlight-pulse');
+        setTimeout(() => card.classList.remove('highlight-pulse'), 2000);
+      }
+    }
+
+    // 滚动到指定转写段落
+    function scrollToTranscript(transcriptId) {
+      if (!transcriptId) return;
+      const item = document.querySelector(`.transcript-item[data-transcript-id="${transcriptId}"]`);
+      if (item) {
+        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        item.classList.add('highlight-pulse');
+        setTimeout(() => item.classList.remove('highlight-pulse'), 2000);
+      }
+    }
+
+    // 更新洞察计数
+    function updateInsightCount() {
+      const count = state.summaries.length + state.agentInsights.length;
+      if (elements.insightCount) {
+        elements.insightCount.textContent = count;
+      }
+    }
+
+    // 显示图片模态框
+    function showImageModal(src) {
+      // 创建模态框
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        cursor: pointer;
+      `;
+      
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.cssText = `
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 8px;
+        box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+      `;
+      
+      modal.appendChild(img);
+      modal.onclick = () => modal.remove();
+      document.body.appendChild(modal);
+    }
+
     // ========== File Upload ==========
     async function uploadAndTranscribe() {
       if (!state.isConnected) { showToast('请先连接后端服务', 'error'); return; }
@@ -2884,6 +3487,7 @@
       // 停止之前的轮询和定时器
       stopPolling();
       stopAutoPush();
+      stopAgentPolling(); // V3: 停止 Agent 轮询
       stopTimerUpdate();
       
       // 重置核心状态
@@ -2893,6 +3497,11 @@
       state.summaries = [];
       state.activeSkills = [];
       state.recordingStartTime = null;
+      
+      // V3: 重置 Agent 状态
+      state.agentInsights = [];
+      state.lastInsightId = null;
+      state.transcriptInsightMap = {};
       
       // 重置计时器显示
       elements.recordingTimer.textContent = '00:00';
