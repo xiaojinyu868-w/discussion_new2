@@ -207,6 +207,52 @@
       font-size: 0.8rem;
       color: var(--text-secondary);
     }
+
+    /* 后端切换器 */
+    .backend-switcher {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    .backend-switcher:hover {
+      border-color: var(--aurora-cyan);
+      background: rgba(0, 212, 255, 0.1);
+    }
+    .backend-switcher-toggle {
+      position: relative;
+      width: 36px;
+      height: 18px;
+      background: var(--bg-secondary);
+      border-radius: 9px;
+      transition: background var(--duration-fast);
+    }
+    .backend-switcher-toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      background: var(--text-secondary);
+      border-radius: 50%;
+      transition: all var(--duration-fast);
+    }
+    .backend-switcher.cloud .backend-switcher-toggle {
+      background: var(--aurora-cyan);
+    }
+    .backend-switcher.cloud .backend-switcher-toggle::after {
+      left: 20px;
+      background: white;
+    }
+    .backend-label { font-family: var(--font-mono); font-size: 0.7rem; }
     
     .status-dot { 
       width: 8px; 
@@ -1657,6 +1703,10 @@
         <div class="status-dot" id="connectionStatus"></div>
         <span id="connectionText">检测中...</span>
       </div>
+      <div class="backend-switcher" id="backendSwitcher" onclick="toggleBackend()" title="切换后端地址">
+        <span class="backend-label" id="backendLabel">本地</span>
+        <div class="backend-switcher-toggle"></div>
+      </div>
     </div>
   </nav>
 
@@ -1864,8 +1914,15 @@
       mediaRecorder: null,
       mediaStream: null, // 保存 MediaStream 以便暂停后恢复
       apiBaseUrl: localStorage.getItem('apiBaseUrl') || 'http://localhost:4000',
+      isCloudBackend: localStorage.getItem('isCloudBackend') === 'true',
       currentVisualizationType: 'chart',
       currentChartType: 'radar',
+    };
+
+    // 后端地址配置
+    const BACKEND_CONFIG = {
+      local: 'http://localhost:4000',
+      cloud: 'https://3598ee05fba0.ngrok-free.app'
     };
 
     // ========== DOM Elements ==========
@@ -1906,10 +1963,49 @@
 
     // ========== Initialize ==========
     function init() {
+      initBackendSwitcher();
       setupNavScroll();
       setupWaveform();
       setupUpload();
       setupScrollListeners();
+      testConnection();
+    }
+
+    // ========== Backend Switcher ==========
+    function initBackendSwitcher() {
+      const switcher = $('backendSwitcher');
+      const label = $('backendLabel');
+      if (state.isCloudBackend) {
+        switcher.classList.add('cloud');
+        label.textContent = '公网';
+        state.apiBaseUrl = BACKEND_CONFIG.cloud;
+      } else {
+        switcher.classList.remove('cloud');
+        label.textContent = '本地';
+        state.apiBaseUrl = BACKEND_CONFIG.local;
+      }
+    }
+
+    function toggleBackend() {
+      state.isCloudBackend = !state.isCloudBackend;
+      localStorage.setItem('isCloudBackend', state.isCloudBackend);
+      
+      const switcher = $('backendSwitcher');
+      const label = $('backendLabel');
+      
+      if (state.isCloudBackend) {
+        switcher.classList.add('cloud');
+        label.textContent = '公网';
+        state.apiBaseUrl = BACKEND_CONFIG.cloud;
+        showToast('已切换到公网后端', 'info');
+      } else {
+        switcher.classList.remove('cloud');
+        label.textContent = '本地';
+        state.apiBaseUrl = BACKEND_CONFIG.local;
+        showToast('已切换到本地后端', 'info');
+      }
+      
+      localStorage.setItem('apiBaseUrl', state.apiBaseUrl);
       testConnection();
     }
 
