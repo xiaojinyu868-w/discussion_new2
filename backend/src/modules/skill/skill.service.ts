@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ContextStoreService } from "../context/context-store.service";
 import { LLMAdapterService } from "../llm/llm-adapter.service";
+import * as crypto from "crypto";
 
 export type SkillType = "inner_os" | "brainstorm" | "stop_talking";
 
@@ -226,7 +227,20 @@ export class SkillService {
   }
 
   /**
+   * 生成内容哈希，用于去重
+   */
+  private generateContentHash(content: any): string {
+    const contentStr = JSON.stringify(content);
+    return crypto
+      .createHash("md5")
+      .update(contentStr)
+      .digest("hex")
+      .substring(0, 8);
+  }
+
+  /**
    * 转换为前端卡片格式
+   * 使用内容哈希生成稳定的 ID，确保相同内容不会重复
    */
   toSummaryCards(
     sessionId: string,
@@ -238,9 +252,9 @@ export class SkillService {
     content: any;
     updatedAt: string;
   }> {
-    const baseId = `${sessionId}-${result.type}-${Date.now()}`;
-
     if (result.type === "stop_talking") {
+      const contentHash = this.generateContentHash(result.content);
+      const baseId = `${sessionId}-${result.type}-${contentHash}`;
       return [
         {
           id: baseId,
@@ -254,12 +268,15 @@ export class SkillService {
 
     // inner_os 和 brainstorm 返回数组
     const items = result.content as any[];
-    return items.map((item, index) => ({
-      id: `${baseId}-${index}`,
-      type: result.type,
-      title: result.title,
-      content: item,
-      updatedAt: result.timestamp.toISOString(),
-    }));
+    return items.map((item) => {
+      const contentHash = this.generateContentHash(item);
+      return {
+        id: `${sessionId}-${result.type}-${contentHash}`,
+        type: result.type,
+        title: result.title,
+        content: item,
+        updatedAt: result.timestamp.toISOString(),
+      };
+    });
   }
 }
