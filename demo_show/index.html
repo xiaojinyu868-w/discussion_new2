@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>遇见会议 - Meeting Meeting</title>
+  <title>MeetMind · 视界 - 会议认知同频平台</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -207,52 +207,6 @@
       font-size: 0.8rem;
       color: var(--text-secondary);
     }
-
-    /* 后端切换器 */
-    .backend-switcher {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      background: var(--bg-glass);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-full);
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all var(--duration-fast) var(--ease-out);
-    }
-    .backend-switcher:hover {
-      border-color: var(--aurora-cyan);
-      background: rgba(0, 212, 255, 0.1);
-    }
-    .backend-switcher-toggle {
-      position: relative;
-      width: 36px;
-      height: 18px;
-      background: var(--bg-secondary);
-      border-radius: 9px;
-      transition: background var(--duration-fast);
-    }
-    .backend-switcher-toggle::after {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 14px;
-      height: 14px;
-      background: var(--text-secondary);
-      border-radius: 50%;
-      transition: all var(--duration-fast);
-    }
-    .backend-switcher.cloud .backend-switcher-toggle {
-      background: var(--aurora-cyan);
-    }
-    .backend-switcher.cloud .backend-switcher-toggle::after {
-      left: 20px;
-      background: white;
-    }
-    .backend-label { font-family: var(--font-mono); font-size: 0.7rem; }
     
     .status-dot { 
       width: 8px; 
@@ -788,11 +742,11 @@
 
     /* ========== 转写面板 ========== */
     .transcript-item {
-      padding: 14px 18px;
+      padding: 10px 14px;
       background: var(--bg-glass);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      margin-bottom: 10px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 6px;
       transition: all var(--duration-fast) var(--ease-out);
       position: relative;
       overflow: hidden;
@@ -804,7 +758,7 @@
       left: 0;
       top: 0;
       bottom: 0;
-      width: 3px;
+      width: 2px;
       background: linear-gradient(180deg, var(--aurora-cyan), var(--aurora-mint));
       border-radius: 0 2px 2px 0;
     }
@@ -816,16 +770,16 @@
 
     .transcript-time {
       font-family: var(--font-mono);
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       color: var(--aurora-cyan);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       opacity: 0.8;
     }
 
     .transcript-text {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-primary);
-      line-height: 1.7;
+      line-height: 1.6;
     }
 
     /* ========== 洞察面板 ========== */
@@ -1485,7 +1439,7 @@
       position: fixed;
       bottom: 24px;
       right: 24px;
-      z-index: 1000;
+      z-index: 9999;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -1514,6 +1468,350 @@
     @keyframes toastSlideIn { 
       from { opacity: 0; transform: translateX(60px) scale(0.95); } 
       to { opacity: 1; transform: translateX(0) scale(1); } 
+    }
+
+    /* ========== 认证弹窗 ========== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(10, 14, 26, 0.9);
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    
+    .modal-content {
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      position: relative;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      transition: all var(--duration-fast);
+    }
+    .modal-close:hover { color: var(--text-primary); background: var(--bg-glass); }
+    
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    
+    .auth-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 12px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all var(--duration-fast);
+    }
+    .auth-tab.active {
+      background: var(--aurora-cyan);
+      color: var(--bg-deep);
+      border-color: var(--aurora-cyan);
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      transition: all var(--duration-fast);
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--aurora-cyan);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+    }
+    
+    .auth-submit {
+      width: 100%;
+      padding: 14px;
+      margin-top: 8px;
+    }
+    
+    .auth-hint {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+    
+    /* 个人中心弹窗 */
+    .profile-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .profile-avatar {
+      width: 48px;
+      height: 48px;
+      background: var(--bg-secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .profile-name {
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    
+    .quota-section h4 {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    .quota-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.9rem;
+    }
+    .quota-item:last-child { border-bottom: none; }
+    
+    /* 会议历史 */
+    .meetings-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .meetings-section h4 {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    .meetings-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .meetings-empty {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      padding: 16px;
+    }
+    .meeting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background: var(--bg-glass);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+    .meeting-item:hover {
+      background: var(--bg-elevated);
+      border-color: var(--aurora-cyan);
+    }
+    .meeting-item-title {
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+    .meeting-item-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    
+    /* 会议详情弹窗 */
+    .meeting-detail-modal {
+      max-width: 800px;
+      width: 95%;
+      max-height: 85vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .meeting-detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .meeting-detail-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+    }
+    .meeting-detail-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .meeting-detail-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .meeting-detail-tab {
+      padding: 8px 16px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all var(--duration-fast);
+    }
+    .meeting-detail-tab.active {
+      background: var(--aurora-cyan);
+      color: var(--bg-deep);
+      border-color: var(--aurora-cyan);
+    }
+    .meeting-detail-content {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .meeting-detail-section {
+      display: none;
+    }
+    .meeting-detail-section.active {
+      display: block;
+    }
+    .transcript-item-detail {
+      padding: 12px 16px;
+      background: var(--bg-glass);
+      border-radius: var(--radius-md);
+      margin-bottom: 8px;
+      border-left: 3px solid var(--aurora-cyan);
+    }
+    .transcript-item-detail .time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .transcript-item-detail .text {
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+    .insight-item-detail {
+      padding: 16px;
+      background: var(--bg-glass);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+      border-left: 3px solid var(--aurora-purple);
+    }
+    .insight-item-detail .type {
+      font-size: 0.75rem;
+      color: var(--aurora-purple);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .insight-item-detail .content {
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .vis-item-detail {
+      padding: 16px;
+      background: var(--bg-glass);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .vis-item-detail img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: var(--radius-md);
+      margin-bottom: 8px;
+    }
+    .vis-item-detail .type {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .detail-empty {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 40px 20px;
+    }
+    .detail-loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+    .btn-delete-meeting {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--color-error);
+      border-radius: var(--radius-md);
+      color: var(--color-error);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+    .btn-delete-meeting:hover {
+      background: var(--color-error);
+      color: white;
+    }
+    
+    /* 用户按钮 */
+    .user-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all var(--duration-fast);
+    }
+    .user-btn:hover {
+      border-color: var(--aurora-cyan);
+      color: var(--text-primary);
     }
 
     /* ========== 模态框 ========== */
@@ -1653,6 +1951,157 @@
       background: rgba(0, 212, 255, 0.3);
       color: white;
     }
+
+    /* ========== V3 Agent 联动样式 ========== */
+
+    /* Agent 开关提示 */
+    .agent-hint {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      padding-left: 4px;
+    }
+
+    /* 转写项关联标记 */
+    .transcript-item.has-insight {
+      border-left: 3px solid var(--aurora-purple);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .transcript-item.has-insight::before {
+      display: none;
+    }
+
+    .transcript-item.has-insight:hover {
+      background: rgba(168, 85, 247, 0.1);
+    }
+
+    .transcript-link-badge {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.9rem;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .transcript-item.has-insight:hover .transcript-link-badge {
+      opacity: 1;
+    }
+
+    /* 洞察来源引用 */
+    .insight-card__source {
+      padding: 8px 12px;
+      background: rgba(168, 85, 247, 0.1);
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .insight-card__source:hover {
+      background: rgba(168, 85, 247, 0.2);
+    }
+
+    .source-label {
+      font-size: 0.75rem;
+      color: var(--aurora-purple);
+      font-weight: 500;
+    }
+
+    .source-text {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* 自动洞察徽章 */
+    .insight-card__badge {
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      margin-left: 8px;
+    }
+
+    .insight-card__badge.auto {
+      background: linear-gradient(135deg, var(--aurora-purple), var(--aurora-pink));
+      color: white;
+    }
+
+    /* 新洞察入场动画 */
+    @keyframes insightSlideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .insight-card.auto-insight {
+      animation: insightSlideIn 0.4s var(--ease-spring);
+    }
+
+    /* 高亮闪烁效果 */
+    @keyframes highlightPulse {
+      0%, 100% { background: transparent; }
+      50% { background: rgba(168, 85, 247, 0.2); }
+    }
+
+    .highlight-pulse {
+      animation: highlightPulse 1s ease-in-out 2;
+    }
+
+    /* Agent 洞察类型样式 */
+    .insight-card[data-type="data_chart"] { border-left: 3px solid var(--aurora-cyan); }
+    .insight-card[data-type="chart_generated"] { border-left: 3px solid var(--aurora-cyan); }
+    .insight-card[data-type="skill_result"] { border-left: 3px solid var(--aurora-purple); }
+    .insight-card[data-type="visualization_generated"] { border-left: 3px solid var(--aurora-pink); }
+    .insight-card[data-type="focus_reminder"] { border-left: 3px solid var(--aurora-pink); }
+    .insight-card[data-type="redundancy_hint"] { border-left: 3px solid var(--color-warning); }
+    .insight-card[data-type="decision_record"] { border-left: 3px solid var(--color-success); }
+    .insight-card[data-type="periodic_summary"] { border-left: 3px solid var(--aurora-purple); }
+
+    .insight-card[data-type="data_chart"] .insight-card__icon { background: rgba(0, 212, 255, 0.15); }
+    .insight-card[data-type="chart_generated"] .insight-card__icon { background: rgba(0, 212, 255, 0.15); }
+    .insight-card[data-type="skill_result"] .insight-card__icon { background: rgba(139, 92, 246, 0.15); }
+    .insight-card[data-type="visualization_generated"] .insight-card__icon { background: rgba(255, 107, 157, 0.15); }
+    .insight-card[data-type="focus_reminder"] .insight-card__icon { background: rgba(255, 107, 157, 0.15); }
+    .insight-card[data-type="redundancy_hint"] .insight-card__icon { background: rgba(251, 191, 36, 0.15); }
+    .insight-card[data-type="decision_record"] .insight-card__icon { background: rgba(0, 255, 200, 0.15); }
+    .insight-card[data-type="periodic_summary"] .insight-card__icon { background: rgba(168, 85, 247, 0.15); }
+
+    /* 数据点样式 */
+    .data-points {
+      font-size: 0.8rem;
+      color: var(--aurora-cyan);
+      padding: 6px 10px;
+      background: rgba(0, 212, 255, 0.1);
+      border-radius: var(--radius-sm);
+      margin: 8px 0;
+    }
+
+    .suggestion {
+      font-size: 0.85rem;
+      color: var(--color-success);
+      font-style: italic;
+    }
+
+    /* 洞察卡片内的可视化图片 */
+    .insight-card__visualization {
+      margin-top: 12px;
+    }
+
+    .insight-card__visualization img {
+      width: 100%;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      border: 1px solid var(--border-subtle);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .insight-card__visualization img:hover {
+      border-color: var(--border-glow);
+      box-shadow: var(--shadow-glow);
+    }
   </style>
 </head>
 <body>
@@ -1703,24 +2152,23 @@
         <div class="status-dot" id="connectionStatus"></div>
         <span id="connectionText">检测中...</span>
       </div>
-      <div class="backend-switcher" id="backendSwitcher" onclick="toggleBackend()" title="切换后端地址">
-        <span class="backend-label" id="backendLabel">本地</span>
-        <div class="backend-switcher-toggle"></div>
-      </div>
+      <button class="user-btn" id="userBtn" onclick="handleUserClick()">
+        <span id="userBtnText">登录</span>
+      </button>
     </div>
   </nav>
 
   <!-- Hero 区域 -->
   <section class="hero">
     <div class="hero-badge">
-      <span>AI 驱动的下一代AI原生组织的信息管理平台</span>
+      <span>您的数字参会者 · Digital Participant</span>
     </div>
     <h1 class="hero-title">
-      让每一次会议<br>
-      <span class="hero-title-gradient">都有清晰洞察</span>
+      MeetMind · 视界<br>
+      <span class="hero-title-gradient">不只是记录，而是真正参与</span>
     </h1>
     <p class="hero-subtitle">
-      基于通义听悟 + Qwen3-Max，实时转写、智能分析、一键生成视觉化总结
+      全程在场、深度理解、主动洞察 — 您会议中最懂行的那位
     </p>
   </section>
 
@@ -1765,12 +2213,12 @@
 
     <!-- 双栏布局 -->
     <div class="main-content">
-      <!-- 左栏：实时转写 -->
+      <!-- 左栏：全息记录 -->
       <div class="panel transcript-panel resizable">
         <div class="panel__header">
           <div class="panel__title">
             <div class="panel__title-icon">📝</div>
-            实时转写
+            全息记录
             <span class="panel__count" id="transcriptCount">0</span>
           </div>
           <div class="panel__actions">
@@ -1803,7 +2251,7 @@
         <div class="panel__header">
           <div class="panel__title">
             <div class="panel__title-icon">✨</div>
-            会议洞察
+            认知同频
             <span class="panel__count" id="insightCount">0</span>
           </div>
         </div>
@@ -1821,21 +2269,21 @@
       <div class="toolbar-row">
         <!-- AI 技能 -->
         <div class="toolbar-section">
-          <div class="toolbar-section__title">AI 技能</div>
+          <div class="toolbar-section__title">认知技能</div>
           <div class="skills-row">
             <button class="skill-btn" id="skillInnerOS" onclick="triggerSkill('inner_os')" disabled>
               <div class="skill-btn__icon inner-os">🔮</div>
-              <span class="skill-btn__name">潜台词</span>
+              <span class="skill-btn__name">认知转译</span>
               <span class="skill-status" id="skillInnerOSStatus"></span>
             </button>
             <button class="skill-btn" id="skillBrainstorm" onclick="triggerSkill('brainstorm')" disabled>
               <div class="skill-btn__icon brainstorm">⚡</div>
-              <span class="skill-btn__name">灵感</span>
+              <span class="skill-btn__name">破局灵感</span>
               <span class="skill-status" id="skillBrainstormStatus"></span>
             </button>
             <button class="skill-btn" id="skillStopTalking" onclick="triggerSkill('stop_talking')" disabled>
               <div class="skill-btn__icon stop-talking">🎯</div>
-              <span class="skill-btn__name">聚焦</span>
+              <span class="skill-btn__name">议程守护</span>
               <span class="skill-status" id="skillStopTalkingStatus"></span>
             </button>
           </div>
@@ -1844,11 +2292,17 @@
             <span class="auto-push-label">自动推送分析</span>
             <div class="toggle-switch active" id="autoPushToggle" onclick="toggleAutoPush()"></div>
           </div>
+          
+          <div class="auto-push-row">
+            <span class="auto-push-label">🤖 Agent 智能联动</span>
+            <div class="toggle-switch active" id="agentToggle" onclick="toggleAgent()"></div>
+          </div>
+          <div class="agent-hint">自动检测数据/跑题，联动生成洞察和图表</div>
         </div>
 
         <!-- 视觉化 -->
         <div class="toolbar-section">
-          <div class="toolbar-section__title">视觉化共识</div>
+          <div class="toolbar-section__title">思维显影</div>
           <div class="vis-section">
             <div class="vis-type-row">
               <button class="vis-type-btn active" data-type="chart" onclick="selectVisualizationType('chart')">📊 数据图表</button>
@@ -1897,6 +2351,97 @@
 
   <div class="toast-container" id="toastContainer"></div>
 
+  <!-- 登录/注册弹窗 -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-content auth-modal">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">登录</button>
+        <button class="auth-tab" data-tab="register" onclick="switchAuthTab('register')">注册</button>
+      </div>
+      <form id="authForm" onsubmit="handleAuth(event)">
+        <div class="form-group">
+          <label>用户名</label>
+          <input type="text" id="authUsername" placeholder="请输入用户名" required minlength="3">
+        </div>
+        <div class="form-group">
+          <label>密码</label>
+          <input type="password" id="authPassword" placeholder="请输入密码" required minlength="6">
+        </div>
+        <div class="form-group" id="confirmPasswordGroup" style="display:none;">
+          <label>确认密码</label>
+          <input type="password" id="authConfirmPassword" placeholder="请再次输入密码">
+        </div>
+        <button type="submit" class="btn btn-primary auth-submit" id="authSubmitBtn">登录</button>
+        <p class="auth-hint">内测版本，注册后即可使用</p>
+      </form>
+      <button class="modal-close" onclick="closeAuthModal()">×</button>
+    </div>
+  </div>
+
+  <!-- 个人中心弹窗 -->
+  <div class="modal-overlay" id="profileModal">
+    <div class="modal-content profile-modal">
+      <h3 class="modal-title">个人中心</h3>
+      <div class="profile-info">
+        <div class="profile-avatar">👤</div>
+        <div class="profile-name" id="profileUsername">-</div>
+      </div>
+      <div class="quota-section">
+        <h4>配额使用情况</h4>
+        <div class="quota-item">
+          <span>AI 洞察</span>
+          <span id="quotaInsight">-/-</span>
+        </div>
+        <div class="quota-item">
+          <span>会议问答</span>
+          <span id="quotaQa">-/-</span>
+        </div>
+        <div class="quota-item">
+          <span>图片生成</span>
+          <span id="quotaImage">-/-</span>
+        </div>
+      </div>
+      <div class="meetings-section">
+        <h4>会议历史</h4>
+        <div class="meetings-list" id="meetingsList">
+          <div class="meetings-empty">暂无会议记录</div>
+        </div>
+      </div>
+      <button class="btn btn-secondary" onclick="logout()" style="width:100%;margin-top:16px;">退出登录</button>
+      <button class="modal-close" onclick="closeProfileModal()">×</button>
+    </div>
+  </div>
+
+  <!-- 会议详情弹窗 -->
+  <div class="modal-overlay" id="meetingDetailModal">
+    <div class="modal-content meeting-detail-modal">
+      <div class="meeting-detail-header">
+        <div>
+          <h3 class="meeting-detail-title" id="meetingDetailTitle">会议详情</h3>
+          <div class="meeting-detail-meta" id="meetingDetailMeta">-</div>
+        </div>
+        <button class="btn-delete-meeting" id="deleteMeetingBtn" onclick="deleteMeeting()">删除会议</button>
+      </div>
+      <div class="meeting-detail-tabs">
+        <button class="meeting-detail-tab active" data-tab="transcripts" onclick="switchMeetingTab('transcripts')">转写内容</button>
+        <button class="meeting-detail-tab" data-tab="insights" onclick="switchMeetingTab('insights')">AI 洞察</button>
+        <button class="meeting-detail-tab" data-tab="visualizations" onclick="switchMeetingTab('visualizations')">可视化</button>
+      </div>
+      <div class="meeting-detail-content">
+        <div class="meeting-detail-section active" id="meetingTranscripts">
+          <div class="detail-loading">加载中...</div>
+        </div>
+        <div class="meeting-detail-section" id="meetingInsights">
+          <div class="detail-loading">加载中...</div>
+        </div>
+        <div class="meeting-detail-section" id="meetingVisualizations">
+          <div class="detail-loading">加载中...</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeMeetingDetailModal()">×</button>
+    </div>
+  </div>
+
   <script>
     // ========== State ==========
     const state = {
@@ -1914,15 +2459,20 @@
       mediaRecorder: null,
       mediaStream: null, // 保存 MediaStream 以便暂停后恢复
       apiBaseUrl: localStorage.getItem('apiBaseUrl') || 'http://localhost:4000',
-      isCloudBackend: localStorage.getItem('isCloudBackend') === 'true',
       currentVisualizationType: 'chart',
       currentChartType: 'radar',
-    };
-
-    // 后端地址配置
-    const BACKEND_CONFIG = {
-      local: 'http://localhost:4000',
-      cloud: 'https://3598ee05fba0.ngrok-free.app'
+      // V3 Agent 状态
+      agentEnabled: true,
+      agentPollingInterval: null,
+      agentInsights: [],
+      lastInsightId: null,
+      transcriptInsightMap: {}, // 转写ID -> 洞察ID 映射
+      // 用户认证状态
+      user: JSON.parse(localStorage.getItem('user') || 'null'),
+      token: localStorage.getItem('token') || null,
+      quota: null,
+      authMode: 'login', // 'login' | 'register'
+      currentMeetingId: null, // 当前查看的会议ID
     };
 
     // ========== DOM Elements ==========
@@ -1959,54 +2509,361 @@
       chartTypeSelect: $('chartTypeSelect'),
       visualizationList: $('visualizationList'),
       downloadDropdown: $('downloadDropdown'),
+      // V3 Agent 元素
+      agentToggle: $('agentToggle'),
+      // 用户认证元素
+      userBtn: $('userBtn'),
+      userBtnText: $('userBtnText'),
     };
 
     // ========== Initialize ==========
     function init() {
-      initBackendSwitcher();
       setupNavScroll();
       setupWaveform();
       setupUpload();
       setupScrollListeners();
       testConnection();
+      initAuth(); // 初始化认证状态
     }
 
-    // ========== Backend Switcher ==========
-    function initBackendSwitcher() {
-      const switcher = $('backendSwitcher');
-      const label = $('backendLabel');
-      if (state.isCloudBackend) {
-        switcher.classList.add('cloud');
-        label.textContent = '公网';
-        state.apiBaseUrl = BACKEND_CONFIG.cloud;
-      } else {
-        switcher.classList.remove('cloud');
-        label.textContent = '本地';
-        state.apiBaseUrl = BACKEND_CONFIG.local;
+    // ========== Auth Functions ==========
+    function initAuth() {
+      if (state.token && state.user) {
+        updateUserUI();
+        fetchQuota();
       }
     }
 
-    function toggleBackend() {
-      state.isCloudBackend = !state.isCloudBackend;
-      localStorage.setItem('isCloudBackend', state.isCloudBackend);
-      
-      const switcher = $('backendSwitcher');
-      const label = $('backendLabel');
-      
-      if (state.isCloudBackend) {
-        switcher.classList.add('cloud');
-        label.textContent = '公网';
-        state.apiBaseUrl = BACKEND_CONFIG.cloud;
-        showToast('已切换到公网后端', 'info');
+    function updateUserUI() {
+      if (state.user) {
+        elements.userBtnText.textContent = state.user.username;
       } else {
-        switcher.classList.remove('cloud');
-        label.textContent = '本地';
-        state.apiBaseUrl = BACKEND_CONFIG.local;
-        showToast('已切换到本地后端', 'info');
+        elements.userBtnText.textContent = '登录';
+      }
+    }
+
+    function handleUserClick() {
+      if (state.user) {
+        openProfileModal();
+      } else {
+        openAuthModal();
+      }
+    }
+
+    function openAuthModal() {
+      $('authModal').classList.add('show');
+      state.authMode = 'login';
+      switchAuthTab('login');
+    }
+
+    function closeAuthModal() {
+      $('authModal').classList.remove('show');
+    }
+
+    function openProfileModal() {
+      $('profileModal').classList.add('show');
+      $('profileUsername').textContent = state.user?.username || '-';
+      updateQuotaDisplay();
+      fetchMeetings();
+    }
+
+    function closeProfileModal() {
+      $('profileModal').classList.remove('show');
+    }
+
+    function switchAuthTab(tab) {
+      state.authMode = tab;
+      document.querySelectorAll('.auth-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tab);
+      });
+      $('confirmPasswordGroup').style.display = tab === 'register' ? 'block' : 'none';
+      $('authSubmitBtn').textContent = tab === 'login' ? '登录' : '注册';
+    }
+
+    async function handleAuth(e) {
+      e.preventDefault();
+      const username = $('authUsername').value.trim();
+      const password = $('authPassword').value;
+      
+      console.log('handleAuth called, mode:', state.authMode, 'username:', username);
+      
+      if (state.authMode === 'register') {
+        const confirmPassword = $('authConfirmPassword').value;
+        if (password !== confirmPassword) {
+          showToast('两次输入的密码不一致', 'error');
+          return;
+        }
+      }
+
+      try {
+        const endpoint = state.authMode === 'login' ? '/auth/login' : '/auth/register';
+        console.log('Sending request to:', state.apiBaseUrl + endpoint);
+        
+        const response = await fetch(`${state.apiBaseUrl}${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        
+        console.log('Response status:', response.status);
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (data.success) {
+          state.user = data.user;
+          state.token = data.token;
+          localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('token', data.token);
+          updateUserUI();
+          closeAuthModal();
+          fetchQuota();
+          showToast(state.authMode === 'login' ? '登录成功！' : '注册成功！', 'success');
+        } else {
+          showToast(data.message || '操作失败', 'error');
+        }
+      } catch (error) {
+        console.error('Auth error:', error);
+        showToast('网络错误，请重试', 'error');
+      }
+    }
+
+    function logout() {
+      state.user = null;
+      state.token = null;
+      state.quota = null;
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      updateUserUI();
+      closeProfileModal();
+      showToast('已退出登录', 'info');
+    }
+
+    async function fetchQuota() {
+      if (!state.token) return;
+      
+      try {
+        const response = await fetch(`${state.apiBaseUrl}/quota/status`, {
+          headers: { 'Authorization': `Bearer ${state.token}` },
+        });
+        const data = await response.json();
+        if (data.success) {
+          state.quota = data.quota;
+          updateQuotaDisplay();
+        }
+      } catch (error) {
+        console.error('Failed to fetch quota:', error);
+      }
+    }
+
+    function updateQuotaDisplay() {
+      if (!state.quota) return;
+      $('quotaInsight').textContent = `${state.quota.dailyInsight.used}/${state.quota.dailyInsight.limit}`;
+      $('quotaQa').textContent = `${state.quota.dailyQa.used}/${state.quota.dailyQa.limit}`;
+      $('quotaImage').textContent = `${state.quota.monthlyImage.used}/${state.quota.monthlyImage.limit}`;
+    }
+
+    async function fetchMeetings() {
+      if (!state.token) return;
+      
+      try {
+        const response = await fetch(`${state.apiBaseUrl}/users/me/meetings`, {
+          headers: { 'Authorization': `Bearer ${state.token}` },
+        });
+        const data = await response.json();
+        if (data.success && data.meetings) {
+          renderMeetingsList(data.meetings);
+        }
+      } catch (error) {
+        console.error('Failed to fetch meetings:', error);
+      }
+    }
+
+    function renderMeetingsList(meetings) {
+      const container = $('meetingsList');
+      if (!meetings || meetings.length === 0) {
+        container.innerHTML = '<div class="meetings-empty">暂无会议记录</div>';
+        return;
       }
       
-      localStorage.setItem('apiBaseUrl', state.apiBaseUrl);
-      testConnection();
+      container.innerHTML = meetings.slice(0, 10).map(m => `
+        <div class="meeting-item" onclick="viewMeeting('${m.id}')">
+          <span class="meeting-item-title">${escapeHtml(m.title || '未命名会议')}</span>
+          <span class="meeting-item-date">${formatMeetingDate(m.created_at)}</span>
+        </div>
+      `).join('');
+    }
+
+    function formatMeetingDate(dateStr) {
+      const d = new Date(dateStr);
+      return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+
+    function viewMeeting(meetingId) {
+      openMeetingDetailModal(meetingId);
+    }
+
+    async function openMeetingDetailModal(meetingId) {
+      state.currentMeetingId = meetingId;
+      $('meetingDetailModal').classList.add('show');
+      $('meetingDetailTitle').textContent = '加载中...';
+      $('meetingDetailMeta').textContent = '';
+      $('meetingTranscripts').innerHTML = '<div class="detail-loading">加载中...</div>';
+      $('meetingInsights').innerHTML = '<div class="detail-loading">加载中...</div>';
+      $('meetingVisualizations').innerHTML = '<div class="detail-loading">加载中...</div>';
+      
+      // 重置tab状态
+      document.querySelectorAll('.meeting-detail-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector('.meeting-detail-tab[data-tab="transcripts"]').classList.add('active');
+      document.querySelectorAll('.meeting-detail-section').forEach(s => s.classList.remove('active'));
+      $('meetingTranscripts').classList.add('active');
+      
+      try {
+        const response = await fetch(`${state.apiBaseUrl}/users/me/meetings/${meetingId}`, {
+          headers: { 'Authorization': `Bearer ${state.token}` },
+        });
+        const data = await response.json();
+        
+        if (data.success && data.meeting) {
+          renderMeetingDetail(data.meeting);
+        } else {
+          showToast(data.message || '加载失败', 'error');
+          closeMeetingDetailModal();
+        }
+      } catch (error) {
+        console.error('Failed to load meeting detail:', error);
+        showToast('加载会议详情失败', 'error');
+        closeMeetingDetailModal();
+      }
+    }
+
+    function renderMeetingDetail(meeting) {
+      // 标题和元信息
+      $('meetingDetailTitle').textContent = meeting.title || '未命名会议';
+      const date = new Date(meeting.created_at);
+      const duration = meeting.duration_ms ? formatDuration(meeting.duration_ms) : '未知';
+      $('meetingDetailMeta').textContent = `${date.toLocaleString('zh-CN')} · 时长: ${duration}`;
+      
+      // 转写内容
+      if (meeting.transcripts && meeting.transcripts.length > 0) {
+        $('meetingTranscripts').innerHTML = meeting.transcripts.map(t => `
+          <div class="transcript-item-detail">
+            <div class="time">${formatTime(t.start_ms)} - ${formatTime(t.end_ms)}</div>
+            <div class="text">${escapeHtml(t.content)}</div>
+          </div>
+        `).join('');
+      } else {
+        $('meetingTranscripts').innerHTML = '<div class="detail-empty">暂无转写内容</div>';
+      }
+      
+      // 认知同频
+      if (meeting.insights && meeting.insights.length > 0) {
+        $('meetingInsights').innerHTML = meeting.insights.map(i => `
+          <div class="insight-item-detail">
+            <div class="type">${getInsightTypeName(i.type)}</div>
+            <div class="content">${escapeHtml(i.content)}</div>
+          </div>
+        `).join('');
+      } else {
+        $('meetingInsights').innerHTML = '<div class="detail-empty">暂无认知洞察</div>';
+      }
+      
+      // 可视化
+      if (meeting.visualizations && meeting.visualizations.length > 0) {
+        $('meetingVisualizations').innerHTML = meeting.visualizations.map(v => `
+          <div class="vis-item-detail">
+            ${v.image_path ? `<img src="${state.apiBaseUrl}/uploads/${v.image_path}" alt="可视化图片" onerror="this.style.display='none'">` : ''}
+            <div class="type">${getVisTypeName(v.type, v.chart_type)}</div>
+          </div>
+        `).join('');
+      } else {
+        $('meetingVisualizations').innerHTML = '<div class="detail-empty">暂无思维显影</div>';
+      }
+    }
+
+    function closeMeetingDetailModal() {
+      $('meetingDetailModal').classList.remove('show');
+      state.currentMeetingId = null;
+    }
+
+    async function deleteMeeting() {
+      if (!state.currentMeetingId) return;
+      
+      if (!confirm('确定要删除这个会议吗？此操作不可恢复。')) return;
+      
+      try {
+        const response = await fetch(`${state.apiBaseUrl}/users/me/meetings/${state.currentMeetingId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${state.token}` },
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          showToast('会议已删除', 'success');
+          closeMeetingDetailModal();
+          fetchMeetings(); // 刷新会议列表
+        } else {
+          showToast(data.message || '删除失败', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to delete meeting:', error);
+        showToast('删除会议失败', 'error');
+      }
+    }
+
+    function switchMeetingTab(tab) {
+      document.querySelectorAll('.meeting-detail-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tab);
+      });
+      document.querySelectorAll('.meeting-detail-section').forEach(s => s.classList.remove('active'));
+      
+      if (tab === 'transcripts') $('meetingTranscripts').classList.add('active');
+      else if (tab === 'insights') $('meetingInsights').classList.add('active');
+      else if (tab === 'visualizations') $('meetingVisualizations').classList.add('active');
+    }
+
+    function formatTime(ms) {
+      if (!ms && ms !== 0) return '--:--';
+      const totalSec = Math.floor(ms / 1000);
+      const min = Math.floor(totalSec / 60);
+      const sec = totalSec % 60;
+      return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+
+    function formatDuration(ms) {
+      if (!ms) return '0分钟';
+      const totalMin = Math.floor(ms / 60000);
+      if (totalMin < 60) return `${totalMin}分钟`;
+      const hours = Math.floor(totalMin / 60);
+      const mins = totalMin % 60;
+      return `${hours}小时${mins}分钟`;
+    }
+
+    function getInsightTypeName(type) {
+      const names = {
+        'inner_os': '认知转译',
+        'brainstorm': '破局灵感',
+        'stop_talking': '议程守护',
+        'summary': '会议摘要',
+        'action_items': '待办事项',
+        'key_points': '关键要点'
+      };
+      return names[type] || type;
+    }
+
+    function getVisTypeName(type, chartType) {
+      if (type === 'chart') {
+        const chartNames = {
+          'radar': '雷达图',
+          'flowchart': '流程图',
+          'architecture': '架构图',
+          'bar': '柱状图',
+          'line': '折线图'
+        };
+        return chartNames[chartType] || '图表';
+      }
+      if (type === 'creative') return '创意图';
+      if (type === 'poster') return '海报';
+      return type;
     }
 
     function setupNavScroll() {
@@ -2189,7 +3046,7 @@
           }
         };
 
-        state.mediaRecorder.start(1000);
+        state.mediaRecorder.start(500); // 优化：500ms 发送一次，减少延迟
         state.isRecording = true;
         state.recordingStartTime = Date.now();
         
@@ -2201,6 +3058,11 @@
         // 如果自动推送已开启，启动定时推送
         if (state.autoPushEnabled) {
           startAutoPush();
+        }
+
+        // V3: 如果 Agent 已开启，启动 Agent
+        if (state.agentEnabled) {
+          startAgent();
         }
         
         showToast('🎙️ 录音已开始', 'success');
@@ -2234,6 +3096,7 @@
       stopWaveformAnimation();
       stopTimerUpdate();
       stopAutoPush(); // 停止自动推送
+      stopAgent(); // V3: 停止 Agent
       // 停止录音时停止实时轮询，但保留 sessionId 以便后续获取结果
       stopPolling();
       updateRecordingUI();
@@ -2306,7 +3169,7 @@
             }
           };
           
-          state.mediaRecorder.start(1000);
+          state.mediaRecorder.start(500); // 优化：500ms 发送一次，减少延迟
           startWaveformAnimation();
           console.log('[Resume] Recording resumed, new MediaRecorder created');
         }
@@ -2359,7 +3222,7 @@
       
       console.log('开始轮询，sessionId:', state.sessionId);
       pollUpdates(); // 立即执行一次
-      pollingInterval = setInterval(pollUpdates, 2000);
+      pollingInterval = setInterval(pollUpdates, 1000); // 优化：1秒轮询一次，提升实时性
     }
 
     function stopPolling() {
@@ -2426,12 +3289,24 @@
         return;
       }
       
-      const html = state.transcription.map(item => `
-        <div class="transcript-item">
-          <div class="transcript-time">${formatTime(item.startMs)}</div>
-          <div class="transcript-text">${escapeHtml(item.text)}</div>
-        </div>
-      `).join('');
+      // 优化：合并相邻的短句（5秒内的句子合并为一个段落）
+      const mergedTranscripts = mergeTranscripts(state.transcription);
+      
+      // V3: 为每个转写项添加唯一 ID，支持关联
+      const html = mergedTranscripts.map((item, index) => {
+        const transcriptId = `transcript-${index}`;
+        const hasInsight = state.transcriptInsightMap[transcriptId];
+        const insightClass = hasInsight ? 'has-insight' : '';
+        const badge = hasInsight ? '<span class="transcript-link-badge" title="点击查看相关洞察">💡</span>' : '';
+        
+        return `
+          <div class="transcript-item ${insightClass}" data-transcript-id="${transcriptId}" ${hasInsight ? `onclick="scrollToInsight('${state.transcriptInsightMap[transcriptId]}')"` : ''}>
+            <div class="transcript-time">${formatTime(item.startMs)}${item.endMs !== item.startMs ? ' - ' + formatTime(item.endMs) : ''}</div>
+            <div class="transcript-text">${escapeHtml(item.text)}</div>
+            ${badge}
+          </div>
+        `;
+      }).join('');
       
       // 检查是否已在底部
       const wasAtBottom = elements.transcriptionList.scrollHeight - elements.transcriptionList.scrollTop - elements.transcriptionList.clientHeight < 100;
@@ -2447,6 +3322,31 @@
       updateScrollButtonVisibility('transcriptionList', 'transcriptScrollBtn');
     }
 
+    // 合并相邻的转写段落（5秒内的句子合并）
+    function mergeTranscripts(transcripts) {
+      if (transcripts.length === 0) return [];
+      
+      const merged = [];
+      let current = { ...transcripts[0] };
+      
+      for (let i = 1; i < transcripts.length; i++) {
+        const item = transcripts[i];
+        const timeDiff = item.startMs - current.endMs;
+        
+        // 如果时间间隔小于5秒，合并文本
+        if (timeDiff < 15000) {
+          current.text += ' ' + item.text;
+          current.endMs = item.endMs;
+        } else {
+          merged.push(current);
+          current = { ...item };
+        }
+      }
+      merged.push(current);
+      
+      return merged;
+    }
+
     // 洞察卡片类型配置
     const INSIGHT_TYPES = {
       inner_os: { title: '潜台词', icon: '🔮', color: 'var(--color-inner-os)' },
@@ -2456,21 +3356,52 @@
     };
 
     function renderSummaries() {
-      elements.insightCount.textContent = state.summaries.length;
+      // 计算总数：手动技能洞察 + Agent 洞察
+      const totalCount = state.summaries.length + state.agentInsights.length;
+      elements.insightCount.textContent = totalCount;
       
-      if (state.summaries.length === 0) {
-        // 清空洞察列表，显示空状态
-        elements.summaryList.innerHTML = `
-          <div class="empty-state" id="insightEmptyState">
-            <div class="empty-state__icon">💡</div>
-            <p class="empty-state__text">触发 AI 技能后，洞察将显示在这里</p>
-          </div>
-          <div id="visualizationList"></div>
-        `;
-        elements.visualizationList = $('visualizationList');
+      console.log('renderSummaries called:', { 
+        summaries: state.summaries.length, 
+        agentInsights: state.agentInsights.length,
+        totalCount 
+      });
+      
+      // 如果没有任何内容，显示空状态（但不清除已有的 Agent 洞察 DOM）
+      if (state.summaries.length === 0 && state.agentInsights.length === 0) {
+        // 检查 DOM 中是否有 Agent 洞察卡片
+        const existingAgentCards = elements.summaryList.querySelectorAll('.auto-insight');
+        if (existingAgentCards.length === 0) {
+          // 清空洞察列表，显示空状态
+          elements.summaryList.innerHTML = `
+            <div class="empty-state" id="insightEmptyState">
+              <div class="empty-state__icon">💡</div>
+              <p class="empty-state__text">触发 AI 技能后，洞察将显示在这里</p>
+            </div>
+            <div id="visualizationList"></div>
+          `;
+          elements.visualizationList = $('visualizationList');
+          elements.insightEmptyState = $('insightEmptyState');
+        }
         return;
       }
       
+      // 隐藏空状态
+      const emptyState = document.getElementById('insightEmptyState');
+      if (emptyState) {
+        emptyState.style.display = 'none';
+      }
+      
+      // 只更新手动技能洞察部分，不影响 Agent 洞察
+      // 查找或创建手动洞察容器
+      let manualInsightsContainer = document.getElementById('manualInsightsContainer');
+      if (!manualInsightsContainer) {
+        manualInsightsContainer = document.createElement('div');
+        manualInsightsContainer.id = 'manualInsightsContainer';
+        // 插入到 summaryList 的开头
+        elements.summaryList.insertBefore(manualInsightsContainer, elements.summaryList.firstChild);
+      }
+      
+      // 渲染手动技能洞察
       const html = state.summaries.map(card => {
         const typeInfo = INSIGHT_TYPES[card.type] || INSIGHT_TYPES.auto_analysis;
         const content = formatInsightContent(card.content, card.type);
@@ -2488,16 +3419,14 @@
         `;
       }).join('');
       
-      // 检查是否已在底部
-      const wasAtBottom = elements.summaryList.scrollHeight - elements.summaryList.scrollTop - elements.summaryList.clientHeight < 100;
+      manualInsightsContainer.innerHTML = html;
       
-      const existingVis = elements.visualizationList?.innerHTML || '';
-      elements.summaryList.innerHTML = html + '<div id="visualizationList">' + existingVis + '</div>';
-      elements.visualizationList = $('visualizationList');
-      
-      // 如果之前在底部，自动滚动到底部
-      if (wasAtBottom) {
-        elements.summaryList.scrollTop = elements.summaryList.scrollHeight;
+      // 确保 visualizationList 存在
+      if (!document.getElementById('visualizationList')) {
+        const visList = document.createElement('div');
+        visList.id = 'visualizationList';
+        elements.summaryList.appendChild(visList);
+        elements.visualizationList = visList;
       }
       
       // 更新滚动按钮状态
@@ -2545,17 +3474,17 @@
       // 字段名中英文映射
       const fieldLabels = {
         // 通用
-        quote: '原话', innerThought: '内心想法', emotion: '情绪',
+        quote: '原话', innerThought: '认知转译', emotion: '情绪',
         idea: '想法', suggestion: '建议', advice: '建议',
         warning: '警告', issue: '问题',
-        // stop_talking 纠偏提醒
+        // stop_talking 议程守护
         isOffTopic: '跑题', mainTopic: '核心议题', deviation: '偏离原因', reminder: '温馨提示',
         // auto_analysis 自动分析
-        phase: '阶段', keyPoints: '要点', blindSpots: '盲区', expertAdvice: '专家建议', innerOS: '内心OS'
+        phase: '阶段', keyPoints: '要点', blindSpots: '盲区', expertAdvice: '专家建议', innerOS: '认知转译'
       };
 
       if (type === 'inner_os') {
-        // 内心OS特殊格式：引用 + 内心想法 + 情绪
+        // 认知转译特殊格式：引用 + 内心想法 + 情绪
         let html = '';
         if (obj.quote) {
           html += `<blockquote class="insight-card__quote">"${escapeHtml(obj.quote)}"</blockquote>`;
@@ -2570,7 +3499,7 @@
       }
       
       if (type === 'brainstorm') {
-        // 头脑风暴：想法列表
+        // 破局灵感：想法列表
         let html = '';
         if (obj.idea || obj.title) {
           html += `<strong style="color: var(--aurora-cyan);">💡 ${escapeHtml(obj.idea || obj.title)}</strong>`;
@@ -2582,7 +3511,7 @@
       }
       
       if (type === 'stop_talking') {
-        // 纠偏提醒 - 精简卡片式显示
+        // 议程守护 - 精简卡片式显示
         let html = '<div class="insight-stop-talking">';
         
         // 跑题状态 - 用醒目标签
@@ -2634,7 +3563,7 @@
           html += `<div class="insight-section advice"><div class="insight-section-title">💡 建议</div><p class="insight-section-content">${escapeHtml(truncateText(obj.expertAdvice, 100))}</p></div>`;
         }
         
-        // 内心OS - 趣味展示
+        // 认知转译 - 趣味展示
         if (obj.innerOS) {
           html += `<div class="insight-inner-os"><span>🧠</span><em>"${escapeHtml(truncateText(obj.innerOS, 60))}"</em></div>`;
         }
@@ -2803,6 +3732,400 @@
           console.warn('后端自动推送接口调用失败:', error);
         }
       }
+    }
+
+    // ========== V3 Agent 联动功能 ==========
+    
+    // 切换 Agent 开关
+    async function toggleAgent() {
+      state.agentEnabled = !state.agentEnabled;
+      elements.agentToggle.classList.toggle('active', state.agentEnabled);
+
+      if (state.agentEnabled) {
+        if (state.isRecording && state.sessionId) {
+          startAgent();
+        }
+        showToast('🤖 Agent 智能联动已开启', 'success');
+      } else {
+        stopAgent();
+        showToast('Agent 智能联动已关闭', 'info');
+      }
+    }
+
+    // 启动 Agent
+    async function startAgent() {
+      if (!state.sessionId || !state.agentEnabled) return;
+
+      try {
+        await apiCall('POST', `/sessions/${state.sessionId}/agent/start`);
+        console.log('Agent started');
+        
+        // 开始轮询 Agent 洞察
+        startAgentPolling();
+      } catch (error) {
+        console.warn('启动 Agent 失败:', error);
+      }
+    }
+
+    // 停止 Agent
+    async function stopAgent() {
+      if (!state.sessionId) return;
+
+      try {
+        await apiCall('POST', `/sessions/${state.sessionId}/agent/stop`);
+        console.log('Agent stopped');
+      } catch (error) {
+        console.warn('停止 Agent 失败:', error);
+      }
+
+      stopAgentPolling();
+    }
+
+    // 开始轮询 Agent 洞察
+    function startAgentPolling() {
+      if (state.agentPollingInterval) return;
+
+      console.log('Starting Agent polling...');
+      
+      // 立即执行一次
+      pollAgentInsights();
+
+      state.agentPollingInterval = setInterval(async () => {
+        await pollAgentInsights();
+      }, 5000); // 每 5 秒轮询一次
+    }
+    
+    // 轮询 Agent 洞察
+    async function pollAgentInsights() {
+      if (!state.sessionId || !state.agentEnabled) return;
+
+      try {
+        const url = state.lastInsightId 
+          ? `/sessions/${state.sessionId}/agent/insights?afterId=${state.lastInsightId}`
+          : `/sessions/${state.sessionId}/agent/insights`;
+        
+        console.log('Polling Agent insights:', url);
+        const response = await apiCall('GET', url);
+        console.log('Agent insights response:', response);
+        
+        if (response.insights && response.insights.length > 0) {
+          console.log(`Received ${response.insights.length} new insights`);
+          response.insights.forEach(insight => {
+            addAgentInsight(insight);
+          });
+          // 更新最后的洞察 ID
+          state.lastInsightId = response.insights[response.insights.length - 1].id;
+        }
+      } catch (error) {
+        console.warn('获取 Agent 洞察失败:', error);
+      }
+    }
+
+    // 停止轮询 Agent 洞察
+    function stopAgentPolling() {
+      if (state.agentPollingInterval) {
+        clearInterval(state.agentPollingInterval);
+        state.agentPollingInterval = null;
+      }
+    }
+
+    // 添加 Agent 洞察到右侧面板
+    function addAgentInsight(insight) {
+      // 检查是否已存在（避免重复）
+      if (state.agentInsights.some(i => i.id === insight.id)) {
+        return;
+      }
+      
+      state.agentInsights.push(insight);
+      
+      // 如果有关联的转写段落，建立映射
+      // 后端返回的是 triggerSegmentIds，格式为 "seg-{sessionId}-{index}"
+      if (insight.triggerSegmentIds && insight.triggerSegmentIds.length > 0) {
+        insight.triggerSegmentIds.forEach(segId => {
+          // 从后端的 segment ID 提取索引，转换为前端的 transcript ID
+          const match = segId.match(/seg-[^-]+-(\d+)/);
+          if (match) {
+            const frontendId = `transcript-${match[1]}`;
+            state.transcriptInsightMap[frontendId] = insight.id;
+          }
+        });
+        // 更新转写列表中的关联标记
+        updateTranscriptLinks();
+      }
+
+      // 直接渲染洞察卡片到 DOM（不依赖 renderSummaries）
+      renderAgentInsightCard(insight);
+      
+      console.log('Agent insight added:', insight.type, insight.id);
+    }
+
+    // 渲染 Agent 洞察卡片
+    function renderAgentInsightCard(insight) {
+      const card = document.createElement('div');
+      card.className = 'insight-card auto-insight';
+      card.dataset.type = insight.type;
+      card.dataset.insightId = insight.id;
+
+      const typeIcons = {
+        'data_chart': '📊',
+        'chart_generated': '📊',
+        'skill_result': '🎭',
+        'visualization_generated': '🎨',
+        'focus_reminder': '🎯',
+        'redundancy_hint': '🔄',
+        'decision_record': '✅',
+        'periodic_summary': '📋'
+      };
+
+      const typeLabels = {
+        'data_chart': '数据洞察',
+        'chart_generated': '数据图表',
+        'skill_result': 'AI技能',
+        'visualization_generated': '视觉化',
+        'focus_reminder': '聚焦提醒',
+        'redundancy_hint': '冗余提示',
+        'decision_record': '决策记录',
+        'periodic_summary': '阶段总结'
+      };
+
+      const icon = typeIcons[insight.type] || '💡';
+      const label = typeLabels[insight.type] || '智能洞察';
+
+      // 处理 content 对象
+      const content = insight.content || {};
+      const title = content.title || label;
+      const summary = content.summary || content.hint || '';
+      const dataPoints = content.dataPoints || [];
+      const suggestion = content.suggestion || '';
+      const decision = content.decision || '';
+      const nextSteps = content.nextSteps || [];
+      const reason = content.reason || '';
+
+      // 来源文本（从触发段落获取）
+      let sourceHtml = '';
+      if (insight.triggerSegmentIds && insight.triggerSegmentIds.length > 0) {
+        // 后端返回的是 "seg-{sessionId}-{index}" 格式，需要提取索引
+        let sourceIndex = -1;
+        for (const segId of insight.triggerSegmentIds) {
+          const match = segId.match(/seg-[^-]+-(\d+)/);
+          if (match) {
+            sourceIndex = parseInt(match[1], 10);
+            break;
+          }
+        }
+        
+        if (sourceIndex >= 0 && sourceIndex < state.transcription.length) {
+          const sourceSegment = state.transcription[sourceIndex];
+          sourceHtml = `
+            <div class="insight-card__source" onclick="scrollToTranscript('transcript-${sourceIndex}')">
+              <span class="source-label">📌 来源</span>
+              <div class="source-text">"${sourceSegment.text.substring(0, 100)}${sourceSegment.text.length > 100 ? '...' : ''}"</div>
+            </div>
+          `;
+        }
+      }
+
+      // 数据点
+      let dataPointsHtml = '';
+      if (dataPoints.length > 0) {
+        dataPointsHtml = `<div class="data-points">📈 关键数据: ${dataPoints.join(', ')}</div>`;
+      }
+
+      // 建议
+      let suggestionHtml = '';
+      if (suggestion) {
+        suggestionHtml = `<div class="suggestion">💡 ${suggestion}</div>`;
+      }
+
+      // 原因
+      let reasonHtml = '';
+      if (reason) {
+        reasonHtml = `<div class="suggestion" style="color: var(--text-secondary);">📝 ${reason}</div>`;
+      }
+
+      // 决策和后续步骤
+      let decisionHtml = '';
+      if (decision) {
+        decisionHtml = `<div class="data-points" style="background: rgba(0, 255, 200, 0.1); color: var(--color-success);">📋 决策: ${decision}</div>`;
+        if (nextSteps.length > 0) {
+          decisionHtml += `<div class="suggestion">📌 后续: ${nextSteps.join('; ')}</div>`;
+        }
+      }
+
+      // 技能结果特殊处理（认知转译、破局灵感等）
+      let skillContentHtml = '';
+      if (insight.type === 'skill_result') {
+        const skillType = content.skillType;
+        if (skillType === 'inner_os' && content.quote) {
+          skillContentHtml = `
+            <div class="skill-content" style="margin-top: 8px; padding: 12px; background: rgba(139, 92, 246, 0.1); border-radius: 8px;">
+              <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">💬 原话</div>
+              <div style="font-style: italic; margin-bottom: 8px;">"${content.quote}"</div>
+              <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">🎭 认知转译</div>
+              <div style="color: var(--aurora-purple);">${content.innerThought || ''}</div>
+              ${content.emotion ? `<div style="margin-top: 4px; font-size: 12px; color: var(--text-muted);">情绪: ${content.emotion}</div>` : ''}
+            </div>
+          `;
+        } else if (skillType === 'brainstorm' && content.idea) {
+          skillContentHtml = `
+            <div class="skill-content" style="margin-top: 8px; padding: 12px; background: rgba(251, 191, 36, 0.1); border-radius: 8px;">
+              <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">💡 破局灵感</div>
+              <div style="color: var(--color-warning); font-weight: 500; margin-bottom: 8px;">${content.idea}</div>
+              ${content.rationale ? `<div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">📖 ${content.rationale}</div>` : ''}
+              ${content.challenge ? `<div style="font-size: 12px; color: var(--text-muted);">🎯 挑战: ${content.challenge}</div>` : ''}
+            </div>
+          `;
+        } else if (skillType === 'stop_talking') {
+          skillContentHtml = `
+            <div class="skill-content" style="margin-top: 8px; padding: 12px; background: rgba(255, 107, 157, 0.1); border-radius: 8px;">
+              ${content.mainTopic ? `<div style="margin-bottom: 4px;"><span style="color: var(--text-secondary);">主题:</span> ${content.mainTopic}</div>` : ''}
+              ${content.deviation ? `<div style="margin-bottom: 4px; color: var(--color-warning);"><span style="color: var(--text-secondary);">偏离:</span> ${content.deviation}</div>` : ''}
+              ${content.reminder ? `<div style="color: var(--aurora-pink);">💬 ${content.reminder}</div>` : ''}
+            </div>
+          `;
+        }
+      }
+
+      // 可视化图片
+      let visualizationHtml = '';
+      if (insight.visualization && (insight.visualization.imageUrl || insight.visualization.imageBase64)) {
+        const imgSrc = insight.visualization.imageUrl || `data:image/png;base64,${insight.visualization.imageBase64}`;
+        visualizationHtml = `
+          <div class="insight-card__visualization">
+            <img src="${imgSrc}" 
+                 alt="数据图表" 
+                 onclick="showImageModal(this.src)" />
+          </div>
+        `;
+      }
+
+      // 时间戳
+      const timestamp = insight.createdAt ? new Date(insight.createdAt) : new Date();
+
+      card.innerHTML = `
+        <div class="insight-card__header">
+          <span class="insight-card__icon">${icon}</span>
+          <span class="insight-card__title">${title}</span>
+          <span class="insight-card__badge auto">自动</span>
+          <span class="insight-card__time">${timestamp.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
+        ${sourceHtml}
+        <div class="insight-card__content">
+          ${summary}
+        </div>
+        ${dataPointsHtml}
+        ${reasonHtml}
+        ${suggestionHtml}
+        ${decisionHtml}
+        ${skillContentHtml}
+        ${visualizationHtml}
+      `;
+
+      // 添加到洞察列表（在 visualizationList 之前）
+      const visList = document.getElementById('visualizationList');
+      if (visList) {
+        elements.summaryList.insertBefore(card, visList);
+      } else {
+        elements.summaryList.appendChild(card);
+      }
+      
+      // 滚动到底部
+      elements.summaryList.scrollTop = elements.summaryList.scrollHeight;
+
+      // 隐藏空状态（重新获取元素，因为可能被 renderSummaries 重建）
+      const emptyState = document.getElementById('insightEmptyState');
+      if (emptyState) {
+        emptyState.style.display = 'none';
+      }
+      elements.insightEmptyState = emptyState;
+
+      // 更新计数
+      updateInsightCount();
+      
+      console.log('Agent insight card rendered:', insight.type, 'to summaryList');
+    }
+
+    // 更新转写列表中的关联标记
+    function updateTranscriptLinks() {
+      document.querySelectorAll('.transcript-item').forEach(item => {
+        const transcriptId = item.dataset.transcriptId;
+        if (state.transcriptInsightMap[transcriptId]) {
+          item.classList.add('has-insight');
+          
+          // 添加关联徽章（如果还没有）
+          if (!item.querySelector('.transcript-link-badge')) {
+            const badge = document.createElement('span');
+            badge.className = 'transcript-link-badge';
+            badge.textContent = '💡';
+            badge.title = '点击查看相关洞察';
+            item.appendChild(badge);
+          }
+
+          // 添加点击事件
+          item.onclick = () => scrollToInsight(state.transcriptInsightMap[transcriptId]);
+        }
+      });
+    }
+
+    // 滚动到指定洞察卡片
+    function scrollToInsight(insightId) {
+      const card = document.querySelector(`.insight-card[data-insight-id="${insightId}"]`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('highlight-pulse');
+        setTimeout(() => card.classList.remove('highlight-pulse'), 2000);
+      }
+    }
+
+    // 滚动到指定转写段落
+    function scrollToTranscript(transcriptId) {
+      if (!transcriptId) return;
+      const item = document.querySelector(`.transcript-item[data-transcript-id="${transcriptId}"]`);
+      if (item) {
+        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        item.classList.add('highlight-pulse');
+        setTimeout(() => item.classList.remove('highlight-pulse'), 2000);
+      }
+    }
+
+    // 更新洞察计数
+    function updateInsightCount() {
+      const count = state.summaries.length + state.agentInsights.length;
+      if (elements.insightCount) {
+        elements.insightCount.textContent = count;
+      }
+    }
+
+    // 显示图片模态框
+    function showImageModal(src) {
+      // 创建模态框
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        cursor: pointer;
+      `;
+      
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.cssText = `
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 8px;
+        box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+      `;
+      
+      modal.appendChild(img);
+      modal.onclick = () => modal.remove();
+      document.body.appendChild(modal);
     }
 
     // ========== File Upload ==========
@@ -2978,10 +4301,26 @@
 
     // ========== API ==========
     async function apiCall(method, path, body = null) {
-      const options = { method, headers: { 'Content-Type': 'application/json' } };
+      const headers = { 'Content-Type': 'application/json' };
+      // 自动添加认证 token
+      if (state.token) {
+        headers['Authorization'] = `Bearer ${state.token}`;
+      }
+      const options = { method, headers };
       if (body) options.body = JSON.stringify(body);
       
       const response = await fetch(`${state.apiBaseUrl}${path}`, options);
+      
+      // 处理配额不足错误
+      if (response.status === 403) {
+        const error = await response.json().catch(() => ({}));
+        if (error.message?.includes('配额')) {
+          showToast(error.message, 'warning');
+          fetchQuota(); // 刷新配额显示
+          throw new Error(error.message);
+        }
+      }
+      
       if (!response.ok) throw new Error(await response.text() || `HTTP ${response.status}`);
       return response.json();
     }
@@ -3013,6 +4352,7 @@
       // 停止之前的轮询和定时器
       stopPolling();
       stopAutoPush();
+      stopAgentPolling(); // V3: 停止 Agent 轮询
       stopTimerUpdate();
       
       // 重置核心状态
@@ -3022,6 +4362,11 @@
       state.summaries = [];
       state.activeSkills = [];
       state.recordingStartTime = null;
+      
+      // V3: 重置 Agent 状态
+      state.agentInsights = [];
+      state.lastInsightId = null;
+      state.transcriptInsightMap = {};
       
       // 重置计时器显示
       elements.recordingTimer.textContent = '00:00';

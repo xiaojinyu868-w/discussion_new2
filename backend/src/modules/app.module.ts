@@ -5,6 +5,10 @@ import { ContextModule } from "./context/context.module";
 import { LLMModule } from "./llm/llm.module";
 import { AutoPushModule } from "./auto-push/auto-push.module";
 import { AgentModule } from "./agent/agent.module";
+import { DatabaseModule } from "./database/database.module";
+import { AuthModule } from "./auth/auth.module";
+import { QuotaModule } from "./quota/quota.module";
+import { UserModule } from "./user/user.module";
 import configuration from "../shared/configuration";
 
 @Module({
@@ -13,6 +17,10 @@ import configuration from "../shared/configuration";
       isGlobal: true,
       load: [configuration],
     }),
+    DatabaseModule,
+    AuthModule,
+    QuotaModule,
+    UserModule,
     ContextModule,
     LLMModule,
     AutoPushModule,

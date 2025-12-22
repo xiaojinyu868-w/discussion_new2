@@ -9,6 +9,9 @@ import { ContextModule } from "../context/context.module";
 import { LLMModule } from "../llm/llm.module";
 import { VisualizationModule } from "../visualization/visualization.module";
 import { AgentModule } from "../agent/agent.module";
+import { QuotaModule } from "../quota/quota.module";
+import { AuthModule } from "../auth/auth.module";
+import { UserModule } from "../user/user.module";
 
 @Module({
   imports: [
@@ -20,6 +23,9 @@ import { AgentModule } from "../agent/agent.module";
     LLMModule,
     VisualizationModule,
     AgentModule,
+    QuotaModule,
+    AuthModule,
+    UserModule,
   ],
   controllers: [SessionController],
   providers: [SessionService],

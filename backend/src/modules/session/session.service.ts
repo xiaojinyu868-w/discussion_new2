@@ -3,6 +3,7 @@ import {
   Logger,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from "@nestjs/common";
 import { TingwuService } from "../tingwu/tingwu.service";
 import { CreateSessionDto } from "./session.dto";
@@ -14,6 +15,8 @@ import { AutoPushService } from "../auto-push/auto-push.service";
 import { ContextStoreService } from "../context/context-store.service";
 import { LLMAdapterService } from "../llm/llm-adapter.service";
 import { VisualizationService } from "../visualization/visualization.service";
+import { QuotaService } from "../quota/quota.service";
+import { UserService } from "../user/user.service";
 import { Express } from "express";
 
 type Transcript = {
@@ -29,7 +32,7 @@ export class SessionService {
   private readonly logger = new Logger(SessionService.name);
   private sessions = new Map<
     string,
-    { taskId: string; meetingJoinUrl: string }
+    { taskId: string; meetingJoinUrl: string; userId?: number }
   >();
   private transcripts = new Map<string, Transcript[]>();
   private summaries = new Map<string, any[]>();
@@ -43,17 +46,34 @@ export class SessionService {
     private readonly autoPushService: AutoPushService,
     private readonly contextStore: ContextStoreService,
     private readonly llmAdapter: LLMAdapterService,
-    private readonly visualizationService: VisualizationService
+    private readonly visualizationService: VisualizationService,
+    private readonly quotaService: QuotaService,
+    private readonly userService: UserService,
   ) {}
 
-  async createRealtimeSession(body: CreateSessionDto) {
+  async createRealtimeSession(body: CreateSessionDto, userId?: number) {
     const sessionId = uuid();
     const { taskId, meetingJoinUrl } =
       await this.tingwuService.createRealtimeTask(body);
 
-    this.sessions.set(sessionId, { taskId, meetingJoinUrl });
+    this.sessions.set(sessionId, { taskId, meetingJoinUrl, userId });
     this.taskStatuses.set(sessionId, "NEW");
     this.audioRelayService.create(sessionId, meetingJoinUrl);
+    
+    // 初始化上下文存储
+    this.contextStore.initialize(sessionId);
+    
+    // 如果有登录用户，创建会议记录并关联到上下文
+    if (userId) {
+      try {
+        const meeting = this.userService.createMeeting(userId, sessionId);
+        this.contextStore.setMeetingId(sessionId, meeting.id);
+        this.logger.log(`Meeting created for user ${userId}, session ${sessionId}, meetingId ${meeting.id}`);
+      } catch (error) {
+        this.logger.error(`Failed to create meeting record: ${error.message}`);
+      }
+    }
+    
     this.pollerService.registerTask(sessionId, taskId, async (payload) => {
       if (payload.transcription?.length) {
         const existing = this.transcripts.get(sessionId) ?? [];
@@ -246,9 +266,51 @@ export class SessionService {
       this.logger.warn(`Failed to stop Tingwu task for ${sessionId}: ${e}`);
     }
     
+    // 强制刷新待持久化的转写内容
+    this.contextStore.flushPending(sessionId);
+    
+    // 自动生成会议标题
+    await this.generateMeetingTitle(sessionId);
+    
     this.taskStatuses.set(sessionId, "COMPLETED");
     // 注意：不删除 session 数据，以便用户仍可以查看转写结果和生成可视化
     return { ok: true };
+  }
+
+  /**
+   * 自动生成会议标题
+   */
+  private async generateMeetingTitle(sessionId: string) {
+    try {
+      const meeting = this.userService.getMeetingBySessionId(sessionId);
+      if (!meeting) return;
+      
+      const context = this.contextStore.getFullText(sessionId);
+      if (!context || context.trim().length < 20) return;
+      
+      // 取前500字符用于生成标题
+      const preview = context.slice(0, 500);
+      
+      const prompt = `根据以下会议内容，生成一个简短的会议标题（10字以内）：
+
+${preview}
+
+只输出标题，不要其他内容。`;
+
+      const title = await this.llmAdapter.chatWithPrompt(
+        "你是一个会议助手，请生成简洁的会议标题。",
+        prompt,
+        { temperature: 0.3, maxTokens: 50 }
+      );
+      
+      const cleanTitle = title.trim().replace(/["""'']/g, '').slice(0, 20);
+      if (cleanTitle) {
+        this.userService.updateMeeting(sessionId, { title: cleanTitle });
+        this.logger.log(`Generated meeting title: ${cleanTitle}`);
+      }
+    } catch (error) {
+      this.logger.warn(`Failed to generate meeting title: ${error}`);
+    }
   }
 
   async getTranscripts(sessionId: string) {
@@ -284,16 +346,29 @@ export class SessionService {
     };
   }
 
-  async triggerSkill(sessionId: string, skill: SkillType) {
+  async triggerSkill(sessionId: string, skill: SkillType, userId?: number) {
     const session = this.sessions.get(sessionId);
     if (!session) {
       throw new NotFoundException("Session not found");
+    }
+
+    // 配额检查（如果有 userId）
+    if (userId) {
+      const check = this.quotaService.checkQuota(userId, 'insight');
+      if (!check.allowed) {
+        throw new ForbiddenException(check.message);
+      }
     }
 
     // 使用新的 SkillService（基于 Qwen3-Max）
     try {
       const result = await this.skillService.triggerSkill(sessionId, skill);
       const cards = this.skillService.toSummaryCards(sessionId, result);
+
+      // 配额扣减
+      if (userId) {
+        this.quotaService.consumeQuota(userId, 'insight');
+      }
 
       if (cards.length) {
         const existing = this.summaries.get(sessionId) ?? [];
@@ -302,6 +377,15 @@ export class SessionService {
           combined.set(card.id, card);
         });
         this.summaries.set(sessionId, Array.from(combined.values()));
+        
+        // 持久化洞察到数据库
+        const meeting = this.userService.getMeetingBySessionId(sessionId);
+        if (meeting) {
+          for (const card of cards) {
+            this.userService.saveInsight(meeting.id, card.type, JSON.stringify(card.content));
+          }
+          this.logger.log(`Saved ${cards.length} insights for meeting ${meeting.id}`);
+        }
       }
 
       return { cards };
@@ -439,12 +523,23 @@ export class SessionService {
 
   // ===== 自由问答 =====
 
-  async askQuestion(sessionId: string, question: string) {
+  async askQuestion(sessionId: string, question: string, userId?: number) {
     if (!this.sessions.has(sessionId)) {
       throw new NotFoundException("Session not found");
     }
 
+    // 配额检查（如果有 userId）
+    if (userId) {
+      const check = this.quotaService.checkQuota(userId, 'qa');
+      if (!check.allowed) {
+        throw new ForbiddenException(check.message);
+      }
+    }
+
     const context = this.contextStore.getFullText(sessionId);
+    this.logger.log(`[QA] Session ${sessionId}, context length: ${context?.length || 0} chars`);
+    this.logger.log(`[QA] Context preview: ${context?.slice(0, 200)}...`);
+    
     if (!context || context.trim().length === 0) {
       return {
         answer: "当前没有可用的会议内容，请先开始录音。",
@@ -475,6 +570,11 @@ ${context}
         prompt,
         { temperature: 0.7, maxTokens: 1000 }
       );
+
+      // 配额扣减
+      if (userId) {
+        this.quotaService.consumeQuota(userId, 'qa');
+      }
 
       // 保存回答到消息流
       const messageId = this.contextStore.appendMessage(sessionId, {
@@ -510,17 +610,48 @@ ${context}
   async generateVisualization(
     sessionId: string,
     type: "chart" | "creative" | "poster",
-    chartType?: "radar" | "flowchart" | "architecture" | "bar" | "line"
+    chartType?: "radar" | "flowchart" | "architecture" | "bar" | "line",
+    userId?: number
   ) {
     if (!this.sessions.has(sessionId)) {
       throw new NotFoundException("Session not found");
     }
 
-    return this.visualizationService.generateVisualization({
+    // 配额检查（如果有 userId）
+    if (userId) {
+      const check = this.quotaService.checkQuota(userId, 'image');
+      if (!check.allowed) {
+        throw new ForbiddenException(check.message);
+      }
+    }
+
+    const result = await this.visualizationService.generateVisualization({
       sessionId,
       type,
       chartType,
     });
+
+    // 配额扣减
+    if (userId) {
+      this.quotaService.consumeQuota(userId, 'image');
+    }
+
+    // 持久化可视化到数据库
+    const meeting = this.userService.getMeetingBySessionId(sessionId);
+    if (meeting && result.imageBase64) {
+      // 保存图片到本地文件
+      const imagePath = `vis-${sessionId}-${Date.now()}.png`;
+      const fs = require('fs');
+      const path = require('path');
+      const uploadsDir = path.join(process.cwd(), 'uploads');
+      const imageBuffer = Buffer.from(result.imageBase64, 'base64');
+      fs.writeFileSync(path.join(uploadsDir, imagePath), imageBuffer);
+      
+      this.userService.saveVisualization(meeting.id, type, chartType || null, imagePath, result.prompt || '');
+      this.logger.log(`Saved visualization for meeting ${meeting.id}: ${imagePath}`);
+    }
+
+    return result;
   }
 
   async getVisualizations(sessionId: string) {

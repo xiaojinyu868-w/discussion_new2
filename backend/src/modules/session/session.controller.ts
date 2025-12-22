@@ -5,21 +5,38 @@ import {
   Param,
   Post,
   Query,
+  Req,
   UploadedFile,
   UseInterceptors,
+  Headers,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { SessionService } from "./session.service";
 import { CreateSessionDto, UploadAudioChunkDto, AskQuestionDto } from "./session.dto";
 import { SkillType } from "../skill/skill.service";
 import { AgentService } from "../agent/agent.service";
+import { AuthService } from "../auth/auth.service";
 
 @Controller("sessions")
 export class SessionController {
   constructor(
     private readonly sessionService: SessionService,
     private readonly agentService: AgentService,
+    private readonly authService: AuthService,
   ) {}
+
+  // 辅助方法：从 Authorization header 获取 userId（可选）
+  private getUserId(authHeader?: string): number | undefined {
+    if (!authHeader) return undefined;
+    try {
+      const [type, token] = authHeader.split(' ');
+      if (type !== 'Bearer' || !token) return undefined;
+      const payload = this.authService.verifyToken(token);
+      return payload.userId;
+    } catch {
+      return undefined;
+    }
+  }
 
   @Get("health")
   async health() {
@@ -27,8 +44,12 @@ export class SessionController {
   }
 
   @Post()
-  async createSession(@Body() body: CreateSessionDto) {
-    return this.sessionService.createRealtimeSession(body);
+  async createSession(
+    @Body() body: CreateSessionDto,
+    @Headers("authorization") authHeader?: string
+  ) {
+    const userId = this.getUserId(authHeader);
+    return this.sessionService.createRealtimeSession(body, userId);
   }
 
   @Get(":id/transcripts")
@@ -44,9 +65,11 @@ export class SessionController {
   @Post(":id/skills/:skillType")
   async triggerSkill(
     @Param("id") id: string,
-    @Param("skillType") skillType: SkillType
+    @Param("skillType") skillType: SkillType,
+    @Headers("authorization") authHeader?: string
   ) {
-    return this.sessionService.triggerSkill(id, skillType);
+    const userId = this.getUserId(authHeader);
+    return this.sessionService.triggerSkill(id, skillType, userId);
   }
 
   @Post(":id/audio")
@@ -101,9 +124,11 @@ export class SessionController {
   @Post(":id/qa")
   async askQuestion(
     @Param("id") id: string,
-    @Body() body: AskQuestionDto
+    @Body() body: AskQuestionDto,
+    @Headers("authorization") authHeader?: string
   ) {
-    return this.sessionService.askQuestion(id, body.question);
+    const userId = this.getUserId(authHeader);
+    return this.sessionService.askQuestion(id, body.question, userId);
   }
 
   @Get(":id/messages")
@@ -120,9 +145,11 @@ export class SessionController {
     body: {
       type: "chart" | "creative" | "poster";
       chartType?: "radar" | "flowchart" | "architecture" | "bar" | "line";
-    }
+    },
+    @Headers("authorization") authHeader?: string
   ) {
-    return this.sessionService.generateVisualization(id, body.type, body.chartType);
+    const userId = this.getUserId(authHeader);
+    return this.sessionService.generateVisualization(id, body.type, body.chartType, userId);
   }
 
   @Get(":id/visualizations")

@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { DatabaseService } from "../database/database.service";
 
 /**
  * 通义听悟 WebSocket 返回格式（TranscriptionResultChanged）
@@ -41,32 +42,57 @@ export interface ChatMessage {
 
 export interface SessionContext {
   sessionId: string;
+  meetingId?: number; // 数据库中的会议 ID
   segments: ContextSegment[];
   messages: ChatMessage[];
   meetingPhase: string;
   lastAutoAnalysis: Date | null;
+  pendingSegments: ContextSegment[]; // 待持久化的段落
 }
 
 @Injectable()
 export class ContextStoreService {
   private readonly logger = new Logger(ContextStoreService.name);
   private readonly contexts = new Map<string, SessionContext>();
+  private readonly BATCH_SIZE = 10; // 每 10 条持久化一次
+  private readonly BATCH_INTERVAL = 5000; // 或每 5 秒持久化一次
+  private batchTimers = new Map<string, NodeJS.Timeout>();
+
+  constructor(private readonly db: DatabaseService) {}
 
   /**
    * 初始化会话上下文
    */
-  initialize(sessionId: string): void {
+  initialize(sessionId: string, meetingId?: number): void {
     if (this.contexts.has(sessionId)) {
+      // 如果已存在，只更新 meetingId
+      if (meetingId) {
+        const ctx = this.contexts.get(sessionId)!;
+        ctx.meetingId = meetingId;
+      }
       return;
     }
     this.contexts.set(sessionId, {
       sessionId,
+      meetingId,
       segments: [],
       messages: [],
       meetingPhase: "开场",
       lastAutoAnalysis: null,
+      pendingSegments: [],
     });
-    this.logger.log(`Initialized context for session ${sessionId}`);
+    this.logger.log(`Initialized context for session ${sessionId}${meetingId ? `, meetingId=${meetingId}` : ''}`);
+  }
+
+  /**
+   * 设置会议 ID（用于后续关联）
+   */
+  setMeetingId(sessionId: string, meetingId: number): void {
+    const context = this.contexts.get(sessionId);
+    if (context) {
+      context.meetingId = meetingId;
+      this.logger.log(`Set meetingId=${meetingId} for session ${sessionId}`);
+    }
   }
 
   /**
@@ -110,10 +136,78 @@ export class ContextStoreService {
       this.logger.debug(`Updated segment ${segment.id}`);
     } else {
       context.segments.push(segment);
+      context.pendingSegments.push(segment);
       this.logger.debug(
         `Appended segment ${segment.id}: "${segment.text.slice(0, 50)}..."`
       );
+
+      // 检查是否需要批量持久化
+      this.checkAndPersist(sessionId);
     }
+  }
+
+  /**
+   * 检查并批量持久化
+   */
+  private checkAndPersist(sessionId: string): void {
+    const context = this.contexts.get(sessionId);
+    if (!context || !context.meetingId) return;
+
+    // 如果达到批量大小，立即持久化
+    if (context.pendingSegments.length >= this.BATCH_SIZE) {
+      this.persistSegments(sessionId);
+      return;
+    }
+
+    // 否则设置定时器
+    if (!this.batchTimers.has(sessionId)) {
+      const timer = setTimeout(() => {
+        this.persistSegments(sessionId);
+        this.batchTimers.delete(sessionId);
+      }, this.BATCH_INTERVAL);
+      this.batchTimers.set(sessionId, timer);
+    }
+  }
+
+  /**
+   * 持久化待保存的段落
+   */
+  private persistSegments(sessionId: string): void {
+    const context = this.contexts.get(sessionId);
+    if (!context || !context.meetingId || context.pendingSegments.length === 0) return;
+
+    const segments = context.pendingSegments;
+    context.pendingSegments = [];
+
+    try {
+      const stmt = this.db.getDatabase().prepare(
+        `INSERT INTO transcripts (meeting_id, start_ms, end_ms, content) VALUES (?, ?, ?, ?)`
+      );
+
+      this.db.transaction(() => {
+        for (const seg of segments) {
+          stmt.run(context.meetingId, seg.startMs, seg.endMs, seg.text);
+        }
+      });
+
+      this.logger.log(`Persisted ${segments.length} transcripts for meeting ${context.meetingId}`);
+    } catch (error) {
+      this.logger.error(`Failed to persist transcripts: ${error}`);
+      // 失败时放回待持久化队列
+      context.pendingSegments.push(...segments);
+    }
+  }
+
+  /**
+   * 强制持久化所有待保存的段落
+   */
+  flushPending(sessionId: string): void {
+    const timer = this.batchTimers.get(sessionId);
+    if (timer) {
+      clearTimeout(timer);
+      this.batchTimers.delete(sessionId);
+    }
+    this.persistSegments(sessionId);
   }
 
   /**
