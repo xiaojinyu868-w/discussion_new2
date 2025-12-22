@@ -1842,6 +1842,46 @@
     }
     .quota-item:last-child { border-bottom: none; }
     
+    /* 语言设置 */
+    .language-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .language-section h4 {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    .language-switcher {
+      display: flex;
+      gap: 10px;
+    }
+    .lang-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    .lang-btn:hover {
+      background: var(--bg-elevated);
+      border-color: var(--border-medium);
+    }
+    .lang-btn.active {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(139, 92, 246, 0.2));
+      border-color: var(--aurora-purple);
+      color: var(--text-primary);
+    }
+    
     /* 会议历史 */
     .meetings-section {
       margin-top: 20px;
@@ -2522,53 +2562,53 @@
       <div class="toolbar-row">
         <!-- AI 技能 -->
         <div class="toolbar-section">
-          <div class="toolbar-section__title">认知技能</div>
+          <div class="toolbar-section__title" data-i18n="toolbar.cognitiveSkills">认知技能</div>
           <div class="skills-row">
             <button class="skill-btn" id="skillInnerOS" onclick="triggerSkill('inner_os')" disabled>
               <div class="skill-btn__icon inner-os">🔮</div>
-              <span class="skill-btn__name">认知转译</span>
+              <span class="skill-btn__name" data-i18n="toolbar.cognitiveTranslate">认知转译</span>
               <span class="skill-status" id="skillInnerOSStatus"></span>
             </button>
             <button class="skill-btn" id="skillBrainstorm" onclick="triggerSkill('brainstorm')" disabled>
               <div class="skill-btn__icon brainstorm">⚡</div>
-              <span class="skill-btn__name">破局灵感</span>
+              <span class="skill-btn__name" data-i18n="toolbar.breakInspiration">破局灵感</span>
               <span class="skill-status" id="skillBrainstormStatus"></span>
             </button>
             <button class="skill-btn" id="skillStopTalking" onclick="triggerSkill('stop_talking')" disabled>
               <div class="skill-btn__icon stop-talking">🎯</div>
-              <span class="skill-btn__name">议程守护</span>
+              <span class="skill-btn__name" data-i18n="toolbar.agendaGuard">议程守护</span>
               <span class="skill-status" id="skillStopTalkingStatus"></span>
             </button>
           </div>
           
           <div class="auto-push-row">
-            <span class="auto-push-label">自动推送分析</span>
+            <span class="auto-push-label" data-i18n="toolbar.autoPushAnalysis">自动推送分析</span>
             <div class="toggle-switch active" id="autoPushToggle" onclick="toggleAutoPush()"></div>
           </div>
           
           <div class="auto-push-row">
-            <span class="auto-push-label">🤖 Agent 智能联动</span>
+            <span class="auto-push-label" data-i18n="toolbar.agentLinkage">🤖 Agent 智能联动</span>
             <div class="toggle-switch active" id="agentToggle" onclick="toggleAgent()"></div>
           </div>
-          <div class="agent-hint">自动检测数据/跑题，联动生成洞察和图表</div>
+          <div class="agent-hint" data-i18n="toolbar.agentHint">自动检测数据/跑题，联动生成洞察和图表</div>
         </div>
 
         <!-- 视觉化 -->
         <div class="toolbar-section">
-          <div class="toolbar-section__title">思维显影</div>
+          <div class="toolbar-section__title" data-i18n="toolbar.mindVisualization">思维显影</div>
           <div class="vis-section">
             <div class="vis-type-row">
-              <button class="vis-type-btn active" data-type="chart" onclick="selectVisualizationType('chart')">📊 数据图表</button>
-              <button class="vis-type-btn" data-type="creative" onclick="selectVisualizationType('creative')">🎨 创意图像</button>
-              <button class="vis-type-btn" data-type="poster" onclick="selectVisualizationType('poster')">📋 逻辑海报</button>
+              <button class="vis-type-btn active" data-type="chart" onclick="selectVisualizationType('chart')" data-i18n="toolbar.dataChart">📊 数据图表</button>
+              <button class="vis-type-btn" data-type="creative" onclick="selectVisualizationType('creative')" data-i18n="toolbar.creativeImage">🎨 创意图像</button>
+              <button class="vis-type-btn" data-type="poster" onclick="selectVisualizationType('poster')" data-i18n="toolbar.logicPoster">📋 逻辑海报</button>
             </div>
             <select class="chart-type-select" id="chartTypeSelect">
-              <option value="radar">雷达图</option>
-              <option value="flowchart">流程图</option>
-              <option value="architecture">架构图</option>
-              <option value="bar">柱状图</option>
+              <option value="radar" data-i18n="toolbar.radarChart">雷达图</option>
+              <option value="flowchart" data-i18n="toolbar.flowChart">流程图</option>
+              <option value="architecture" data-i18n="toolbar.archChart">架构图</option>
+              <option value="bar" data-i18n="toolbar.barChart">柱状图</option>
             </select>
-            <button class="vis-generate-btn" id="visGenerateBtn" onclick="generateVisualization()" disabled>
+            <button class="vis-generate-btn" id="visGenerateBtn" onclick="generateVisualization()" disabled data-i18n="toolbar.generateVis">
               ✨ 生成视觉化
             </button>
             <div class="vis-status" id="visStatus"></div>
@@ -2580,14 +2620,14 @@
 
         <!-- 问答 -->
         <div class="qa-section-wrapper">
-          <div class="toolbar-section__title">会议问答</div>
+          <div class="toolbar-section__title" data-i18n="toolbar.meetingQA">会议问答</div>
           <div class="qa-section">
             <div class="qa-messages" id="qaMessages">
-              <div class="qa-message assistant">👋 有问题随时问我，我会基于会议内容为你解答</div>
+              <div class="qa-message assistant" data-i18n="toolbar.qaWelcome">👋 有问题随时问我，我会基于会议内容为你解答</div>
             </div>
             <div class="qa-input-row">
-              <input type="text" class="qa-input" id="qaInput" placeholder="输入问题..." onkeypress="handleQAKeypress(event)">
-              <button class="qa-send-btn" id="qaSendBtn" onclick="askQuestion()" disabled>发送</button>
+              <input type="text" class="qa-input" id="qaInput" data-i18n-placeholder="toolbar.inputQuestion" placeholder="输入问题..." onkeypress="handleQAKeypress(event)">
+              <button class="qa-send-btn" id="qaSendBtn" onclick="askQuestion()" disabled data-i18n="toolbar.send">发送</button>
             </div>
           </div>
         </div>
@@ -2601,6 +2641,7 @@
       Built with ❤️ using <a href="#">通义听悟</a> + <a href="#">Qwen3-Max</a>
     </p>
   </footer>
+
 
   <div class="toast-container" id="toastContainer"></div>
 
@@ -2634,33 +2675,46 @@
   <!-- 个人中心弹窗 -->
   <div class="modal-overlay" id="profileModal">
     <div class="modal-content profile-modal">
-      <h3 class="modal-title">个人中心</h3>
+      <h3 class="modal-title" data-i18n="profile.title">个人中心</h3>
       <div class="profile-info">
         <div class="profile-avatar">👤</div>
         <div class="profile-name" id="profileUsername">-</div>
       </div>
       <div class="quota-section">
-        <h4>配额使用情况</h4>
+        <h4 data-i18n="profile.quota">配额使用情况</h4>
         <div class="quota-item">
-          <span>AI 洞察</span>
+          <span data-i18n="profile.aiInsight">AI 洞察</span>
           <span id="quotaInsight">-/-</span>
         </div>
         <div class="quota-item">
-          <span>会议问答</span>
+          <span data-i18n="profile.meetingQa">会议问答</span>
           <span id="quotaQa">-/-</span>
         </div>
         <div class="quota-item">
-          <span>图片生成</span>
+          <span data-i18n="profile.imageGen">图片生成</span>
           <span id="quotaImage">-/-</span>
         </div>
       </div>
-      <div class="meetings-section">
-        <h4>会议历史</h4>
-        <div class="meetings-list" id="meetingsList">
-          <div class="meetings-empty">暂无会议记录</div>
+      <div class="language-section">
+        <h4 data-i18n="profile.language">语言设置</h4>
+        <div class="language-switcher">
+          <button class="lang-btn" data-lang="zh" onclick="switchLanguage('zh')">
+            <span>🇨🇳</span>
+            <span>简体中文</span>
+          </button>
+          <button class="lang-btn" data-lang="en" onclick="switchLanguage('en')">
+            <span>🇺🇸</span>
+            <span>English</span>
+          </button>
         </div>
       </div>
-      <button class="btn btn-secondary" onclick="logout()" style="width:100%;margin-top:16px;">退出登录</button>
+      <div class="meetings-section">
+        <h4 data-i18n="profile.meetingHistory">会议历史</h4>
+        <div class="meetings-list" id="meetingsList">
+          <div class="meetings-empty" data-i18n="profile.noMeetings">暂无会议记录</div>
+        </div>
+      </div>
+      <button class="btn btn-secondary" onclick="logout()" style="width:100%;margin-top:16px;" data-i18n="profile.logout">退出登录</button>
       <button class="modal-close" onclick="closeProfileModal()">×</button>
     </div>
   </div>
@@ -2696,6 +2750,332 @@
   </div>
 
   <script>
+    // ========== 国际化配置 (i18n) ==========
+    const i18n = {
+      zh: {
+        // 导航栏
+        nav: {
+          detecting: '检测中...',
+          connected: '已连接',
+          disconnected: '未连接',
+          login: '登录',
+        },
+        // Hero区域
+        hero: {
+          badge: '您的数字参会者 · Digital Participant',
+          title: 'MeetMind · 视界',
+          subtitle: '不只是记录，而是真正参与',
+          desc: '全程在场、深度理解、主动洞察 — 您会议中最懂行的那位',
+        },
+        // 录音控制
+        recording: {
+          ready: '准备就绪',
+          recording: '录制中',
+          paused: '已暂停',
+          start: '开始录音',
+          stop: '停止录音',
+          pause: '暂停',
+          resume: '继续',
+          upload: '上传音频',
+        },
+        // 面板
+        panel: {
+          transcript: '全息记录',
+          insight: '认知同频',
+          emptyTranscript: '开始录音后，转写内容将实时显示',
+          emptyInsight: '触发 AI 技能后，洞察将显示在这里',
+        },
+        // 侧边栏
+        sidebar: {
+          title: '会议记录',
+          newMeeting: '新建会议',
+          inProgress: '进行中',
+          history: '历史会议',
+          loginHint: '登录后查看历史会议',
+          noMeetings: '暂无会议记录',
+          loadMeetingContinue: '已加载会议，点击录音按钮继续',
+          loadMeetingHistory: '已加载历史会议',
+          loadMeetingFailed: '加载会议失败',
+          switchMeetingConfirm: '当前正在录音，切换会议将停止录音。是否继续？',
+          newMeetingConfirm: '当前正在录音，新建会议将停止当前录音。是否继续？',
+        },
+        // 认证
+        auth: {
+          login: '登录',
+          register: '注册',
+          username: '用户名',
+          password: '密码',
+          usernamePlaceholder: '请输入用户名',
+          passwordPlaceholder: '请输入密码',
+          hint: '内测版本，注册后即可使用',
+          loginSuccess: '登录成功！',
+          registerSuccess: '注册成功！',
+          logoutSuccess: '已退出登录',
+          operationFailed: '操作失败',
+        },
+        // 个人中心
+        profile: {
+          title: '个人中心',
+          quota: '配额使用情况',
+          aiInsight: 'AI 洞察',
+          meetingQa: '会议问答',
+          imageGen: '图片生成',
+          meetingHistory: '会议历史',
+          noMeetings: '暂无会议记录',
+          logout: '退出登录',
+          language: '语言设置',
+          langZh: '简体中文',
+          langEn: 'English',
+        },
+        // 会议详情
+        meetingDetail: {
+          title: '会议详情',
+          transcripts: '转写内容',
+          insights: 'AI 洞察',
+          visualizations: '可视化',
+          delete: '删除会议',
+          deleteConfirm: '确定要删除这个会议吗？此操作不可恢复。',
+          deleteSuccess: '会议已删除',
+          deleteFailed: '删除失败',
+          loading: '加载中...',
+          noTranscripts: '暂无转写内容',
+          noInsights: '暂无 AI 洞察',
+          noVisualizations: '暂无可视化内容',
+        },
+        // 技能和工具栏
+        skills: {
+          innerOs: '潜台词',
+          brainstorm: '灵感',
+          stopTalking: '聚焦',
+          autoAnalysis: '洞察',
+          chart: '科研图表',
+          creative: '创意图像',
+          poster: '逻辑海报',
+          visualization: '思维显影',
+        },
+        toolbar: {
+          cognitiveSkills: '认知技能',
+          cognitiveTranslate: '认知转译',
+          breakInspiration: '破局灵感',
+          agendaGuard: '议程守护',
+          autoPushAnalysis: '自动推送分析',
+          agentLinkage: '🤖 Agent 智能联动',
+          agentHint: '自动检测数据/跑题，联动生成洞察和图表',
+          mindVisualization: '思维显影',
+          dataChart: '📊 数据图表',
+          creativeImage: '🎨 创意图像',
+          logicPoster: '📋 逻辑海报',
+          radarChart: '雷达图',
+          flowChart: '流程图',
+          archChart: '架构图',
+          barChart: '柱状图',
+          generateVis: '✨ 生成视觉化',
+          meetingQA: '会议问答',
+          qaWelcome: '👋 有问题随时问我，我会基于会议内容为你解答',
+          inputQuestion: '输入问题...',
+          send: '发送',
+        },
+        // 提示消息
+        toast: {
+          connectionSuccess: '后端服务连接成功',
+          connectionFailed: '无法连接到后端服务',
+          micPermissionDenied: '麦克风权限被拒绝，请在浏览器设置中允许访问麦克风',
+          micNotFound: '未找到麦克风设备',
+          recordingStartFailed: '录音启动失败',
+          recordingStopped: '录音已停止',
+          uploadSuccess: '上传成功',
+          uploadFailed: '上传失败',
+          processingAudio: '正在处理音频...',
+          needMicPermission: '需要麦克风权限',
+          micPermissionHint: '请点击浏览器地址栏左侧的锁图标，允许访问麦克风后重试。',
+          startBackend: '需要启动后端服务',
+          startBackendHint: '请先启动后端服务',
+        },
+        // 下载
+        download: {
+          word: 'Word 文档',
+          pdf: 'PDF 文档',
+        },
+        // 其他
+        misc: {
+          clickToStop: '点击将停止当前录音',
+          today: '今天',
+          yesterday: '昨天',
+        },
+      },
+      en: {
+        // Navigation
+        nav: {
+          detecting: 'Detecting...',
+          connected: 'Connected',
+          disconnected: 'Disconnected',
+          login: 'Login',
+        },
+        // Hero section
+        hero: {
+          badge: 'Your Digital Participant',
+          title: 'MeetMind · Vision',
+          subtitle: 'Not just recording, but truly participating',
+          desc: 'Always present, deeply understanding, proactively insightful — the most knowledgeable one in your meeting',
+        },
+        // Recording controls
+        recording: {
+          ready: 'Ready',
+          recording: 'Recording',
+          paused: 'Paused',
+          start: 'Start Recording',
+          stop: 'Stop Recording',
+          pause: 'Pause',
+          resume: 'Resume',
+          upload: 'Upload Audio',
+        },
+        // Panels
+        panel: {
+          transcript: 'Transcript',
+          insight: 'Cognitive Sync',
+          emptyTranscript: 'Transcription will appear here after recording starts',
+          emptyInsight: 'Insights will appear here after triggering AI skills',
+        },
+        // Sidebar
+        sidebar: {
+          title: 'Meetings',
+          newMeeting: 'New Meeting',
+          inProgress: 'In Progress',
+          history: 'History',
+          loginHint: 'Login to view meeting history',
+          noMeetings: 'No meetings yet',
+          loadMeetingContinue: 'Meeting loaded, click record to continue',
+          loadMeetingHistory: 'Historical meeting loaded',
+          loadMeetingFailed: 'Failed to load meeting',
+          switchMeetingConfirm: 'Currently recording. Switching will stop the recording. Continue?',
+          newMeetingConfirm: 'Currently recording. Creating new meeting will stop recording. Continue?',
+        },
+        // Authentication
+        auth: {
+          login: 'Login',
+          register: 'Register',
+          username: 'Username',
+          password: 'Password',
+          usernamePlaceholder: 'Enter username',
+          passwordPlaceholder: 'Enter password',
+          hint: 'Beta version, register to start using',
+          loginSuccess: 'Login successful!',
+          registerSuccess: 'Registration successful!',
+          logoutSuccess: 'Logged out',
+          operationFailed: 'Operation failed',
+        },
+        // Profile
+        profile: {
+          title: 'Profile',
+          quota: 'Quota Usage',
+          aiInsight: 'AI Insights',
+          meetingQa: 'Meeting Q&A',
+          imageGen: 'Image Generation',
+          meetingHistory: 'Meeting History',
+          noMeetings: 'No meetings yet',
+          logout: 'Logout',
+          language: 'Language',
+          langZh: '简体中文',
+          langEn: 'English',
+        },
+        // Meeting details
+        meetingDetail: {
+          title: 'Meeting Details',
+          transcripts: 'Transcripts',
+          insights: 'AI Insights',
+          visualizations: 'Visualizations',
+          delete: 'Delete Meeting',
+          deleteConfirm: 'Are you sure you want to delete this meeting? This cannot be undone.',
+          deleteSuccess: 'Meeting deleted',
+          deleteFailed: 'Delete failed',
+          loading: 'Loading...',
+          noTranscripts: 'No transcripts yet',
+          noInsights: 'No AI insights yet',
+          noVisualizations: 'No visualizations yet',
+        },
+        // Skills
+        skills: {
+          innerOs: 'Subtext',
+          brainstorm: 'Brainstorm',
+          stopTalking: 'Focus',
+          autoAnalysis: 'Insight',
+          chart: 'Research Chart',
+          creative: 'Creative Image',
+          poster: 'Logic Poster',
+          visualization: 'Mind Visualization',
+        },
+        toolbar: {
+          cognitiveSkills: 'AI Skills',
+          cognitiveTranslate: 'Mind Reader',
+          breakInspiration: 'Brainstorm',
+          agendaGuard: 'Focus Guard',
+          autoPushAnalysis: 'Auto Analysis',
+          agentLinkage: '🤖 Agent Linkage',
+          agentHint: 'Auto-detect data/off-topic, generate insights and charts',
+          mindVisualization: 'Visualization',
+          dataChart: '📊 Data Chart',
+          creativeImage: '🎨 Creative',
+          logicPoster: '📋 Poster',
+          radarChart: 'Radar',
+          flowChart: 'Flowchart',
+          archChart: 'Architecture',
+          barChart: 'Bar Chart',
+          generateVis: '✨ Generate',
+          meetingQA: 'Meeting Q&A',
+          qaWelcome: '👋 Ask me anything about the meeting',
+          inputQuestion: 'Ask a question...',
+          send: 'Send',
+        },
+        // Toast messages
+        toast: {
+          connectionSuccess: 'Backend connected successfully',
+          connectionFailed: 'Cannot connect to backend',
+          micPermissionDenied: 'Microphone permission denied. Please allow in browser settings.',
+          micNotFound: 'Microphone not found',
+          recordingStartFailed: 'Failed to start recording',
+          recordingStopped: 'Recording stopped',
+          uploadSuccess: 'Upload successful',
+          uploadFailed: 'Upload failed',
+          processingAudio: 'Processing audio...',
+          needMicPermission: 'Microphone permission required',
+          micPermissionHint: 'Click the lock icon in browser address bar to allow microphone access.',
+          startBackend: 'Backend service required',
+          startBackendHint: 'Please start the backend service first',
+        },
+        // Download
+        download: {
+          word: 'Word Document',
+          pdf: 'PDF Document',
+        },
+        // Misc
+        misc: {
+          clickToStop: 'Click to stop current recording',
+          today: 'Today',
+          yesterday: 'Yesterday',
+        },
+      },
+    };
+
+    // 获取翻译文本
+    function t(key) {
+      const lang = state.language || 'zh';
+      const keys = key.split('.');
+      let value = i18n[lang];
+      for (const k of keys) {
+        if (value && value[k] !== undefined) {
+          value = value[k];
+        } else {
+          // 回退到中文
+          value = i18n.zh;
+          for (const k2 of keys) {
+            value = value?.[k2];
+          }
+          break;
+        }
+      }
+      return value || key;
+    }
+
     // ========== State ==========
     const state = {
       sessionId: null,
@@ -2730,6 +3110,8 @@
       // 侧边栏状态
       sidebarOpen: false,
       meetings: [], // 会议列表缓存
+      // 语言设置
+      language: localStorage.getItem('language') || 'zh',
     };
 
     // ========== DOM Elements ==========
@@ -2782,6 +3164,7 @@
       testConnection();
       initAuth(); // 初始化认证状态
       initSidebar(); // 初始化侧边栏
+      initLanguage(); // 初始化语言设置
     }
 
     // ========== Sidebar Functions ==========
@@ -2831,7 +3214,7 @@
         $('historyMeetingList').innerHTML = `
           <div class="meeting-list-empty">
             <div class="meeting-list-empty-icon">🔐</div>
-            <div>登录后查看历史会议</div>
+            <div>${t('sidebar.loginHint')}</div>
           </div>
         `;
         return;
@@ -2932,7 +3315,7 @@
       
       // 如果正在录音，提示用户
       if (state.isRecording) {
-        if (!confirm('当前正在录音，切换会议将停止录音。是否继续？')) {
+        if (!confirm(t('sidebar.switchMeetingConfirm'))) {
           return;
         }
         await stopRecording();
@@ -3013,11 +3396,11 @@
           
           // 检查会议状态，如果是进行中的会议，可以继续
           if (meeting.status === 'recording' || meeting.status === 'paused') {
-            showToast('已加载会议，点击录音按钮继续', 'info');
+            showToast(t('sidebar.loadMeetingContinue'), 'info');
             // 可以在这里恢复会话
             state.sessionId = meeting.session_id;
           } else {
-            showToast('已加载历史会议', 'success');
+            showToast(t('sidebar.loadMeetingHistory'), 'success');
           }
           
           // 更新侧边栏高亮
@@ -3025,7 +3408,7 @@
         }
       } catch (error) {
         console.error('Failed to load meeting:', error);
-        showToast('加载会议失败', 'error');
+        showToast(t('sidebar.loadMeetingFailed'), 'error');
       }
     }
 
@@ -3130,7 +3513,7 @@
     async function startNewMeeting() {
       // 如果正在录音，提示用户
       if (state.isRecording) {
-        if (!confirm('当前正在录音，新建会议将停止当前录音。是否继续？')) {
+        if (!confirm(t('sidebar.newMeetingConfirm'))) {
           return;
         }
         await stopRecording();
@@ -3178,7 +3561,7 @@
       if (state.user) {
         elements.userBtnText.textContent = state.user.username;
       } else {
-        elements.userBtnText.textContent = '登录';
+        elements.userBtnText.textContent = t('nav.login');
       }
     }
 
@@ -3217,7 +3600,7 @@
         t.classList.toggle('active', t.dataset.tab === tab);
       });
       $('confirmPasswordGroup').style.display = tab === 'register' ? 'block' : 'none';
-      $('authSubmitBtn').textContent = tab === 'login' ? '登录' : '注册';
+      $('authSubmitBtn').textContent = tab === 'login' ? t('auth.login') : t('auth.register');
     }
 
     async function handleAuth(e) {
@@ -3258,13 +3641,13 @@
           closeAuthModal();
           fetchQuota();
           loadSidebarMeetings(); // 登录后刷新会议列表
-          showToast(state.authMode === 'login' ? '登录成功！' : '注册成功！', 'success');
+          showToast(state.authMode === 'login' ? t('auth.loginSuccess') : t('auth.registerSuccess'), 'success');
         } else {
-          showToast(data.message || '操作失败', 'error');
+          showToast(data.message || t('auth.operationFailed'), 'error');
         }
       } catch (error) {
         console.error('Auth error:', error);
-        showToast('网络错误，请重试', 'error');
+        showToast(state.language === 'zh' ? '网络错误，请重试' : 'Network error, please retry', 'error');
       }
     }
 
@@ -3276,7 +3659,204 @@
       localStorage.removeItem('token');
       updateUserUI();
       closeProfileModal();
-      showToast('已退出登录', 'info');
+      showToast(t('auth.logoutSuccess'), 'info');
+    }
+
+    // ========== 语言切换 ==========
+    function switchLanguage(lang) {
+      if (lang === state.language) return;
+      
+      state.language = lang;
+      localStorage.setItem('language', lang);
+      
+      // 更新语言按钮状态
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+      
+      // 更新整个UI
+      updateAllI18nText();
+      
+      // 更新HTML lang属性
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+      
+      showToast(lang === 'zh' ? '已切换为中文' : 'Switched to English', 'success');
+    }
+
+    function updateAllI18nText() {
+      // 更新所有带 data-i18n 属性的元素
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = t(key);
+      });
+      
+      // 更新所有带 data-i18n-placeholder 属性的输入框
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        el.placeholder = t(key);
+      });
+      
+      // 更新特定的动态内容
+      updateDynamicI18nContent();
+    }
+
+    function updateDynamicI18nContent() {
+      // 更新导航栏连接状态
+      const connectionText = $('connectionText');
+      if (connectionText) {
+        if (state.isConnected) {
+          connectionText.textContent = t('nav.connected');
+        } else if (connectionText.textContent.includes('检测') || connectionText.textContent.includes('Detecting')) {
+          connectionText.textContent = t('nav.detecting');
+        } else {
+          connectionText.textContent = t('nav.disconnected');
+        }
+      }
+      
+      // 更新用户按钮
+      if (!state.user && elements.userBtnText) {
+        elements.userBtnText.textContent = t('nav.login');
+      }
+      
+      // 更新录音状态
+      updateRecordingUI();
+      
+      // 更新空状态
+      const transcriptEmpty = document.querySelector('#transcriptEmptyState .empty-state__text');
+      if (transcriptEmpty) {
+        transcriptEmpty.textContent = t('panel.emptyTranscript');
+      }
+      
+      const insightEmpty = document.querySelector('#insightEmptyState .empty-state__text');
+      if (insightEmpty) {
+        insightEmpty.textContent = t('panel.emptyInsight');
+      }
+      
+      // 更新侧边栏
+      const sidebarTitle = document.querySelector('.sidebar-title');
+      if (sidebarTitle) sidebarTitle.textContent = t('sidebar.title');
+      
+      const newMeetingBtn = document.querySelector('#newMeetingBtn span:last-child');
+      if (newMeetingBtn) newMeetingBtn.textContent = t('sidebar.newMeeting');
+      
+      const sectionTitles = document.querySelectorAll('.sidebar-section-title');
+      if (sectionTitles[0]) sectionTitles[0].textContent = t('sidebar.inProgress');
+      if (sectionTitles[1]) sectionTitles[1].textContent = t('sidebar.history');
+      
+      // 更新面板标题
+      const panelTitles = document.querySelectorAll('.panel__title');
+      panelTitles.forEach(title => {
+        const icon = title.querySelector('.panel__title-icon');
+        const count = title.querySelector('.panel__count');
+        if (icon && icon.textContent === '📝') {
+          title.childNodes.forEach(node => {
+            if (node.nodeType === 3 && node.textContent.trim()) {
+              node.textContent = '\n            ' + t('panel.transcript') + '\n            ';
+            }
+          });
+        } else if (icon && (icon.textContent === '✨' || icon.textContent === '💡')) {
+          title.childNodes.forEach(node => {
+            if (node.nodeType === 3 && node.textContent.trim()) {
+              node.textContent = '\n            ' + t('panel.insight') + '\n            ';
+            }
+          });
+        }
+      });
+      
+      // 更新上传按钮
+      const uploadBtnText = document.querySelector('#uploadBtn span:last-child');
+      if (uploadBtnText) uploadBtnText.textContent = t('recording.upload');
+      
+      // 更新下载菜单
+      const downloadItems = document.querySelectorAll('.download-menu-item');
+      if (downloadItems[0]) {
+        const span = downloadItems[0].querySelector('span');
+        if (span) downloadItems[0].innerHTML = `<span>📄</span> ${t('download.word')}`;
+      }
+      if (downloadItems[1]) {
+        const span = downloadItems[1].querySelector('span');
+        if (span) downloadItems[1].innerHTML = `<span>📑</span> ${t('download.pdf')}`;
+      }
+      
+      // 更新Hero区域
+      const heroBadge = document.querySelector('.hero-badge span');
+      if (heroBadge) heroBadge.textContent = t('hero.badge');
+      
+      const heroTitle = document.querySelector('.hero-title');
+      if (heroTitle) {
+        heroTitle.innerHTML = `${t('hero.title')}<br><span class="hero-title-gradient">${t('hero.subtitle')}</span>`;
+      }
+      
+      const heroSubtitle = document.querySelector('.hero-subtitle');
+      if (heroSubtitle) heroSubtitle.textContent = t('hero.desc');
+      
+      // 更新登录弹窗
+      const authTabs = document.querySelectorAll('.auth-tab');
+      if (authTabs[0]) authTabs[0].textContent = t('auth.login');
+      if (authTabs[1]) authTabs[1].textContent = t('auth.register');
+      
+      const authLabels = document.querySelectorAll('#authForm .form-group label');
+      if (authLabels[0]) authLabels[0].textContent = t('auth.username');
+      if (authLabels[1]) authLabels[1].textContent = t('auth.password');
+      
+      const authUsername = $('authUsername');
+      if (authUsername) authUsername.placeholder = t('auth.usernamePlaceholder');
+      
+      const authPassword = $('authPassword');
+      if (authPassword) authPassword.placeholder = t('auth.passwordPlaceholder');
+      
+      const authSubmitBtn = $('authSubmitBtn');
+      if (authSubmitBtn) authSubmitBtn.textContent = state.authMode === 'login' ? t('auth.login') : t('auth.register');
+      
+      const authHint = document.querySelector('.auth-hint');
+      if (authHint) authHint.textContent = t('auth.hint');
+      
+      // 更新会议详情弹窗
+      const meetingDetailTitle = $('meetingDetailTitle');
+      if (meetingDetailTitle && meetingDetailTitle.textContent.includes('会议详情') || meetingDetailTitle?.textContent.includes('Meeting Details')) {
+        meetingDetailTitle.textContent = t('meetingDetail.title');
+      }
+      
+      const deleteMeetingBtn = $('deleteMeetingBtn');
+      if (deleteMeetingBtn) deleteMeetingBtn.textContent = t('meetingDetail.delete');
+      
+      const meetingTabs = document.querySelectorAll('.meeting-detail-tab');
+      if (meetingTabs[0]) meetingTabs[0].textContent = t('meetingDetail.transcripts');
+      if (meetingTabs[1]) meetingTabs[1].textContent = t('meetingDetail.insights');
+      if (meetingTabs[2]) meetingTabs[2].textContent = t('meetingDetail.visualizations');
+      
+      // 更新图表类型选择器
+      const chartTypeSelect = $('chartTypeSelect');
+      if (chartTypeSelect) {
+        const options = chartTypeSelect.querySelectorAll('option');
+        if (options[0]) options[0].textContent = t('toolbar.radarChart');
+        if (options[1]) options[1].textContent = t('toolbar.flowChart');
+        if (options[2]) options[2].textContent = t('toolbar.archChart');
+        if (options[3]) options[3].textContent = t('toolbar.barChart');
+      }
+      
+      // 更新问答输入框 placeholder
+      const qaInput = $('qaInput');
+      if (qaInput) qaInput.placeholder = t('toolbar.inputQuestion');
+      
+      // 更新问答欢迎消息
+      const qaWelcome = document.querySelector('#qaMessages .qa-message.assistant');
+      if (qaWelcome && !qaWelcome.classList.contains('user-asked')) {
+        qaWelcome.textContent = t('toolbar.qaWelcome');
+      }
+    }
+
+    function initLanguage() {
+      // 设置语言按钮初始状态
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === state.language);
+      });
+      
+      // 如果是英文，更新所有文本
+      if (state.language === 'en') {
+        updateAllI18nText();
+        document.documentElement.lang = 'en';
+      }
     }
 
     async function fetchQuota() {
@@ -3429,7 +4009,7 @@
     async function deleteMeeting() {
       if (!state.currentMeetingId) return;
       
-      if (!confirm('确定要删除这个会议吗？此操作不可恢复。')) return;
+      if (!confirm(t('meetingDetail.deleteConfirm'))) return;
       
       try {
         const response = await fetch(`${state.apiBaseUrl}/users/me/meetings/${state.currentMeetingId}`, {
@@ -3439,15 +4019,15 @@
         const data = await response.json();
         
         if (data.success) {
-          showToast('会议已删除', 'success');
+          showToast(t('meetingDetail.deleteSuccess'), 'success');
           closeMeetingDetailModal();
           fetchMeetings(); // 刷新会议列表
         } else {
-          showToast(data.message || '删除失败', 'error');
+          showToast(data.message || t('meetingDetail.deleteFailed'), 'error');
         }
       } catch (error) {
         console.error('Failed to delete meeting:', error);
-        showToast('删除会议失败', 'error');
+        showToast(t('meetingDetail.deleteFailed'), 'error');
       }
     }
 
@@ -3590,7 +4170,7 @@
           updateConnectionStatus('connected');
           hideAlert();
           enableControls(true);
-          showToast('后端连接成功！', 'success');
+          showToast(t('toast.connectionSuccess'), 'success');
         } else {
           throw new Error(`HTTP ${response.status}`);
         }
@@ -3600,18 +4180,18 @@
         enableControls(false);
         
         if (error.name === 'AbortError') {
-          showAlert('连接超时', '无法连接到后端服务，请确保后端已启动');
+          showAlert(t('toast.startBackend'), t('toast.connectionFailed'));
         } else {
-          showAlert('无法连接后端服务', '请先启动后端服务：<code>cd backend && npm run start:dev</code>');
+          showAlert(t('toast.startBackend'), t('toast.startBackendHint') + '：<code>cd backend && npm run start:dev</code>');
         }
       }
     }
 
     function updateConnectionStatus(status) {
       const statusMap = {
-        testing: { class: '', text: '检测中...' },
-        connected: { class: 'connected', text: '已连接' },
-        error: { class: 'error', text: '未连接' }
+        testing: { class: '', text: t('nav.detecting') },
+        connected: { class: 'connected', text: t('nav.connected') },
+        error: { class: 'error', text: t('nav.disconnected') }
       };
       const s = statusMap[status] || statusMap.error;
       elements.connectionStatus.className = `status-dot ${s.class}`;
@@ -3829,23 +4409,23 @@
       
       if (state.isRecording) {
         elements.recordingStatus.className = state.isPaused ? 'recording-bar__status paused' : 'recording-bar__status recording';
-        elements.recordingStatusText.textContent = state.isPaused ? '已暂停' : '录制中';
-        elements.recordBtnText.textContent = '停止录音';
+        elements.recordingStatusText.textContent = state.isPaused ? t('recording.paused') : t('recording.recording');
+        elements.recordBtnText.textContent = t('recording.stop');
         elements.recordBtn.classList.add('recording');
         elements.pauseBtn.disabled = false;
-        elements.pauseBtn.textContent = state.isPaused ? '继续' : '暂停';
+        elements.pauseBtn.textContent = state.isPaused ? t('recording.resume') : t('recording.pause');
         // 录音时新建会议按钮显示警告样式
         if (newMeetingBtn) {
           newMeetingBtn.style.opacity = '0.7';
-          newMeetingBtn.title = '点击将停止当前录音';
+          newMeetingBtn.title = t('misc.clickToStop');
         }
       } else {
         elements.recordingStatus.className = 'recording-bar__status';
-        elements.recordingStatusText.textContent = '准备就绪';
-        elements.recordBtnText.textContent = '开始录音';
+        elements.recordingStatusText.textContent = t('recording.ready');
+        elements.recordBtnText.textContent = t('recording.start');
         elements.recordBtn.classList.remove('recording');
         elements.pauseBtn.disabled = true;
-        elements.pauseBtn.textContent = '暂停';
+        elements.pauseBtn.textContent = t('recording.pause');
         // 恢复新建会议按钮正常样式
         if (newMeetingBtn) {
           newMeetingBtn.style.opacity = '1';
