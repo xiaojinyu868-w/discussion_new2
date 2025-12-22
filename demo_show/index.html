@@ -504,6 +504,234 @@
       background: rgba(0, 212, 255, 0.05);
     }
 
+    /* ========== 左侧边栏 ========== */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 280px;
+      background: var(--bg-primary);
+      border-right: 1px solid var(--border-subtle);
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform var(--duration-normal) var(--ease-out);
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .sidebar-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      transition: all var(--duration-fast);
+    }
+
+    .sidebar-close:hover {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .new-meeting-btn {
+      margin: 16px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, var(--aurora-purple), var(--aurora-blue));
+      border: none;
+      border-radius: var(--radius-md);
+      color: white;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all var(--duration-fast);
+    }
+
+    .new-meeting-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
+    }
+
+    .new-meeting-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .sidebar-section-title {
+      padding: 12px 20px 8px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .meeting-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 8px;
+    }
+
+    .meeting-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .meeting-list::-webkit-scrollbar-thumb {
+      background: var(--border-medium);
+      border-radius: 2px;
+    }
+
+    .meeting-list-item {
+      padding: 12px;
+      margin: 4px 0;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--duration-fast);
+      border: 1px solid transparent;
+    }
+
+    .meeting-list-item:hover {
+      background: var(--bg-elevated);
+    }
+
+    .meeting-list-item.active {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: var(--aurora-purple);
+    }
+
+    .meeting-list-item.recording {
+      background: rgba(255, 77, 106, 0.1);
+      border-color: var(--color-recording);
+    }
+
+    .meeting-list-item__title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .meeting-list-item__meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .meeting-list-item__status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-size: 0.65rem;
+      font-weight: 500;
+    }
+
+    .meeting-list-item__status.recording {
+      background: rgba(255, 77, 106, 0.2);
+      color: var(--color-recording);
+    }
+
+    .meeting-list-item__status.completed {
+      background: rgba(0, 255, 200, 0.1);
+      color: var(--color-success);
+    }
+
+    .meeting-list-empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .meeting-list-empty-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      opacity: 0.5;
+    }
+
+    /* 侧边栏触发按钮 */
+    .sidebar-toggle {
+      position: fixed;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 89;
+      width: 40px;
+      height: 40px;
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--duration-fast);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sidebar-toggle:hover {
+      background: var(--bg-elevated);
+      color: var(--aurora-cyan);
+      border-color: var(--aurora-cyan);
+    }
+
+    .sidebar-toggle.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* 侧边栏打开时的遮罩 */
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 85;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--duration-normal);
+    }
+
+    .sidebar-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     /* ========== 主内容区 ========== */
     .main-content {
       display: grid;
@@ -2108,6 +2336,31 @@
   <div class="aurora-bg"></div>
   <div class="grid-pattern"></div>
 
+  <!-- 左侧边栏 -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">会议记录</span>
+      <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+    </div>
+    <button class="new-meeting-btn" id="newMeetingBtn" onclick="startNewMeeting()">
+      <span>➕</span>
+      <span>新建会议</span>
+    </button>
+    <div class="sidebar-section-title">进行中</div>
+    <div class="meeting-list" id="activeMeetingList">
+      <!-- 当前进行中的会议 -->
+    </div>
+    <div class="sidebar-section-title">历史会议</div>
+    <div class="meeting-list" id="historyMeetingList">
+      <div class="meeting-list-empty">
+        <div class="meeting-list-empty-icon">📂</div>
+        <div>登录后查看历史会议</div>
+      </div>
+    </div>
+  </aside>
+  <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+
   <!-- 导航栏 -->
   <nav class="nav" id="nav">
     <div class="nav-inner">
@@ -2447,6 +2700,7 @@
     const state = {
       sessionId: null,
       taskId: null,
+      meetingId: null, // 当前会议ID
       isRecording: false,
       isPaused: false,
       isConnected: false,
@@ -2473,6 +2727,9 @@
       quota: null,
       authMode: 'login', // 'login' | 'register'
       currentMeetingId: null, // 当前查看的会议ID
+      // 侧边栏状态
+      sidebarOpen: false,
+      meetings: [], // 会议列表缓存
     };
 
     // ========== DOM Elements ==========
@@ -2524,6 +2781,388 @@
       setupScrollListeners();
       testConnection();
       initAuth(); // 初始化认证状态
+      initSidebar(); // 初始化侧边栏
+    }
+
+    // ========== Sidebar Functions ==========
+    function initSidebar() {
+      // 如果已登录，加载会议列表
+      if (state.token) {
+        loadSidebarMeetings();
+      }
+    }
+
+    function toggleSidebar() {
+      state.sidebarOpen = !state.sidebarOpen;
+      updateSidebarUI();
+    }
+
+    function openSidebar() {
+      state.sidebarOpen = true;
+      updateSidebarUI();
+      if (state.token) {
+        loadSidebarMeetings();
+      }
+    }
+
+    function closeSidebar() {
+      state.sidebarOpen = false;
+      updateSidebarUI();
+    }
+
+    function updateSidebarUI() {
+      const sidebar = $('sidebar');
+      const overlay = $('sidebarOverlay');
+      const toggle = $('sidebarToggle');
+      
+      if (state.sidebarOpen) {
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
+        toggle.classList.add('hidden');
+      } else {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+        toggle.classList.remove('hidden');
+      }
+    }
+
+    async function loadSidebarMeetings() {
+      if (!state.token) {
+        $('historyMeetingList').innerHTML = `
+          <div class="meeting-list-empty">
+            <div class="meeting-list-empty-icon">🔐</div>
+            <div>登录后查看历史会议</div>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        const response = await fetch(`${state.apiBaseUrl}/users/me/meetings`, {
+          headers: { 'Authorization': `Bearer ${state.token}` },
+        });
+        const data = await response.json();
+        
+        if (data.success && data.meetings) {
+          state.meetings = data.meetings;
+          renderSidebarMeetings(data.meetings);
+        }
+      } catch (error) {
+        console.error('Failed to load meetings:', error);
+      }
+    }
+
+    function renderSidebarMeetings(meetings) {
+      const activeList = $('activeMeetingList');
+      const historyList = $('historyMeetingList');
+      
+      // 分离进行中和已完成的会议
+      const activeMeetings = meetings.filter(m => m.status === 'recording' || m.status === 'paused');
+      const completedMeetings = meetings.filter(m => m.status === 'completed' || !m.status);
+      
+      // 渲染进行中的会议
+      if (activeMeetings.length > 0 || state.isRecording) {
+        let activeHtml = '';
+        
+        // 如果当前正在录音但不在列表中，显示当前会议
+        if (state.isRecording && state.meetingId) {
+          const currentInList = activeMeetings.find(m => m.id === state.meetingId);
+          if (!currentInList) {
+            activeHtml += `
+              <div class="meeting-list-item active recording" onclick="selectMeeting('${state.meetingId}')">
+                <div class="meeting-list-item__title">当前会议</div>
+                <div class="meeting-list-item__meta">
+                  <span class="meeting-list-item__status recording">
+                    <span style="animation: pulse-glow 1s infinite;">●</span> 录音中
+                  </span>
+                </div>
+              </div>
+            `;
+          }
+        }
+        
+        activeHtml += activeMeetings.map(m => `
+          <div class="meeting-list-item ${m.id === state.meetingId ? 'active' : ''} ${m.status === 'recording' ? 'recording' : ''}" 
+               onclick="selectMeeting('${m.id}')">
+            <div class="meeting-list-item__title">${escapeHtml(m.title || '未命名会议')}</div>
+            <div class="meeting-list-item__meta">
+              <span class="meeting-list-item__status ${m.status === 'recording' ? 'recording' : ''}">
+                ${m.status === 'recording' ? '● 录音中' : '⏸ 已暂停'}
+              </span>
+            </div>
+          </div>
+        `).join('');
+        
+        activeList.innerHTML = activeHtml || '<div class="meeting-list-empty" style="padding: 12px;">暂无进行中的会议</div>';
+      } else {
+        activeList.innerHTML = '<div class="meeting-list-empty" style="padding: 12px;">暂无进行中的会议</div>';
+      }
+      
+      // 渲染历史会议
+      if (completedMeetings.length > 0) {
+        historyList.innerHTML = completedMeetings.slice(0, 20).map(m => `
+          <div class="meeting-list-item ${m.id === state.currentMeetingId ? 'active' : ''}" 
+               onclick="selectMeeting('${m.id}')">
+            <div class="meeting-list-item__title">${escapeHtml(m.title || '未命名会议')}</div>
+            <div class="meeting-list-item__meta">
+              <span>${formatMeetingDate(m.created_at)}</span>
+              <span class="meeting-list-item__status completed">✓ 已完成</span>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        historyList.innerHTML = `
+          <div class="meeting-list-empty">
+            <div class="meeting-list-empty-icon">📂</div>
+            <div>暂无历史会议</div>
+          </div>
+        `;
+      }
+    }
+
+    async function selectMeeting(meetingId) {
+      // 转换为数字以确保类型一致
+      const numMeetingId = typeof meetingId === 'string' ? parseInt(meetingId, 10) : meetingId;
+      
+      // 如果选择的是当前正在录音的会议，只关闭侧边栏
+      if (numMeetingId === state.meetingId && state.isRecording) {
+        closeSidebar();
+        return;
+      }
+      
+      // 如果正在录音，提示用户
+      if (state.isRecording) {
+        if (!confirm('当前正在录音，切换会议将停止录音。是否继续？')) {
+          return;
+        }
+        await stopRecording();
+      }
+      
+      // 加载选中的会议
+      await loadMeetingToView(meetingId);
+      closeSidebar();
+    }
+
+    async function loadMeetingToView(meetingId) {
+      try {
+        const response = await fetch(`${state.apiBaseUrl}/users/me/meetings/${meetingId}`, {
+          headers: { 'Authorization': `Bearer ${state.token}` },
+        });
+        const data = await response.json();
+        
+        if (data.success && data.meeting) {
+          const meeting = data.meeting;
+          
+          // 清空当前状态
+          state.transcription = [];
+          state.summaries = [];
+          state.agentInsights = [];
+          state.meetingId = meetingId;
+          state.currentMeetingId = meetingId;
+          
+          // 先清空UI
+          elements.summaryList.innerHTML = `
+            <div class="empty-state" id="insightEmptyState">
+              <div class="empty-state__icon">💡</div>
+              <p class="empty-state__text">触发 AI 技能后，洞察将显示在这里</p>
+            </div>
+            <div id="visualizationList"></div>
+          `;
+          elements.visualizationList = $('visualizationList');
+          elements.insightEmptyState = $('insightEmptyState');
+          
+          // 恢复转写内容 - 使用正确的字段名 startMs/endMs
+          if (meeting.transcripts && meeting.transcripts.length > 0) {
+            meeting.transcripts.forEach(t => {
+              state.transcription.push({
+                id: t.id || `transcript-${state.transcription.length}`,
+                text: t.content,
+                startMs: t.start_ms || 0,
+                endMs: t.end_ms || 0,
+              });
+            });
+            renderTranscriptionFromState();
+          } else {
+            renderTranscriptionFromState();
+          }
+          
+          // 恢复洞察内容
+          if (meeting.insights && meeting.insights.length > 0) {
+            meeting.insights.forEach(i => {
+              addInsightCard({
+                type: i.type,
+                title: getInsightTypeName(i.type),
+                content: i.content,
+                timestamp: new Date(i.created_at).getTime(),
+              });
+            });
+          }
+          
+          // 恢复可视化
+          if (meeting.visualizations && meeting.visualizations.length > 0) {
+            meeting.visualizations.forEach(v => {
+              if (v.image_path) {
+                addVisualizationCard({
+                  type: v.type,
+                  chartType: v.chart_type,
+                  imageUrl: `${state.apiBaseUrl}/uploads/${v.image_path}`,
+                });
+              }
+            });
+          }
+          
+          // 检查会议状态，如果是进行中的会议，可以继续
+          if (meeting.status === 'recording' || meeting.status === 'paused') {
+            showToast('已加载会议，点击录音按钮继续', 'info');
+            // 可以在这里恢复会话
+            state.sessionId = meeting.session_id;
+          } else {
+            showToast('已加载历史会议', 'success');
+          }
+          
+          // 更新侧边栏高亮
+          loadSidebarMeetings();
+        }
+      } catch (error) {
+        console.error('Failed to load meeting:', error);
+        showToast('加载会议失败', 'error');
+      }
+    }
+
+    // 添加洞察卡片到面板
+    function addInsightCard(insight) {
+      const typeInfo = INSIGHT_TYPES[insight.type] || INSIGHT_TYPES.auto_analysis;
+      const time = insight.timestamp ? new Date(insight.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) : '';
+      
+      // 解析content（可能是JSON字符串）
+      let content = insight.content;
+      if (typeof content === 'string') {
+        try {
+          content = JSON.parse(content);
+        } catch (e) {
+          // 保持原样
+        }
+      }
+      
+      const formattedContent = formatInsightContent(content, insight.type);
+      
+      const card = document.createElement('article');
+      card.className = 'insight-card';
+      card.dataset.type = insight.type;
+      card.innerHTML = `
+        <header class="insight-card__header">
+          <span class="insight-card__icon">${typeInfo.icon}</span>
+          <h3 class="insight-card__title">${insight.title || typeInfo.title}</h3>
+          <time class="insight-card__time">${time}</time>
+        </header>
+        <div class="insight-card__content">${formattedContent}</div>
+      `;
+      
+      // 隐藏空状态
+      if (elements.insightEmptyState) {
+        elements.insightEmptyState.style.display = 'none';
+      }
+      
+      // 添加到洞察列表（在 visualizationList 之前）
+      const visList = document.getElementById('visualizationList');
+      if (visList) {
+        elements.summaryList.insertBefore(card, visList);
+      } else {
+        elements.summaryList.appendChild(card);
+      }
+      
+      // 更新计数
+      elements.insightCount.textContent = parseInt(elements.insightCount.textContent || '0') + 1;
+    }
+
+    // 添加可视化卡片到面板
+    function addVisualizationCard(vis) {
+      const typeLabels = { chart: '科研图表', creative: '创意图像', poster: '逻辑海报' };
+      
+      const card = document.createElement('div');
+      card.className = 'insight-card';
+      card.innerHTML = `
+        <header class="insight-card__header">
+          <span class="insight-card__icon">🎨</span>
+          <h3 class="insight-card__title">${typeLabels[vis.type] || '思维显影'}</h3>
+        </header>
+        ${vis.imageUrl ? `<img src="${vis.imageUrl}" alt="视觉化" style="width:100%;border-radius:var(--radius-md);cursor:pointer;margin-top:12px;" onclick="showImageModal(this.src)" onerror="this.style.display='none'">` : ''}
+      `;
+      
+      // 隐藏空状态
+      if (elements.insightEmptyState) {
+        elements.insightEmptyState.style.display = 'none';
+      }
+      
+      // 添加到可视化列表
+      if (elements.visualizationList) {
+        elements.visualizationList.appendChild(card);
+      } else {
+        elements.summaryList.appendChild(card);
+      }
+    }
+
+    function renderTranscriptionFromState() {
+      if (state.transcription.length === 0) {
+        elements.transcriptionList.innerHTML = `
+          <div class="empty-state" id="transcriptEmptyState">
+            <div class="empty-state__icon">🎤</div>
+            <p class="empty-state__text">开始录音后，转写内容将实时显示</p>
+          </div>
+        `;
+        elements.transcriptCount.textContent = '0';
+        elements.downloadDropdown.style.display = 'none';
+        return;
+      }
+      
+      // 使用正确的字段名 startMs/endMs
+      elements.transcriptionList.innerHTML = state.transcription.map(t => `
+        <div class="transcript-item" data-id="${t.id || ''}">
+          <div class="transcript-time">${formatTime(t.startMs)}${t.endMs !== t.startMs ? ' - ' + formatTime(t.endMs) : ''}</div>
+          <div class="transcript-text">${escapeHtml(t.text)}</div>
+        </div>
+      `).join('');
+      
+      elements.transcriptCount.textContent = state.transcription.length;
+      elements.downloadDropdown.style.display = 'block';
+    }
+
+    async function startNewMeeting() {
+      // 如果正在录音，提示用户
+      if (state.isRecording) {
+        if (!confirm('当前正在录音，新建会议将停止当前录音。是否继续？')) {
+          return;
+        }
+        await stopRecording();
+      }
+      
+      // 清空状态
+      state.sessionId = null;
+      state.meetingId = null;
+      state.transcription = [];
+      state.summaries = [];
+      state.agentInsights = [];
+      
+      // 清空UI
+      elements.transcriptionList.innerHTML = `
+        <div class="empty-state" id="transcriptEmptyState">
+          <div class="empty-state__icon">🎤</div>
+          <p class="empty-state__text">开始录音后，转写内容将实时显示</p>
+        </div>
+      `;
+      elements.summaryList.innerHTML = `
+        <div class="empty-state" id="insightEmptyState">
+          <div class="empty-state__icon">💡</div>
+          <p class="empty-state__text">触发 AI 技能后，洞察将显示在这里</p>
+        </div>
+        <div id="visualizationList"></div>
+      `;
+      elements.transcriptCount.textContent = '0';
+      elements.insightCount.textContent = '0';
+      elements.downloadDropdown.style.display = 'none';
+      
+      closeSidebar();
+      showToast('已创建新会议，点击录音按钮开始', 'info');
     }
 
     // ========== Auth Functions ==========
@@ -2531,6 +3170,7 @@
       if (state.token && state.user) {
         updateUserUI();
         fetchQuota();
+        loadSidebarMeetings(); // 登录状态下加载会议列表
       }
     }
 
@@ -2617,6 +3257,7 @@
           updateUserUI();
           closeAuthModal();
           fetchQuota();
+          loadSidebarMeetings(); // 登录后刷新会议列表
           showToast(state.authMode === 'login' ? '登录成功！' : '注册成功！', 'success');
         } else {
           showToast(data.message || '操作失败', 'error');
@@ -3025,6 +3666,7 @@
         const response = await apiCall('POST', '/sessions', { meetingId: `meeting-${Date.now()}` });
         state.sessionId = response.sessionId;
         state.taskId = response.taskId;
+        state.meetingId = response.meetingId; // 保存会议ID
 
         const stream = await navigator.mediaDevices.getUserMedia({ 
           audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true }
@@ -3064,6 +3706,9 @@
         if (state.agentEnabled) {
           startAgent();
         }
+        
+        // 刷新侧边栏显示当前会议
+        loadSidebarMeetings();
         
         showToast('🎙️ 录音已开始', 'success');
       } catch (error) {
@@ -3139,6 +3784,8 @@
         
         try {
           await apiCall('POST', `/sessions/${currentSessionId}/complete`);
+          // 录音结束后刷新侧边栏
+          loadSidebarMeetings();
         } catch (e) { console.warn('Complete session failed:', e); }
       }
     }
@@ -3178,6 +3825,8 @@
     }
 
     function updateRecordingUI() {
+      const newMeetingBtn = $('newMeetingBtn');
+      
       if (state.isRecording) {
         elements.recordingStatus.className = state.isPaused ? 'recording-bar__status paused' : 'recording-bar__status recording';
         elements.recordingStatusText.textContent = state.isPaused ? '已暂停' : '录制中';
@@ -3185,6 +3834,11 @@
         elements.recordBtn.classList.add('recording');
         elements.pauseBtn.disabled = false;
         elements.pauseBtn.textContent = state.isPaused ? '继续' : '暂停';
+        // 录音时新建会议按钮显示警告样式
+        if (newMeetingBtn) {
+          newMeetingBtn.style.opacity = '0.7';
+          newMeetingBtn.title = '点击将停止当前录音';
+        }
       } else {
         elements.recordingStatus.className = 'recording-bar__status';
         elements.recordingStatusText.textContent = '准备就绪';
@@ -3192,6 +3846,11 @@
         elements.recordBtn.classList.remove('recording');
         elements.pauseBtn.disabled = true;
         elements.pauseBtn.textContent = '暂停';
+        // 恢复新建会议按钮正常样式
+        if (newMeetingBtn) {
+          newMeetingBtn.style.opacity = '1';
+          newMeetingBtn.title = '';
+        }
       }
     }
 
@@ -4261,7 +4920,9 @@
         elements.visualizationList.insertBefore(card, elements.visualizationList.firstChild);
       }
       
-      elements.insightEmptyState.style.display = 'none';
+      if (elements.insightEmptyState) {
+        elements.insightEmptyState.style.display = 'none';
+      }
     }
 
     function viewVisualizationFromPreview() {
@@ -4333,12 +4994,6 @@
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });
-    }
-
-    function formatTime(ms) {
-      const m = Math.floor(ms / 60000).toString().padStart(2, '0');
-      const s = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');
-      return `${m}:${s}`;
     }
 
     function escapeHtml(text) {

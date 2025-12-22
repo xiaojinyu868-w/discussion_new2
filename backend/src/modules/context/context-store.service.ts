@@ -96,6 +96,13 @@ export class ContextStoreService {
   }
 
   /**
+   * 获取会议 ID
+   */
+  getMeetingId(sessionId: string): number | undefined {
+    return this.contexts.get(sessionId)?.meetingId;
+  }
+
+  /**
    * 从通义听悟格式转换并追加
    */
   appendFromTingwu(

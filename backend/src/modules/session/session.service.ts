@@ -99,10 +99,14 @@ export class SessionService {
       }
     });
 
+    // 获取会议ID（如果有）
+    const meetingId = this.contextStore.getMeetingId(sessionId);
+
     return {
       sessionId,
       taskId,
       meetingJoinUrl,
+      meetingId,
     };
   }
 
