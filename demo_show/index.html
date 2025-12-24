@@ -1803,6 +1803,61 @@
       color: var(--text-muted);
       margin-top: 16px;
     }
+
+    /* 设置弹窗 */
+    .settings-modal {
+      max-width: 500px;
+    }
+    .settings-info {
+      background: var(--bg-secondary);
+      padding: 16px;
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+    }
+    .settings-info p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .settings-info code {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--aurora-cyan);
+      word-break: break-all;
+    }
+    .form-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+      line-height: 1.8;
+    }
+    .form-hint code {
+      background: var(--bg-secondary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+    }
+    .form-hint strong {
+      color: var(--text-secondary);
+    }
+    .settings-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .settings-actions .btn {
+      flex: 1;
+    }
+    .settings-icon {
+      margin-left: 6px;
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+    .nav-status:hover .settings-icon {
+      opacity: 1;
+    }
     
     /* 个人中心弹窗 */
     .profile-info {
@@ -2441,9 +2496,10 @@
         </svg>
         <span class="logo-text">MeetMind</span>
       </div>
-      <div class="nav-status">
+      <div class="nav-status" onclick="openSettingsModal()" style="cursor: pointer;" title="点击设置后端地址">
         <div class="status-dot" id="connectionStatus"></div>
         <span id="connectionText">检测中...</span>
+        <span class="settings-icon">⚙️</span>
       </div>
       <button class="user-btn" id="userBtn" onclick="handleUserClick()">
         <span id="userBtnText">登录</span>
@@ -2645,6 +2701,34 @@
 
   <div class="toast-container" id="toastContainer"></div>
 
+  <!-- 后端设置弹窗 -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-content settings-modal">
+      <h3 class="modal-title">🔧 后端服务设置</h3>
+      <div class="settings-info">
+        <p>当前后端地址：</p>
+        <code id="currentApiUrl">-</code>
+      </div>
+      <div class="form-group">
+        <label>后端服务地址</label>
+        <input type="text" id="apiUrlInput" placeholder="例如: https://xxxx.ngrok-free.app">
+        <p class="form-hint">
+          💡 <strong>内网穿透说明：</strong><br>
+          如果前端部署在 Netlify，后端在本地，需要使用内网穿透工具：<br>
+          • <strong>ngrok</strong>: <code>ngrok http 4000</code><br>
+          • <strong>localtunnel</strong>: <code>lt --port 4000</code><br>
+          • <strong>cloudflared</strong>: <code>cloudflared tunnel --url http://localhost:4000</code><br>
+          获得公网地址后填入上方输入框。
+        </p>
+      </div>
+      <div class="settings-actions">
+        <button class="btn btn-secondary" onclick="resetApiUrl()">重置为默认</button>
+        <button class="btn btn-primary" onclick="saveApiUrl()">保存并测试</button>
+      </div>
+      <button class="modal-close" onclick="closeSettingsModal()">×</button>
+    </div>
+  </div>
+
   <!-- 登录/注册弹窗 -->
   <div class="modal-overlay" id="authModal">
     <div class="modal-content auth-modal">
@@ -2793,6 +2877,12 @@
           history: '历史会议',
           loginHint: '登录后查看历史会议',
           noMeetings: '暂无会议记录',
+          noActiveMeetings: '暂无进行中的会议',
+          noHistoryMeetings: '暂无历史会议',
+          untitledMeeting: '未命名会议',
+          recording: '● 录音中',
+          paused: '⏸ 已暂停',
+          completed: '✓ 已完成',
           loadMeetingContinue: '已加载会议，点击录音按钮继续',
           loadMeetingHistory: '已加载历史会议',
           loadMeetingFailed: '加载会议失败',
@@ -2879,17 +2969,34 @@
         toast: {
           connectionSuccess: '后端服务连接成功',
           connectionFailed: '无法连接到后端服务',
-          micPermissionDenied: '麦克风权限被拒绝，请在浏览器设置中允许访问麦克风',
+          connectBackendFirst: '请先连接后端服务',
+          envNotSupportMic: '当前环境不支持麦克风访问',
+          creatingSession: '正在创建会话...',
+          recordingStarted: '🎙️ 录音已开始',
+          micPermissionDenied: '麦克风权限被拒绝',
           micNotFound: '未找到麦克风设备',
           recordingStartFailed: '录音启动失败',
           recordingStopped: '录音已停止',
           uploadSuccess: '上传成功',
           uploadFailed: '上传失败',
           processingAudio: '正在处理音频...',
+          audioProcessFailed: '音频处理失败',
           needMicPermission: '需要麦克风权限',
           micPermissionHint: '请点击浏览器地址栏左侧的锁图标，允许访问麦克风后重试。',
           startBackend: '需要启动后端服务',
           startBackendHint: '请先启动后端服务',
+          startRecordFirst: '请先开始录音',
+          analysisDone: '分析完成',
+          analysisFailed: '分析失败',
+          autoPushOn: '自动推送已开启，每30秒自动分析',
+          autoPushOff: '自动推送已关闭',
+          uploadingFile: '上传中...',
+          fileUploadSuccess: '文件上传成功，已开始转写',
+          visualGenSuccess: '视觉化生成成功！',
+          visualGenFailed: '生成失败',
+          noTranscriptToDownload: '没有可下载的转写内容',
+          wordDownloadSuccess: 'Word 文档下载成功',
+          selectPdfSave: '请在打印对话框中选择"保存为 PDF"',
         },
         // 下载
         download: {
@@ -2944,6 +3051,12 @@
           history: 'History',
           loginHint: 'Login to view meeting history',
           noMeetings: 'No meetings yet',
+          noActiveMeetings: 'No active meetings',
+          noHistoryMeetings: 'No meeting history',
+          untitledMeeting: 'Untitled Meeting',
+          recording: '● Recording',
+          paused: '⏸ Paused',
+          completed: '✓ Completed',
           loadMeetingContinue: 'Meeting loaded, click record to continue',
           loadMeetingHistory: 'Historical meeting loaded',
           loadMeetingFailed: 'Failed to load meeting',
@@ -3030,17 +3143,34 @@
         toast: {
           connectionSuccess: 'Backend connected successfully',
           connectionFailed: 'Cannot connect to backend',
-          micPermissionDenied: 'Microphone permission denied. Please allow in browser settings.',
+          connectBackendFirst: 'Please connect to backend first',
+          envNotSupportMic: 'Microphone not supported in this environment',
+          creatingSession: 'Creating session...',
+          recordingStarted: '🎙️ Recording started',
+          micPermissionDenied: 'Microphone permission denied',
           micNotFound: 'Microphone not found',
           recordingStartFailed: 'Failed to start recording',
           recordingStopped: 'Recording stopped',
           uploadSuccess: 'Upload successful',
           uploadFailed: 'Upload failed',
           processingAudio: 'Processing audio...',
+          audioProcessFailed: 'Audio processing failed',
           needMicPermission: 'Microphone permission required',
           micPermissionHint: 'Click the lock icon in browser address bar to allow microphone access.',
           startBackend: 'Backend service required',
           startBackendHint: 'Please start the backend service first',
+          startRecordFirst: 'Please start recording first',
+          analysisDone: 'Analysis completed',
+          analysisFailed: 'Analysis failed',
+          autoPushOn: 'Auto-push enabled, analyzing every 30 seconds',
+          autoPushOff: 'Auto-push disabled',
+          uploadingFile: 'Uploading...',
+          fileUploadSuccess: 'File uploaded, transcription started',
+          visualGenSuccess: 'Visualization generated!',
+          visualGenFailed: 'Generation failed',
+          noTranscriptToDownload: 'No transcript to download',
+          wordDownloadSuccess: 'Word document downloaded',
+          selectPdfSave: 'Please select "Save as PDF" in print dialog',
         },
         // Download
         download: {
@@ -3092,7 +3222,8 @@
       activeSkills: [], // 用户激活的技能列表
       mediaRecorder: null,
       mediaStream: null, // 保存 MediaStream 以便暂停后恢复
-      apiBaseUrl: localStorage.getItem('apiBaseUrl') || 'http://localhost:4000',
+      // 网络模式：自动检测当前访问的主机地址，支持局域网访问
+      apiBaseUrl: localStorage.getItem('apiBaseUrl') || getDefaultApiUrl(),
       currentVisualizationType: 'chart',
       currentChartType: 'radar',
       // V3 Agent 状态
@@ -3113,6 +3244,35 @@
       // 语言设置
       language: localStorage.getItem('language') || 'zh',
     };
+
+    // ========== 网络模式配置 ==========
+    // 自动检测后端地址
+    function getDefaultApiUrl() {
+      const hostname = window.location.hostname;
+      // 如果是 localhost 或 127.0.0.1 或本地文件，使用本地后端
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '') {
+        return 'http://localhost:4000';
+      }
+      // 如果是局域网 IP (192.168.x.x, 10.x.x.x, 172.16-31.x.x)，使用相同主机的后端
+      if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(hostname)) {
+        return `http://${hostname}:4000`;
+      }
+      // 外网部署（如 Netlify）时，返回空字符串，提示用户配置
+      // 用户需要通过设置弹窗配置内网穿透地址
+      return '';
+    }
+
+    // 检查是否需要配置后端地址
+    function checkBackendConfig() {
+      if (!state.apiBaseUrl) {
+        setTimeout(() => {
+          showToast('请点击右上角设置后端地址', 'warning');
+          openSettingsModal();
+        }, 1000);
+        return false;
+      }
+      return true;
+    }
 
     // ========== DOM Elements ==========
     const $ = id => document.getElementById(id);
@@ -3161,10 +3321,14 @@
       setupWaveform();
       setupUpload();
       setupScrollListeners();
-      testConnection();
       initAuth(); // 初始化认证状态
       initSidebar(); // 初始化侧边栏
       initLanguage(); // 初始化语言设置
+      
+      // 检查后端配置
+      if (checkBackendConfig()) {
+        testConnection();
+      }
     }
 
     // ========== Sidebar Functions ==========
@@ -3246,6 +3410,7 @@
       // 渲染进行中的会议
       if (activeMeetings.length > 0 || state.isRecording) {
         let activeHtml = '';
+        const untitledText = t('sidebar.untitledMeeting');
         
         // 如果当前正在录音但不在列表中，显示当前会议
         if (state.isRecording && state.meetingId) {
@@ -3253,10 +3418,10 @@
           if (!currentInList) {
             activeHtml += `
               <div class="meeting-list-item active recording" onclick="selectMeeting('${state.meetingId}')">
-                <div class="meeting-list-item__title">当前会议</div>
+                <div class="meeting-list-item__title">${state.language === 'zh' ? '当前会议' : 'Current Meeting'}</div>
                 <div class="meeting-list-item__meta">
                   <span class="meeting-list-item__status recording">
-                    <span style="animation: pulse-glow 1s infinite;">●</span> 录音中
+                    <span style="animation: pulse-glow 1s infinite;">●</span> ${state.language === 'zh' ? '录音中' : 'Recording'}
                   </span>
                 </div>
               </div>
@@ -3267,29 +3432,30 @@
         activeHtml += activeMeetings.map(m => `
           <div class="meeting-list-item ${m.id === state.meetingId ? 'active' : ''} ${m.status === 'recording' ? 'recording' : ''}" 
                onclick="selectMeeting('${m.id}')">
-            <div class="meeting-list-item__title">${escapeHtml(m.title || '未命名会议')}</div>
+            <div class="meeting-list-item__title">${escapeHtml(m.title || untitledText)}</div>
             <div class="meeting-list-item__meta">
               <span class="meeting-list-item__status ${m.status === 'recording' ? 'recording' : ''}">
-                ${m.status === 'recording' ? '● 录音中' : '⏸ 已暂停'}
+                ${m.status === 'recording' ? t('sidebar.recording') : t('sidebar.paused')}
               </span>
             </div>
           </div>
         `).join('');
         
-        activeList.innerHTML = activeHtml || '<div class="meeting-list-empty" style="padding: 12px;">暂无进行中的会议</div>';
+        activeList.innerHTML = activeHtml || `<div class="meeting-list-empty" style="padding: 12px;">${t('sidebar.noActiveMeetings')}</div>`;
       } else {
-        activeList.innerHTML = '<div class="meeting-list-empty" style="padding: 12px;">暂无进行中的会议</div>';
+        activeList.innerHTML = `<div class="meeting-list-empty" style="padding: 12px;">${t('sidebar.noActiveMeetings')}</div>`;
       }
       
       // 渲染历史会议
+      const untitledTextHistory = t('sidebar.untitledMeeting');
       if (completedMeetings.length > 0) {
         historyList.innerHTML = completedMeetings.slice(0, 20).map(m => `
           <div class="meeting-list-item ${m.id === state.currentMeetingId ? 'active' : ''}" 
                onclick="selectMeeting('${m.id}')">
-            <div class="meeting-list-item__title">${escapeHtml(m.title || '未命名会议')}</div>
+            <div class="meeting-list-item__title">${escapeHtml(m.title || untitledTextHistory)}</div>
             <div class="meeting-list-item__meta">
               <span>${formatMeetingDate(m.created_at)}</span>
-              <span class="meeting-list-item__status completed">✓ 已完成</span>
+              <span class="meeting-list-item__status completed">${t('sidebar.completed')}</span>
             </div>
           </div>
         `).join('');
@@ -3297,7 +3463,7 @@
         historyList.innerHTML = `
           <div class="meeting-list-empty">
             <div class="meeting-list-empty-icon">📂</div>
-            <div>暂无历史会议</div>
+            <div>${t('sidebar.noHistoryMeetings')}</div>
           </div>
         `;
       }
@@ -3583,6 +3749,42 @@
       $('authModal').classList.remove('show');
     }
 
+    // ========== 后端设置弹窗 ==========
+    function openSettingsModal() {
+      $('settingsModal').classList.add('show');
+      $('currentApiUrl').textContent = state.apiBaseUrl;
+      $('apiUrlInput').value = state.apiBaseUrl;
+    }
+
+    function closeSettingsModal() {
+      $('settingsModal').classList.remove('show');
+    }
+
+    function saveApiUrl() {
+      const newUrl = $('apiUrlInput').value.trim();
+      if (!newUrl) {
+        showToast('请输入后端地址', 'error');
+        return;
+      }
+      // 移除末尾斜杠
+      const cleanUrl = newUrl.replace(/\/+$/, '');
+      state.apiBaseUrl = cleanUrl;
+      localStorage.setItem('apiBaseUrl', cleanUrl);
+      $('currentApiUrl').textContent = cleanUrl;
+      showToast('后端地址已保存，正在测试连接...', 'info');
+      closeSettingsModal();
+      testConnection();
+    }
+
+    function resetApiUrl() {
+      const defaultUrl = getDefaultApiUrl();
+      $('apiUrlInput').value = defaultUrl;
+      state.apiBaseUrl = defaultUrl;
+      localStorage.removeItem('apiBaseUrl');
+      $('currentApiUrl').textContent = defaultUrl;
+      showToast('已重置为默认地址', 'info');
+    }
+
     function openProfileModal() {
       $('profileModal').classList.add('show');
       $('profileUsername').textContent = state.user?.username || '-';
@@ -3813,7 +4015,7 @@
       
       // 更新会议详情弹窗
       const meetingDetailTitle = $('meetingDetailTitle');
-      if (meetingDetailTitle && meetingDetailTitle.textContent.includes('会议详情') || meetingDetailTitle?.textContent.includes('Meeting Details')) {
+      if (meetingDetailTitle && (meetingDetailTitle.textContent.includes('会议详情') || meetingDetailTitle.textContent.includes('Meeting Details'))) {
         meetingDetailTitle.textContent = t('meetingDetail.title');
       }
       
@@ -3902,13 +4104,14 @@
     function renderMeetingsList(meetings) {
       const container = $('meetingsList');
       if (!meetings || meetings.length === 0) {
-        container.innerHTML = '<div class="meetings-empty">暂无会议记录</div>';
+        container.innerHTML = `<div class="meetings-empty">${t('profile.noMeetings')}</div>`;
         return;
       }
       
+      const untitledText = state.language === 'zh' ? '未命名会议' : 'Untitled Meeting';
       container.innerHTML = meetings.slice(0, 10).map(m => `
         <div class="meeting-item" onclick="viewMeeting('${m.id}')">
-          <span class="meeting-item-title">${escapeHtml(m.title || '未命名会议')}</span>
+          <span class="meeting-item-title">${escapeHtml(m.title || untitledText)}</span>
           <span class="meeting-item-date">${formatMeetingDate(m.created_at)}</span>
         </div>
       `).join('');
@@ -3926,11 +4129,11 @@
     async function openMeetingDetailModal(meetingId) {
       state.currentMeetingId = meetingId;
       $('meetingDetailModal').classList.add('show');
-      $('meetingDetailTitle').textContent = '加载中...';
+      $('meetingDetailTitle').textContent = t('meetingDetail.loading');
       $('meetingDetailMeta').textContent = '';
-      $('meetingTranscripts').innerHTML = '<div class="detail-loading">加载中...</div>';
-      $('meetingInsights').innerHTML = '<div class="detail-loading">加载中...</div>';
-      $('meetingVisualizations').innerHTML = '<div class="detail-loading">加载中...</div>';
+      $('meetingTranscripts').innerHTML = `<div class="detail-loading">${t('meetingDetail.loading')}</div>`;
+      $('meetingInsights').innerHTML = `<div class="detail-loading">${t('meetingDetail.loading')}</div>`;
+      $('meetingVisualizations').innerHTML = `<div class="detail-loading">${t('meetingDetail.loading')}</div>`;
       
       // 重置tab状态
       document.querySelectorAll('.meeting-detail-tab').forEach(t => t.classList.remove('active'));
@@ -3947,22 +4150,23 @@
         if (data.success && data.meeting) {
           renderMeetingDetail(data.meeting);
         } else {
-          showToast(data.message || '加载失败', 'error');
+          showToast(data.message || (state.language === 'zh' ? '加载失败' : 'Load failed'), 'error');
           closeMeetingDetailModal();
         }
       } catch (error) {
         console.error('Failed to load meeting detail:', error);
-        showToast('加载会议详情失败', 'error');
+        showToast(state.language === 'zh' ? '加载会议详情失败' : 'Failed to load meeting details', 'error');
         closeMeetingDetailModal();
       }
     }
 
     function renderMeetingDetail(meeting) {
       // 标题和元信息
-      $('meetingDetailTitle').textContent = meeting.title || '未命名会议';
+      $('meetingDetailTitle').textContent = meeting.title || t('sidebar.untitledMeeting');
       const date = new Date(meeting.created_at);
-      const duration = meeting.duration_ms ? formatDuration(meeting.duration_ms) : '未知';
-      $('meetingDetailMeta').textContent = `${date.toLocaleString('zh-CN')} · 时长: ${duration}`;
+      const duration = meeting.duration_ms ? formatDuration(meeting.duration_ms) : (state.language === 'zh' ? '未知' : 'Unknown');
+      const durationLabel = state.language === 'zh' ? '时长' : 'Duration';
+      $('meetingDetailMeta').textContent = `${date.toLocaleString(state.language === 'zh' ? 'zh-CN' : 'en-US')} · ${durationLabel}: ${duration}`;
       
       // 转写内容
       if (meeting.transcripts && meeting.transcripts.length > 0) {
@@ -3973,7 +4177,7 @@
           </div>
         `).join('');
       } else {
-        $('meetingTranscripts').innerHTML = '<div class="detail-empty">暂无转写内容</div>';
+        $('meetingTranscripts').innerHTML = `<div class="detail-empty">${t('meetingDetail.noTranscripts')}</div>`;
       }
       
       // 认知同频
@@ -3985,19 +4189,19 @@
           </div>
         `).join('');
       } else {
-        $('meetingInsights').innerHTML = '<div class="detail-empty">暂无认知洞察</div>';
+        $('meetingInsights').innerHTML = `<div class="detail-empty">${t('meetingDetail.noInsights')}</div>`;
       }
       
       // 可视化
       if (meeting.visualizations && meeting.visualizations.length > 0) {
         $('meetingVisualizations').innerHTML = meeting.visualizations.map(v => `
           <div class="vis-item-detail">
-            ${v.image_path ? `<img src="${state.apiBaseUrl}/uploads/${v.image_path}" alt="可视化图片" onerror="this.style.display='none'">` : ''}
+            ${v.image_path ? `<img src="${state.apiBaseUrl}/uploads/${v.image_path}" alt="${state.language === 'zh' ? '可视化图片' : 'Visualization'}" onerror="this.style.display='none'">` : ''}
             <div class="type">${getVisTypeName(v.type, v.chart_type)}</div>
           </div>
         `).join('');
       } else {
-        $('meetingVisualizations').innerHTML = '<div class="detail-empty">暂无思维显影</div>';
+        $('meetingVisualizations').innerHTML = `<div class="detail-empty">${t('meetingDetail.noVisualizations')}</div>`;
       }
     }
 
@@ -4053,37 +4257,57 @@
     function formatDuration(ms) {
       if (!ms) return '0分钟';
       const totalMin = Math.floor(ms / 60000);
-      if (totalMin < 60) return `${totalMin}分钟`;
-      const hours = Math.floor(totalMin / 60);
-      const mins = totalMin % 60;
-      return `${hours}小时${mins}分钟`;
+      if (state.language === 'zh') {
+        if (totalMin < 60) return `${totalMin}分钟`;
+        const hours = Math.floor(totalMin / 60);
+        const mins = totalMin % 60;
+        return `${hours}小时${mins}分钟`;
+      } else {
+        if (totalMin < 60) return `${totalMin} min`;
+        const hours = Math.floor(totalMin / 60);
+        const mins = totalMin % 60;
+        return `${hours}h ${mins}m`;
+      }
     }
 
     function getInsightTypeName(type) {
-      const names = {
+      const names = state.language === 'zh' ? {
         'inner_os': '认知转译',
         'brainstorm': '破局灵感',
         'stop_talking': '议程守护',
         'summary': '会议摘要',
         'action_items': '待办事项',
         'key_points': '关键要点'
+      } : {
+        'inner_os': 'Mind Reader',
+        'brainstorm': 'Brainstorm',
+        'stop_talking': 'Focus Guard',
+        'summary': 'Summary',
+        'action_items': 'Action Items',
+        'key_points': 'Key Points'
       };
       return names[type] || type;
     }
 
     function getVisTypeName(type, chartType) {
       if (type === 'chart') {
-        const chartNames = {
+        const chartNames = state.language === 'zh' ? {
           'radar': '雷达图',
           'flowchart': '流程图',
           'architecture': '架构图',
           'bar': '柱状图',
           'line': '折线图'
+        } : {
+          'radar': 'Radar Chart',
+          'flowchart': 'Flowchart',
+          'architecture': 'Architecture',
+          'bar': 'Bar Chart',
+          'line': 'Line Chart'
         };
-        return chartNames[chartType] || '图表';
+        return chartNames[chartType] || (state.language === 'zh' ? '图表' : 'Chart');
       }
-      if (type === 'creative') return '创意图';
-      if (type === 'poster') return '海报';
+      if (type === 'creative') return state.language === 'zh' ? '创意图' : 'Creative';
+      if (type === 'poster') return state.language === 'zh' ? '海报' : 'Poster';
       return type;
     }
 
@@ -4228,17 +4452,17 @@
 
     async function startRecording() {
       if (!state.isConnected) {
-        showToast('请先连接后端服务', 'error');
+        showToast(t('toast.connectBackendFirst'), 'error');
         return;
       }
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showToast('当前环境不支持麦克风访问', 'error');
+        showToast(t('toast.envNotSupportMic'), 'error');
         return;
       }
 
       try {
-        showToast('正在创建会话...', 'info');
+        showToast(t('toast.creatingSession'), 'info');
         
         // 完全重置所有状态 - 类似页面刷新
         resetAllState();
@@ -4290,13 +4514,13 @@
         // 刷新侧边栏显示当前会议
         loadSidebarMeetings();
         
-        showToast('🎙️ 录音已开始', 'success');
+        showToast(t('toast.recordingStarted'), 'success');
       } catch (error) {
         console.error('Start recording failed:', error);
         if (error.name === 'NotAllowedError') {
-          showToast('麦克风权限被拒绝', 'error');
+          showToast(t('toast.micPermissionDenied'), 'error');
         } else {
-          showToast('录音启动失败: ' + error.message, 'error');
+          showToast(t('toast.recordingStartFailed') + ': ' + error.message, 'error');
         }
       }
     }
@@ -4328,7 +4552,7 @@
 
       if (currentSessionId) {
         try {
-          showToast('正在处理音频...', 'info');
+          showToast(t('toast.processingAudio'), 'info');
           await apiCall('POST', `/sessions/${currentSessionId}/process`);
           
           let pollCount = 0;
@@ -4359,7 +4583,7 @@
           };
           pollForResults();
         } catch (e) { 
-          showToast('音频处理失败: ' + e.message, 'error');
+          showToast(t('toast.audioProcessFailed') + ': ' + e.message, 'error');
         }
         
         try {
@@ -4509,7 +4733,7 @@
           if (visResponse.visualizations?.length > 0) {
             renderVisualizations(visResponse.visualizations);
           }
-        } catch (e) {}
+        } catch (e) { /* Visualization polling is optional */ }
       } catch (e) { console.warn('Poll failed:', e); }
     }
 
@@ -4851,7 +5075,7 @@
 
     // ========== Skills ==========
     async function triggerSkill(skill) {
-      if (!state.sessionId) { showToast('请先开始录音', 'error'); return; }
+      if (!state.sessionId) { showToast(t('toast.startRecordFirst'), 'error'); return; }
 
       const names = { inner_os: 'InnerOS', brainstorm: 'Brainstorm', stop_talking: 'StopTalking' };
       const displayNames = { inner_os: '潜台词', brainstorm: '灵感', stop_talking: '聚焦' };
@@ -4874,10 +5098,10 @@
           renderSummaries();
         }
         statusEl.textContent = '✓';
-        showToast(`${displayNames[skill]} 分析完成`, 'success');
+        showToast(`${displayNames[skill]} ${t('toast.analysisDone')}`, 'success');
       } catch (error) {
         statusEl.textContent = '⚠️';
-        showToast(`${displayNames[skill]} 失败: ${error.message}`, 'error');
+        showToast(`${displayNames[skill]} ${t('toast.analysisFailed')}: ${error.message}`, 'error');
       } finally {
         btnEl.disabled = false;
         btnEl.classList.remove('loading');
@@ -4952,10 +5176,10 @@
         if (state.isRecording && state.sessionId) {
           startAutoPush();
         }
-        showToast('自动推送已开启，每30秒自动分析', 'success');
+        showToast(t('toast.autoPushOn'), 'success');
       } else {
         stopAutoPush();
-        showToast('自动推送已关闭', 'info');
+        showToast(t('toast.autoPushOff'), 'info');
       }
 
       // 尝试通知后端（可选，后端可能没有这个接口）
@@ -5369,11 +5593,11 @@
 
     // ========== File Upload ==========
     async function uploadAndTranscribe() {
-      if (!state.isConnected) { showToast('请先连接后端服务', 'error'); return; }
+      if (!state.isConnected) { showToast(t('toast.connectBackendFirst'), 'error'); return; }
       const file = elements.uploadInput.files?.[0];
       if (!file) return;
 
-      showToast('上传中...', 'info');
+      showToast(t('toast.uploadingFile'), 'info');
 
       try {
         const form = new FormData();
@@ -5395,9 +5619,9 @@
         renderSummaries();
         stopPolling();
         startPolling();
-        showToast('文件上传成功，已开始转写', 'success');
+        showToast(t('toast.fileUploadSuccess'), 'success');
       } catch (error) {
-        showToast('上传失败: ' + error.message, 'error');
+        showToast(t('toast.uploadFailed') + ': ' + error.message, 'error');
       }
     }
 
@@ -5407,7 +5631,7 @@
     async function askQuestion() {
       const question = elements.qaInput.value.trim();
       if (!question) return;
-      if (!state.sessionId) { showToast('请先开始录音', 'error'); return; }
+      if (!state.sessionId) { showToast(t('toast.startRecordFirst'), 'error'); return; }
 
       addQAMessage(question, 'user');
       elements.qaInput.value = '';
@@ -5446,29 +5670,33 @@
     }
 
     async function generateVisualization() {
-      if (!state.sessionId) { showToast('请先开始录音', 'error'); return; }
+      if (!state.sessionId) { showToast(t('toast.startRecordFirst'), 'error'); return; }
       
       const type = state.currentVisualizationType;
       const chartType = type === 'chart' ? elements.chartTypeSelect.value : undefined;
       
+      const generatingText = state.language === 'zh' ? '⏳ 生成中...' : '⏳ Generating...';
+      const genStatusText = state.language === 'zh' ? '正在生成...' : 'Generating...';
+      const genBtnText = state.language === 'zh' ? '✨ 生成视觉化' : '✨ Generate';
+      
       elements.visGenerateBtn.disabled = true;
-      elements.visGenerateBtn.textContent = '⏳ 生成中...';
+      elements.visGenerateBtn.textContent = generatingText;
       elements.visStatus.style.display = 'block';
-      elements.visStatus.textContent = '正在生成...';
+      elements.visStatus.textContent = genStatusText;
       elements.visStatus.className = 'vis-status';
       
       try {
         const response = await apiCall('POST', `/sessions/${state.sessionId}/visualization`, { type, chartType });
         displayVisualization(response);
         elements.visStatus.style.display = 'none';
-        showToast('视觉化生成成功！', 'success');
+        showToast(t('toast.visualGenSuccess'), 'success');
       } catch (error) {
-        elements.visStatus.textContent = '生成失败';
+        elements.visStatus.textContent = t('toast.visualGenFailed');
         elements.visStatus.className = 'vis-status error';
-        showToast('生成失败: ' + error.message, 'error');
+        showToast(t('toast.visualGenFailed') + ': ' + error.message, 'error');
       } finally {
         elements.visGenerateBtn.disabled = false;
-        elements.visGenerateBtn.textContent = '✨ 生成视觉化';
+        elements.visGenerateBtn.textContent = genBtnText;
       }
     }
 
@@ -5677,7 +5905,7 @@
       $('downloadMenu').classList.remove('show');
       
       if (state.transcription.length === 0) {
-        showToast('没有可下载的转写内容', 'warning');
+        showToast(t('toast.noTranscriptToDownload'), 'warning');
         return;
       }
 
@@ -5732,7 +5960,7 @@
 
       const blob = new Blob([content], { type: 'application/msword;charset=utf-8' });
       downloadBlob(blob, `${filename}.doc`);
-      showToast('Word 文档下载成功', 'success');
+      showToast(t('toast.wordDownloadSuccess'), 'success');
     }
 
     function downloadAsPDF(filename) {
@@ -5815,7 +6043,7 @@
       printWindow.onload = function() {
         setTimeout(() => {
           printWindow.print();
-          showToast('请在打印对话框中选择"保存为 PDF"', 'info');
+          showToast(t('toast.selectPdfSave'), 'info');
         }, 300);
       };
     }
