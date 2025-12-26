@@ -4592,7 +4592,7 @@
       }
     }
 
-    function togglePause() {
+    async function togglePause() {
       if (!state.isRecording) return;
       state.isPaused = !state.isPaused;
       if (state.isPaused) {
@@ -4601,9 +4601,25 @@
           state.mediaRecorder.stop();
         }
         stopWaveformAnimation();
+        pauseTimerUpdate(); // 暂停计时器
         console.log('[Pause] Recording paused, MediaRecorder stopped');
       } else {
-        // 恢复时：创建新的 MediaRecorder（确保 WebM 流完整）
+        // 恢复时：创建新的后端会话（因为通义听悟会超时断开）
+        try {
+          showToast('正在恢复录音...', 'info');
+          const res = await apiCall('POST', '/sessions', { meetingId: `meeting-${Date.now()}` });
+          state.sessionId = res.sessionId;
+          state.taskId = res.taskId;
+          console.log('[Resume] Created new session:', res.sessionId);
+        } catch (e) {
+          console.error('[Resume] Failed to create new session:', e);
+          showToast('恢复录音失败: ' + e.message, 'error');
+          state.isPaused = true; // 恢复暂停状态
+          updateRecordingUI();
+          return;
+        }
+        
+        // 创建新的 MediaRecorder（确保 WebM 流完整）
         if (state.mediaStream) {
           state.mediaRecorder = new MediaRecorder(state.mediaStream, { 
             mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm' 
@@ -4620,6 +4636,8 @@
           
           state.mediaRecorder.start(500); // 优化：500ms 发送一次，减少延迟
           startWaveformAnimation();
+          resumeTimerUpdate(); // 恢复计时器
+          showToast('录音已恢复', 'success');
           console.log('[Resume] Recording resumed, new MediaRecorder created');
         }
       }
@@ -4658,19 +4676,47 @@
 
     // ========== Timer ==========
     let timerInterval = null;
+    let pausedElapsedTime = 0; // 暂停时已经过的时间
+    let timerStartTime = null; // 计时器开始时间（不含暂停时间）
+    
     function startTimerUpdate() {
       if (timerInterval) return;
+      timerStartTime = Date.now();
       timerInterval = setInterval(() => {
         if (!state.recordingStartTime) return;
-        const elapsed = Date.now() - state.recordingStartTime;
-        const m = Math.floor(elapsed / 60000).toString().padStart(2, '0');
-        const s = Math.floor((elapsed % 60000) / 1000).toString().padStart(2, '0');
+        // 计算实际录音时间 = 暂停前累计时间 + 本次录音时间
+        const currentElapsed = pausedElapsedTime + (Date.now() - timerStartTime);
+        const m = Math.floor(currentElapsed / 60000).toString().padStart(2, '0');
+        const s = Math.floor((currentElapsed % 60000) / 1000).toString().padStart(2, '0');
+        elements.recordingTimer.textContent = `${m}:${s}`;
+      }, 1000);
+    }
+
+    function pauseTimerUpdate() {
+      if (timerInterval) {
+        // 保存已经过的时间
+        pausedElapsedTime += Date.now() - timerStartTime;
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+    
+    function resumeTimerUpdate() {
+      if (timerInterval) return;
+      timerStartTime = Date.now();
+      timerInterval = setInterval(() => {
+        if (!state.recordingStartTime) return;
+        const currentElapsed = pausedElapsedTime + (Date.now() - timerStartTime);
+        const m = Math.floor(currentElapsed / 60000).toString().padStart(2, '0');
+        const s = Math.floor((currentElapsed % 60000) / 1000).toString().padStart(2, '0');
         elements.recordingTimer.textContent = `${m}:${s}`;
       }, 1000);
     }
 
     function stopTimerUpdate() {
       if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      pausedElapsedTime = 0;
+      timerStartTime = null;
     }
 
     // ========== Polling ==========
