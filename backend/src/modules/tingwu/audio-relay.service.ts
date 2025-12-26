@@ -16,11 +16,15 @@ type RelaySession = {
   isConnected: boolean;
   isStarted: boolean;
   isStopping: boolean; // 标记是否正在停止
+  isFailed: boolean; // 标记是否已失败（不再重试）
   ffmpegProcess: ChildProcess | null;
   pcmBuffer: Buffer[]; // 已转码的 PCM 待发送队列
   lastDataTime: number; // 最后收到数据的时间戳
   heartbeatTimer: NodeJS.Timeout | null; // 心跳检测定时器
+  reconnectAttempts: number; // 重连尝试次数
 };
+
+const MAX_RECONNECT_ATTEMPTS = 3; // 最大重连次数
 
 @Injectable()
 export class AudioRelayService {
@@ -44,10 +48,12 @@ export class AudioRelayService {
       isConnected: false,
       isStarted: false,
       isStopping: false,
+      isFailed: false,
       ffmpegProcess: null,
       pcmBuffer: [],
       lastDataTime: Date.now(),
       heartbeatTimer: null,
+      reconnectAttempts: 0,
     };
 
     this.sessions.set(sessionId, relay);
@@ -57,7 +63,21 @@ export class AudioRelayService {
   }
 
   private connectToTingwu(sessionId: string, relay: RelaySession) {
-    this.logger.log(`Connecting to Tingwu WebSocket for session ${sessionId}...`);
+    // 如果已经在停止或已失败，不再重连
+    if (relay.isStopping || relay.isFailed) {
+      this.logger.warn(`[${sessionId}] Skipping reconnect: isStopping=${relay.isStopping}, isFailed=${relay.isFailed}`);
+      return;
+    }
+    
+    // 检查重连次数
+    if (relay.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+      this.logger.error(`[${sessionId}] Max reconnect attempts (${MAX_RECONNECT_ATTEMPTS}) reached, marking as failed`);
+      relay.isFailed = true;
+      return;
+    }
+    
+    relay.reconnectAttempts++;
+    this.logger.log(`Connecting to Tingwu WebSocket for session ${sessionId} (attempt ${relay.reconnectAttempts})...`);
     
     const socket = new WS(relay.meetingJoinUrl);
     relay.socket = socket;
@@ -65,6 +85,8 @@ export class AudioRelayService {
     socket.on("open", () => {
       this.logger.log(`Tingwu WebSocket connected for session ${sessionId}`);
       relay.isConnected = true;
+      // 连接成功后重置重连计数
+      relay.reconnectAttempts = 0;
       // 注意：不再在连接时立即发送 StartTranscription
       // 而是等到第一个音频数据到达时再发送，避免 IDLE_TIMEOUT
     });
@@ -106,14 +128,26 @@ export class AudioRelayService {
         } else if (msg.header?.name === "TranscriptionCompleted") {
           this.logger.log(`[${sessionId}] Transcription completed`);
         } else if (msg.header?.name === "TaskFailed") {
+          const statusText = msg.header?.status_text || "";
           this.logger.error(
             `[${sessionId}] TaskFailed: ${JSON.stringify({
               header: msg.header,
               payload: msg.payload,
               status: msg.header?.status,
-              status_text: msg.header?.status_text,
+              status_text: statusText,
             })}`
           );
+          
+          // 如果是并发超限或其他严重错误，标记为失败，不再重试
+          if (statusText.includes("Concurrency exceed") || 
+              statusText.includes("Task not found") ||
+              statusText.includes("Invalid task")) {
+            this.logger.error(`[${sessionId}] Critical error, marking session as failed`);
+            relay.isFailed = true;
+            relay.isConnected = false;
+            // 清理资源
+            this.cleanupFfmpeg(sessionId, relay);
+          }
         } else {
           this.logger.debug(`[${sessionId}] Tingwu message: ${msg.header?.name}`);
         }
@@ -345,9 +379,14 @@ export class AudioRelayService {
     // 更新最后数据时间
     relay.lastDataTime = Date.now();
     
-    // 检查 relay 是否正在停止
+    // 检查 relay 是否正在停止或已失败
     if (relay.isStopping) {
       this.logger.warn(`[${sessionId}] Relay is stopping, ignoring chunk`);
+      return;
+    }
+    
+    if (relay.isFailed) {
+      this.logger.warn(`[${sessionId}] Relay has failed, ignoring chunk`);
       return;
     }
     
@@ -366,6 +405,13 @@ export class AudioRelayService {
     
     // 检查 WebSocket 连接状态，如果断开则需要重新连接
     if (!relay.isConnected || !relay.socket || relay.socket.readyState !== WS.OPEN) {
+      // 如果已经达到最大重连次数，直接返回
+      if (relay.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        this.logger.warn(`[${sessionId}] Max reconnect attempts reached, ignoring chunk`);
+        relay.isFailed = true;
+        return;
+      }
+      
       this.logger.warn(`[${sessionId}] WebSocket disconnected, attempting to reconnect...`);
       
       // 清理旧的 ffmpeg 进程（因为需要重新开始新的流）
@@ -376,6 +422,11 @@ export class AudioRelayService {
       
       // 重新连接 WebSocket
       this.connectToTingwu(sessionId, relay);
+    }
+    
+    // 如果连接失败，直接返回
+    if (relay.isFailed) {
+      return;
     }
     
     // 等待连接就绪
@@ -570,11 +621,13 @@ export class AudioRelayService {
         relay.ffmpegProcess = null;
       }
       
-      // 重置状态
+      // 重置状态（包括失败状态和重连计数）
       relay.meetingJoinUrl = meetingJoinUrl;
       relay.isConnected = false;
       relay.isStarted = false;
       relay.isStopping = false;
+      relay.isFailed = false;
+      relay.reconnectAttempts = 0;
       
       this.logger.log(`Updated meetingJoinUrl for session ${sessionId}, reconnecting...`);
       
