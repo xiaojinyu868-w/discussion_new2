@@ -77,20 +77,23 @@ export class AudioRelayService {
         // 检查是否有转写结果
         if (msg.header?.name === "TranscriptionResultChanged" || 
             msg.header?.name === "SentenceEnd") {
-          // 实时转写严格模式：只使用原始result，不使用fixed_result
-          // 确保转写结果严格遵循语音输入，不进行自动修正
+          // 优先使用 fixed_result（修正后的结果），提高识别正确率
+          // fixed_result 包含听悟的智能修正，如标点、同音字纠错等
           const rawResult = msg.payload?.result ?? "";
-          this.logger.log(`[${sessionId}] Transcription (strict mode): "${rawResult}"`);
+          const fixedResult = msg.payload?.fixed_result ?? "";
+          const finalResult = fixedResult || rawResult; // 优先使用修正结果
           
-          // 追加到 ContextStore（严格模式：不使用fixed_result）
+          this.logger.log(`[${sessionId}] Transcription: "${finalResult}"${fixedResult ? ' (fixed)' : ''}`);
+          
+          // 追加到 ContextStore
           if (msg.payload) {
             const payload: TingwuTranscriptionPayload = {
-              result: rawResult, // 严格模式：只使用原始转写结果
+              result: rawResult,
               words: msg.payload.words ?? [],
               index: msg.payload.index ?? 0,
               time: msg.payload.time ?? 0,
               confidence: msg.payload.confidence ?? 0,
-              fixed_result: undefined, // 严格模式：不使用修正后的结果
+              fixed_result: fixedResult || undefined,
             };
             this.contextStore.appendFromTingwu(sessionId, payload);
           }
@@ -238,21 +241,20 @@ export class AudioRelayService {
 
   /**
    * 获取音频预处理滤镜参数
-   * 用于提高音频质量和转写准确率
+   * 平衡版本：保留降噪以提高识别率，移除耗时的loudnorm
    */
   private getAudioEnhancementFilters(): string {
     // 音频增强滤镜链：
     // 1. highpass: 高通滤波，去除低频噪声（80Hz以下）
-    // 2. lowpass: 低通滤波，去除高频噪声（8000Hz以上，保留语音频段）
-    // 3. anlmdn: 非局部均值降噪，减少背景噪声
-    // 4. loudnorm: 音量归一化，确保音量稳定
-    // 5. volume: 音量增益（如果音频过小）
+    // 2. lowpass: 低通滤波，去除高频噪声（8000Hz以上）
+    // 3. anlmdn: 非局部均值降噪（保留，对识别率很重要）
+    // 4. volume: 音量增益
+    // 注：移除了 loudnorm（音量归一化）以降低延迟
     return [
-      "highpass=f=80", // 高通滤波，去除80Hz以下低频噪声
-      "lowpass=f=8000", // 低通滤波，去除8000Hz以上高频噪声（语音主要频段在80-8000Hz）
-      "anlmdn=s=0.0003", // 非局部均值降噪，s参数控制降噪强度（0.0003为中等强度）
-      "loudnorm=I=-16:TP=-1.5:LRA=11", // 音量归一化：目标响度-16 LUFS，真峰值-1.5dB，响度范围11 LU
-      "volume=1.2", // 音量增益20%（如果音频过小可适当提高）
+      "highpass=f=80",
+      "lowpass=f=8000",
+      "anlmdn=s=0.0003", // 降噪，对识别率很重要
+      "volume=1.3",
     ].join(",");
   }
 
@@ -315,8 +317,8 @@ export class AudioRelayService {
     for (let offset = 0; offset < pcm.length; offset += chunkSize) {
       const slice = pcm.subarray(offset, offset + chunkSize);
       socket.send(slice);
-      // 微节流，避免过快推送
-      await new Promise((r) => setTimeout(r, 5));
+      // 减少节流延迟，从5ms改为2ms，提高实时性
+      await new Promise((r) => setTimeout(r, 2));
     }
   }
 

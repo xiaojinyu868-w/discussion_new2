@@ -72,6 +72,7 @@ export interface AgentSessionState {
   enabled: boolean;
   lastAnalyzedIndex: number; // 上次分析到的转写索引
   lastSummaryTime: number; // 上次总结时间
+  lastSummaryTextLength: number; // 上次总结时的文本长度（用于检测内容变化）
   insights: AgentInsight[]; // 生成的洞察列表
 }
 

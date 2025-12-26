@@ -267,42 +267,17 @@ export class ActionDispatcherService {
   }
 
   /**
-   * 处理数据提及 - 自动生成图表
-   * 关键：调用现有的 VisualizationService
+   * 处理数据提及 - 只生成文字洞察，不生成图表（图表太贵）
    */
   private async handleDataMention(
     sessionId: string,
     result: AnalysisResult,
   ): Promise<AgentInsight> {
-    const chartType = result.metadata?.chartType || 'bar';
-
-    // 生成数据摘要
+    // 生成数据摘要（纯文字，不调用图表生成）
     const summary = await this.generateDataSummary(
       result.context,
       result.metadata?.matches || [],
     );
-
-    // 尝试调用现有的视觉化服务生成图表
-    let visualization: AgentInsight['visualization'];
-    try {
-      const visResult = await this.visualizationService.generateVisualization({
-        sessionId,
-        type: 'chart',
-        chartType: chartType as 'radar' | 'flowchart' | 'architecture' | 'bar',
-      });
-
-      if (visResult.imageUrl || visResult.imageBase64) {
-        visualization = {
-          type: 'chart',
-          imageUrl: visResult.imageUrl,
-          imageBase64: visResult.imageBase64,
-        };
-        this.logger.log(`Chart generated for session ${sessionId}`);
-      }
-    } catch (error) {
-      this.logger.warn(`Chart generation failed: ${error}`);
-      // 图表生成失败，继续生成文字洞察
-    }
 
     return {
       id: `agent-data-${Date.now()}`,
@@ -314,7 +289,7 @@ export class ActionDispatcherService {
         summary,
         dataPoints: result.metadata?.matches,
       },
-      visualization,
+      // 不生成图表，节省成本
       createdAt: new Date(),
       isAuto: true,
     };

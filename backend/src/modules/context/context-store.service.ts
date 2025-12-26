@@ -122,9 +122,9 @@ export class ContextStoreService {
         ? payload.words[payload.words.length - 1].endTime
         : payload.time;
 
-    // 严格模式：实时转写只使用原始result，不使用fixed_result
-    // 确保转写结果严格遵循语音输入，不进行自动修正
-    const text = payload.result ?? "";
+    // 优先使用 fixed_result（修正后的结果），提高识别正确率
+    // fixed_result 包含听悟的智能修正，如标点、同音字纠错等
+    const text = payload.fixed_result || payload.result || "";
 
     const segment: ContextSegment = {
       id: `seg-${sessionId}-${payload.index}`,

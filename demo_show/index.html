@@ -2638,15 +2638,10 @@
           </div>
           
           <div class="auto-push-row">
-            <span class="auto-push-label" data-i18n="toolbar.autoPushAnalysis">自动推送分析</span>
-            <div class="toggle-switch active" id="autoPushToggle" onclick="toggleAutoPush()"></div>
-          </div>
-          
-          <div class="auto-push-row">
-            <span class="auto-push-label" data-i18n="toolbar.agentLinkage">🤖 Agent 智能联动</span>
+            <span class="auto-push-label" data-i18n="toolbar.agentLinkage">🤖 AI 智能分析</span>
             <div class="toggle-switch active" id="agentToggle" onclick="toggleAgent()"></div>
           </div>
-          <div class="agent-hint" data-i18n="toolbar.agentHint">自动检测数据/跑题，联动生成洞察和图表</div>
+          <div class="agent-hint" data-i18n="toolbar.agentHint">自动检测数据/跑题，智能生成洞察和图表</div>
         </div>
 
         <!-- 视觉化 -->
@@ -2948,9 +2943,8 @@
           cognitiveTranslate: '认知转译',
           breakInspiration: '破局灵感',
           agendaGuard: '议程守护',
-          autoPushAnalysis: '自动推送分析',
-          agentLinkage: '🤖 Agent 智能联动',
-          agentHint: '自动检测数据/跑题，联动生成洞察和图表',
+          agentLinkage: '🤖 AI 智能分析',
+          agentHint: '自动检测数据/跑题，智能生成洞察和图表',
           mindVisualization: '思维显影',
           dataChart: '📊 数据图表',
           creativeImage: '🎨 创意图像',
@@ -2988,8 +2982,8 @@
           startRecordFirst: '请先开始录音',
           analysisDone: '分析完成',
           analysisFailed: '分析失败',
-          autoPushOn: '自动推送已开启，每30秒自动分析',
-          autoPushOff: '自动推送已关闭',
+          agentOn: '🤖 AI 智能分析已开启',
+          agentOff: 'AI 智能分析已关闭',
           uploadingFile: '上传中...',
           fileUploadSuccess: '文件上传成功，已开始转写',
           visualGenSuccess: '视觉化生成成功！',
@@ -3122,8 +3116,7 @@
           cognitiveTranslate: 'Mind Reader',
           breakInspiration: 'Brainstorm',
           agendaGuard: 'Focus Guard',
-          autoPushAnalysis: 'Auto Analysis',
-          agentLinkage: '🤖 Agent Linkage',
+          agentLinkage: '🤖 AI Analysis',
           agentHint: 'Auto-detect data/off-topic, generate insights and charts',
           mindVisualization: 'Visualization',
           dataChart: '📊 Data Chart',
@@ -3162,8 +3155,8 @@
           startRecordFirst: 'Please start recording first',
           analysisDone: 'Analysis completed',
           analysisFailed: 'Analysis failed',
-          autoPushOn: 'Auto-push enabled, analyzing every 30 seconds',
-          autoPushOff: 'Auto-push disabled',
+          agentOn: '🤖 AI Analysis enabled',
+          agentOff: 'AI Analysis disabled',
           uploadingFile: 'Uploading...',
           fileUploadSuccess: 'File uploaded, transcription started',
           visualGenSuccess: 'Visualization generated!',
@@ -3217,9 +3210,7 @@
       recordingStartTime: null,
       transcription: [],
       summaries: [],
-      autoPushEnabled: true,
-      autoPushInterval: null,
-      activeSkills: [], // 用户激活的技能列表
+      autoPushInterval: null, // 保留以兼容旧代码
       mediaRecorder: null,
       mediaStream: null, // 保存 MediaStream 以便暂停后恢复
       // 网络模式：自动检测当前访问的主机地址，支持局域网访问
@@ -3293,7 +3284,6 @@
       insightEmptyState: $('insightEmptyState'),
       transcriptCount: $('transcriptCount'),
       insightCount: $('insightCount'),
-      autoPushToggle: $('autoPushToggle'),
       qaMessages: $('qaMessages'),
       qaInput: $('qaInput'),
       qaSendBtn: $('qaSendBtn'),
@@ -3386,7 +3376,7 @@
 
       try {
         const response = await fetch(`${state.apiBaseUrl}/users/me/meetings`, {
-          headers: { 'Authorization': `Bearer ${state.token}` },
+          headers: { 'Authorization': `Bearer ${state.token}`, ...getNgrokHeaders() },
         });
         const data = await response.json();
         
@@ -3495,7 +3485,7 @@
     async function loadMeetingToView(meetingId) {
       try {
         const response = await fetch(`${state.apiBaseUrl}/users/me/meetings/${meetingId}`, {
-          headers: { 'Authorization': `Bearer ${state.token}` },
+          headers: { 'Authorization': `Bearer ${state.token}`, ...getNgrokHeaders() },
         });
         const data = await response.json();
         
@@ -3826,7 +3816,7 @@
         
         const response = await fetch(`${state.apiBaseUrl}${endpoint}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...getNgrokHeaders() },
           body: JSON.stringify({ username, password }),
         });
         
@@ -4066,7 +4056,7 @@
       
       try {
         const response = await fetch(`${state.apiBaseUrl}/quota/status`, {
-          headers: { 'Authorization': `Bearer ${state.token}` },
+          headers: { 'Authorization': `Bearer ${state.token}`, ...getNgrokHeaders() },
         });
         const data = await response.json();
         if (data.success) {
@@ -4090,7 +4080,7 @@
       
       try {
         const response = await fetch(`${state.apiBaseUrl}/users/me/meetings`, {
-          headers: { 'Authorization': `Bearer ${state.token}` },
+          headers: { 'Authorization': `Bearer ${state.token}`, ...getNgrokHeaders() },
         });
         const data = await response.json();
         if (data.success && data.meetings) {
@@ -4143,7 +4133,7 @@
       
       try {
         const response = await fetch(`${state.apiBaseUrl}/users/me/meetings/${meetingId}`, {
-          headers: { 'Authorization': `Bearer ${state.token}` },
+          headers: { 'Authorization': `Bearer ${state.token}`, ...getNgrokHeaders() },
         });
         const data = await response.json();
         
@@ -4218,7 +4208,7 @@
       try {
         const response = await fetch(`${state.apiBaseUrl}/users/me/meetings/${state.currentMeetingId}`, {
           method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${state.token}` },
+          headers: { 'Authorization': `Bearer ${state.token}`, ...getNgrokHeaders() },
         });
         const data = await response.json();
         
@@ -4379,14 +4369,31 @@
     }
 
     // ========== Connection ==========
+    // 获取 ngrok 所需的额外 headers
+    function getNgrokHeaders() {
+      if (state.apiBaseUrl && state.apiBaseUrl.includes('ngrok')) {
+        return { 'ngrok-skip-browser-warning': 'true' };
+      }
+      return {};
+    }
+
     async function testConnection() {
       const baseUrl = state.apiBaseUrl;
+      if (!baseUrl) {
+        updateConnectionStatus('error');
+        enableControls(false);
+        return;
+      }
       updateConnectionStatus('testing');
       
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
-        const response = await fetch(`${baseUrl}/sessions/health`, { method: 'GET', signal: controller.signal });
+        const response = await fetch(`${baseUrl}/sessions/health`, { 
+          method: 'GET', 
+          signal: controller.signal,
+          headers: getNgrokHeaders()
+        });
         clearTimeout(timeoutId);
         
         if (response.ok) {
@@ -4500,13 +4507,8 @@
         startWaveformAnimation();
         startTimerUpdate();
         startPolling();
-        
-        // 如果自动推送已开启，启动定时推送
-        if (state.autoPushEnabled) {
-          startAutoPush();
-        }
 
-        // V3: 如果 Agent 已开启，启动 Agent
+        // V3: 如果 Agent 已开启，启动 Agent（智能分析）
         if (state.agentEnabled) {
           startAgent();
         }
@@ -5082,10 +5084,7 @@
       const statusEl = $(`skill${names[skill]}Status`);
       const btnEl = $(`skill${names[skill]}`);
       
-      // 将用户点击的技能加入激活列表（用于自动推送）
-      if (!state.activeSkills.includes(skill)) {
-        state.activeSkills.push(skill);
-      }
+      // 技能按钮是一次性触发，不再加入自动推送列表
       
       btnEl.disabled = true;
       btnEl.classList.add('loading');
@@ -5109,95 +5108,21 @@
       }
     }
 
-    // ========== Auto Push ==========
-    // 启动自动推送（每30秒）
+    // ========== Auto Push (已废弃，由 Agent 替代) ==========
+    // 保留函数以兼容旧代码，但不再执行实际操作
     function startAutoPush() {
-      if (state.autoPushInterval) return;
-      
-      // 首次延迟30秒后开始推送
-      state.autoPushInterval = setInterval(async () => {
-        if (!state.sessionId || !state.isRecording || state.isPaused) return;
-        if (state.transcription.length === 0) return; // 没有转写内容时不推送
-        
-        await executeAutoPush();
-      }, 30000); // 每30秒执行一次
-      
-      console.log('自动推送已启动，每30秒推送一次');
+      // 已由 Agent 智能分析替代，不再需要前端定时推送
+      console.log('Auto push disabled, using Agent instead');
     }
 
-    // 停止自动推送
     function stopAutoPush() {
       if (state.autoPushInterval) {
         clearInterval(state.autoPushInterval);
         state.autoPushInterval = null;
-        console.log('自动推送已停止');
       }
     }
 
-    // 执行自动推送分析
-    async function executeAutoPush() {
-      try {
-        // 如果有选中的技能，执行这些技能
-        if (state.activeSkills.length > 0) {
-          for (const skill of state.activeSkills) {
-            try {
-              const response = await apiCall('POST', `/sessions/${state.sessionId}/skills/${skill}`);
-              if (response.cards?.length) {
-                state.summaries = [...state.summaries, ...response.cards];
-                renderSummaries();
-              }
-            } catch (e) {
-              console.warn(`自动推送 ${skill} 失败:`, e);
-            }
-          }
-        } else {
-          // 没有选中技能时，默认执行 inner_os（潜台词分析）
-          try {
-            const response = await apiCall('POST', `/sessions/${state.sessionId}/skills/inner_os`);
-            if (response.cards?.length) {
-              state.summaries = [...state.summaries, ...response.cards];
-              renderSummaries();
-            }
-          } catch (e) {
-            console.warn('自动推送 inner_os 失败:', e);
-          }
-        }
-      } catch (error) {
-        console.warn('自动推送执行失败:', error);
-      }
-    }
-
-    async function toggleAutoPush() {
-      state.autoPushEnabled = !state.autoPushEnabled;
-      elements.autoPushToggle.classList.toggle('active', state.autoPushEnabled);
-
-      if (state.autoPushEnabled) {
-        // 如果正在录音，立即启动自动推送
-        if (state.isRecording && state.sessionId) {
-          startAutoPush();
-        }
-        showToast(t('toast.autoPushOn'), 'success');
-      } else {
-        stopAutoPush();
-        showToast(t('toast.autoPushOff'), 'info');
-      }
-
-      // 尝试通知后端（可选，后端可能没有这个接口）
-      if (state.sessionId) {
-        try {
-          if (state.autoPushEnabled) {
-            await apiCall('POST', `/sessions/${state.sessionId}/auto-push/start`);
-          } else {
-            await apiCall('POST', `/sessions/${state.sessionId}/auto-push/stop`);
-          }
-        } catch (error) {
-          // 后端接口可能不存在，忽略错误
-          console.warn('后端自动推送接口调用失败:', error);
-        }
-      }
-    }
-
-    // ========== V3 Agent 联动功能 ==========
+    // ========== V3 Agent 智能分析功能 ==========
     
     // 切换 Agent 开关
     async function toggleAgent() {
@@ -5208,10 +5133,10 @@
         if (state.isRecording && state.sessionId) {
           startAgent();
         }
-        showToast('🤖 Agent 智能联动已开启', 'success');
+        showToast(t('toast.agentOn') || '🤖 AI 智能分析已开启', 'success');
       } else {
         stopAgent();
-        showToast('Agent 智能联动已关闭', 'info');
+        showToast(t('toast.agentOff') || 'AI 智能分析已关闭', 'info');
       }
     }
 
@@ -5606,6 +5531,7 @@
         const response = await fetch(`${state.apiBaseUrl}/sessions/upload`, {
           method: 'POST',
           body: form,
+          headers: getNgrokHeaders(),
         });
 
         if (!response.ok) throw new Error(await response.text() || `HTTP ${response.status}`);
@@ -5775,6 +5701,10 @@
       if (state.token) {
         headers['Authorization'] = `Bearer ${state.token}`;
       }
+      // ngrok 免费版需要这个 header 来跳过警告页面
+      if (state.apiBaseUrl.includes('ngrok')) {
+        headers['ngrok-skip-browser-warning'] = 'true';
+      }
       const options = { method, headers };
       if (body) options.body = JSON.stringify(body);
       
@@ -5823,7 +5753,6 @@
       state.taskId = null;
       state.transcription = [];
       state.summaries = [];
-      state.activeSkills = [];
       state.recordingStartTime = null;
       
       // V3: 重置 Agent 状态

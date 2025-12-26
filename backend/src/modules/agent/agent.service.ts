@@ -11,7 +11,8 @@ export class AgentService {
 
   // Agent 配置
   private readonly CYCLE_INTERVAL_MS = 10000; // 每10秒运行一次 Agent 循环
-  private readonly SUMMARY_INTERVAL_MS = 30000; // 每30秒生成周期性总结
+  private readonly SUMMARY_INTERVAL_MS = 90000; // 每90秒生成周期性总结（从30秒改为90秒，减少刷屏）
+  private readonly MIN_NEW_CONTENT_FOR_SUMMARY = 100; // 至少有100字新内容才生成总结
 
   constructor(
     private readonly contextStore: ContextStoreService,
@@ -32,7 +33,8 @@ export class AgentService {
       intervalId: null,
       enabled: true,
       lastAnalyzedIndex: 0,
-      lastSummaryTime: Date.now() - this.SUMMARY_INTERVAL_MS, // 让第一次总结可以立即触发
+      lastSummaryTime: Date.now(), // 不再立即触发第一次总结，等待一个完整周期
+      lastSummaryTextLength: 0, // 记录上次总结时的文本长度
       insights: [],
     });
 
@@ -152,9 +154,13 @@ export class AgentService {
         session.lastAnalyzedIndex = segments.length;
       }
 
-      // 5. 检查是否需要周期性总结（每30秒）
+      // 5. 检查是否需要周期性总结（每90秒，且有足够新内容）
       const now = Date.now();
-      if (now - session.lastSummaryTime >= this.SUMMARY_INTERVAL_MS) {
+      const currentTextLength = this.contextStore.getRecentText(sessionId, 5)?.length || 0;
+      const newContentLength = currentTextLength - (session.lastSummaryTextLength || 0);
+      
+      if (now - session.lastSummaryTime >= this.SUMMARY_INTERVAL_MS && 
+          newContentLength >= this.MIN_NEW_CONTENT_FOR_SUMMARY) {
         const summaryInsight =
           await this.actionDispatcher.dispatchPeriodicSummary(sessionId);
         if (summaryInsight) {
@@ -162,6 +168,7 @@ export class AgentService {
           this.logger.log(`Periodic summary generated for session ${sessionId}`);
         }
         session.lastSummaryTime = now;
+        session.lastSummaryTextLength = currentTextLength;
       }
     } catch (error) {
       this.logger.error(`Agent cycle failed for session ${sessionId}: ${error}`);

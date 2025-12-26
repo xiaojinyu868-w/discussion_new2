@@ -53,7 +53,7 @@ export class DatabaseService implements OnModuleInit {
         daily_insight_used INTEGER DEFAULT 0,
         daily_qa_limit INTEGER DEFAULT 100,
         daily_qa_used INTEGER DEFAULT 0,
-        monthly_image_limit INTEGER DEFAULT 5,
+        monthly_image_limit INTEGER DEFAULT 30,
         monthly_image_used INTEGER DEFAULT 0,
         daily_reset_at DATETIME,
         monthly_reset_at DATETIME
