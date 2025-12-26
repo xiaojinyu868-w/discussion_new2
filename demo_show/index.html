@@ -3242,15 +3242,14 @@
       const hostname = window.location.hostname;
       // 如果是 localhost 或 127.0.0.1 或本地文件，使用本地后端
       if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '') {
-        return 'http://localhost:4000';
+        return 'http://47.112.160.134:4000';
       }
       // 如果是局域网 IP (192.168.x.x, 10.x.x.x, 172.16-31.x.x)，使用相同主机的后端
       if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(hostname)) {
         return `http://${hostname}:4000`;
       }
-      // 外网部署（如 Netlify）时，返回空字符串，提示用户配置
-      // 用户需要通过设置弹窗配置内网穿透地址
-      return '';
+      // 外网部署时，默认使用阿里云服务器地址
+      return 'http://47.112.160.134:4000';
     }
 
     // 检查是否需要配置后端地址

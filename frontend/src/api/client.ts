@@ -1,4 +1,4 @@
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:4000";
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://47.112.160.134:4000";
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
