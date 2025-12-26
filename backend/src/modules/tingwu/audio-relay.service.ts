@@ -18,6 +18,8 @@ type RelaySession = {
   isStopping: boolean; // 标记是否正在停止
   ffmpegProcess: ChildProcess | null;
   pcmBuffer: Buffer[]; // 已转码的 PCM 待发送队列
+  lastDataTime: number; // 最后收到数据的时间戳
+  heartbeatTimer: NodeJS.Timeout | null; // 心跳检测定时器
 };
 
 @Injectable()
@@ -44,6 +46,8 @@ export class AudioRelayService {
       isStopping: false,
       ffmpegProcess: null,
       pcmBuffer: [],
+      lastDataTime: Date.now(),
+      heartbeatTimer: null,
     };
 
     this.sessions.set(sessionId, relay);
@@ -262,7 +266,7 @@ export class AudioRelayService {
     if (relay.ffmpegProcess) return;
     const args = [
       "-loglevel",
-      "error",
+      "warning", // 改为 warning 以便看到更多信息
       "-f",
       "webm",
       "-i",
@@ -293,11 +297,21 @@ export class AudioRelayService {
     });
 
     let stderr = "";
-    proc.stderr?.on("data", (d) => (stderr += d.toString()));
+    proc.stderr?.on("data", (d) => {
+      stderr += d.toString();
+      // 检测 WebM header 错误，这通常意味着收到了新的 WebM 流
+      if (d.toString().includes("Invalid data") || d.toString().includes("Invalid EBML")) {
+        this.logger.warn(`[${sessionId}] Detected new WebM stream, will restart ffmpeg on next chunk`);
+        // 标记需要重启
+        this.cleanupFfmpeg(sessionId, relay);
+      }
+    });
     proc.on("close", (code) => {
-      this.logger.warn(
-        `[${sessionId}] ffmpeg stream closed code=${code}, stderr_tail=${stderr.slice(-400)}`
-      );
+      if (code !== 0 && !relay.isStopping) {
+        this.logger.warn(
+          `[${sessionId}] ffmpeg stream closed unexpectedly code=${code}, stderr_tail=${stderr.slice(-400)}`
+        );
+      }
       relay.ffmpegProcess = null;
     });
     proc.on("error", (err) => {
@@ -328,10 +342,26 @@ export class AudioRelayService {
       throw new Error(`Relay not found for session ${sessionId}`);
     }
     
+    // 更新最后数据时间
+    relay.lastDataTime = Date.now();
+    
     // 检查 relay 是否正在停止
     if (relay.isStopping) {
       this.logger.warn(`[${sessionId}] Relay is stopping, ignoring chunk`);
       return;
+    }
+    
+    // 检测是否是新的 WebM 流（检查 EBML header: 0x1A45DFA3）
+    // 如果是新流且 ffmpeg 已经在运行，需要重启 ffmpeg
+    const isNewWebmStream = webmChunk.length >= 4 && 
+                            webmChunk[0] === 0x1A && 
+                            webmChunk[1] === 0x45 && 
+                            webmChunk[2] === 0xDF && 
+                            webmChunk[3] === 0xA3;
+    
+    if (isNewWebmStream && relay.ffmpegProcess) {
+      this.logger.log(`[${sessionId}] Detected new WebM stream (EBML header), restarting ffmpeg`);
+      this.cleanupFfmpeg(sessionId, relay);
     }
     
     // 检查 WebSocket 连接状态，如果断开则需要重新连接
@@ -339,13 +369,7 @@ export class AudioRelayService {
       this.logger.warn(`[${sessionId}] WebSocket disconnected, attempting to reconnect...`);
       
       // 清理旧的 ffmpeg 进程（因为需要重新开始新的流）
-      if (relay.ffmpegProcess) {
-        try {
-          relay.ffmpegProcess.stdin?.end();
-          relay.ffmpegProcess.kill('SIGKILL');
-        } catch {}
-        relay.ffmpegProcess = null;
-      }
+      this.cleanupFfmpeg(sessionId, relay);
       
       // 重置状态
       relay.isStarted = false;
@@ -362,23 +386,24 @@ export class AudioRelayService {
       throw err;
     }
     
+    // 检查 ffmpeg 进程是否健康，如果不健康则重启
+    if (relay.ffmpegProcess) {
+      const stdinOk = relay.ffmpegProcess.stdin && 
+                      !relay.ffmpegProcess.stdin.destroyed && 
+                      !relay.ffmpegProcess.stdin.writableEnded;
+      if (!stdinOk) {
+        this.logger.warn(`[${sessionId}] ffmpeg stdin unhealthy, restarting ffmpeg...`);
+        this.cleanupFfmpeg(sessionId, relay);
+      }
+    }
+    
     // 启动新的 ffmpeg 流（如果需要）
-    this.startFfmpegStream(sessionId, relay);
+    if (!relay.ffmpegProcess) {
+      this.startFfmpegStream(sessionId, relay);
+    }
 
     if (!relay.ffmpegProcess || !relay.ffmpegProcess.stdin) {
       throw new Error(`ffmpeg stream not ready for session ${sessionId}`);
-    }
-
-    // 检查 stdin 是否可写
-    if (relay.ffmpegProcess.stdin.destroyed || relay.ffmpegProcess.stdin.writableEnded) {
-      this.logger.warn(`[${sessionId}] ffmpeg stdin already closed, restarting ffmpeg...`);
-      // 重启 ffmpeg
-      relay.ffmpegProcess = null;
-      this.startFfmpegStream(sessionId, relay);
-      
-      if (!relay.ffmpegProcess || !relay.ffmpegProcess.stdin) {
-        throw new Error(`Failed to restart ffmpeg for session ${sessionId}`);
-      }
     }
 
     return new Promise<void>((resolve, reject) => {
@@ -386,15 +411,34 @@ export class AudioRelayService {
         if (err) {
           // 忽略 "write after end" 错误，因为这是竞态条件导致的
           if (err.message.includes('write after end')) {
-            this.logger.warn(`[${sessionId}] ffmpeg stdin write after end, ignoring`);
+            this.logger.warn(`[${sessionId}] ffmpeg stdin write after end, will restart on next chunk`);
+            this.cleanupFfmpeg(sessionId, relay);
             return resolve();
           }
           this.logger.error(`[${sessionId}] ffmpeg stdin write failed: ${err.message}`);
+          // 清理 ffmpeg 以便下次重启
+          this.cleanupFfmpeg(sessionId, relay);
           return reject(err);
         }
         resolve();
       });
     });
+  }
+  
+  /**
+   * 清理 ffmpeg 进程
+   */
+  private cleanupFfmpeg(sessionId: string, relay: RelaySession): void {
+    if (relay.ffmpegProcess) {
+      try {
+        relay.ffmpegProcess.stdin?.end();
+        relay.ffmpegProcess.kill('SIGKILL');
+      } catch (e) {
+        this.logger.debug(`[${sessionId}] ffmpeg cleanup error (ignored): ${e}`);
+      }
+      relay.ffmpegProcess = null;
+      this.logger.log(`[${sessionId}] ffmpeg process cleaned up`);
+    }
   }
 
   private async waitForConnection(relay: RelaySession, timeoutMs = 5000) {
@@ -571,20 +615,17 @@ export class AudioRelayService {
     relay.isStopping = true;
     this.logger.log(`Stopping relay for session ${sessionId}`);
 
-    // 停止定时发送
-    if (relay.sendInterval) {
-      clearInterval(relay.sendInterval);
-      relay.sendInterval = null;
+    // 清理心跳定时器
+    if (relay.heartbeatTimer) {
+      clearInterval(relay.heartbeatTimer);
+      relay.heartbeatTimer = null;
     }
 
     // 发送最后的数据
     await this.flushPcmBuffer(sessionId, relay);
 
     // 结束 ffmpeg 流
-    try {
-      relay.ffmpegProcess?.stdin?.end();
-      relay.ffmpegProcess?.kill('SIGKILL');
-    } catch {}
+    this.cleanupFfmpeg(sessionId, relay);
 
     // 发送 StopTranscription 命令
     if (relay.socket && relay.socket.readyState === WS.OPEN && relay.isStarted) {

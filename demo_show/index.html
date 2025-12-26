@@ -3239,14 +3239,14 @@
       const hostname = window.location.hostname;
       // 如果是 localhost 或 127.0.0.1 或本地文件，使用本地后端
       if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '') {
-        return 'http://47.112.160.134:4000';
+        return 'http://localhost:4000';
       }
       // 如果是局域网 IP (192.168.x.x, 10.x.x.x, 172.16-31.x.x)，使用相同主机的后端
       if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(hostname)) {
-        return `http://${hostname}:4000`;
+        return `${window.location.protocol}//${window.location.host}`;
       }
       // 外网部署时，默认使用阿里云服务器地址
-      return 'http://47.112.160.134:4000';
+      return 'http://localhost:4000';
     }
 
     // 检查是否需要配置后端地址
@@ -5288,20 +5288,28 @@
       // 来源文本（从触发段落获取）
       let sourceHtml = '';
       if (insight.triggerSegmentIds && insight.triggerSegmentIds.length > 0) {
-        // 后端返回的是 "seg-{sessionId}-{index}" 格式，需要提取索引
-        let sourceIndex = -1;
+        // 通过 ID 匹配查找对应的转写段落
+        let sourceSegment = null;
+        let sourceArrayIndex = -1;
+        
         for (const segId of insight.triggerSegmentIds) {
-          const match = segId.match(/seg-[^-]+-(\d+)/);
-          if (match) {
-            sourceIndex = parseInt(match[1], 10);
+          const foundIndex = state.transcription.findIndex(t => t.id === segId);
+          if (foundIndex >= 0) {
+            sourceSegment = state.transcription[foundIndex];
+            sourceArrayIndex = foundIndex;
             break;
           }
         }
         
-        if (sourceIndex >= 0 && sourceIndex < state.transcription.length) {
-          const sourceSegment = state.transcription[sourceIndex];
+        // 如果直接匹配失败，取最新的转写段落
+        if (!sourceSegment && state.transcription.length > 0) {
+          sourceArrayIndex = state.transcription.length - 1;
+          sourceSegment = state.transcription[sourceArrayIndex];
+        }
+        
+        if (sourceSegment) {
           sourceHtml = `
-            <div class="insight-card__source" onclick="scrollToTranscript('transcript-${sourceIndex}')">
+            <div class="insight-card__source" onclick="scrollToTranscript('transcript-${sourceArrayIndex}')">
               <span class="source-label">📌 来源</span>
               <div class="source-text">"${sourceSegment.text.substring(0, 100)}${sourceSegment.text.length > 100 ? '...' : ''}"</div>
             </div>

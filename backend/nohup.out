@@ -1,0 +1,86 @@
+nohup: ignoring input
+
+> meeting-snapshot-backend@0.1.0 start
+> ts-node-dev --respawn --transpile-only src/main.ts
+
+[INFO] 20:42:56 ts-node-dev ver. 2.0.0 (using ts-node ver. 10.9.2, typescript ver. 5.9.3)
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDatabaseModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mContextModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[ImageGenerationAdapter] [39m[32mImage Generation Adapter initialized with model: gemini-3-pro-image-preview, baseUrl: https://vip.undyingapi.com/v1beta, apiKey configured: true, apiKey prefix: sk-Qretp...[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[LLMAdapterService] [39m[32mLLM Adapter initialized with model: qwen3-max[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mImageGenModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLLMModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTingwuModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[AutoPushService] [39m[32mAutoPush initialized: interval=60000ms, defaultEnabled=true[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mQuotaModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDataExtractionModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAutoPushModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSkillModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPollerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mVisualizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAgentModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSessionModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/auth}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/register, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/login, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/me, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mQuotaController {/quota}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/quota/status, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/quota/check, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUserController {/users}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/me, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/me/meetings, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/me/meetings/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/me/meetings/:id, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSessionController {/sessions}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/health, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/transcripts, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/summaries, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/skills/:skillType, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/audio, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/upload, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/process, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/complete, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/auto-push/start, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/auto-push/stop, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/auto-push/status, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/qa, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/messages, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/visualization, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/visualizations, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/visualizations/:visId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/visualizations/:visId/image, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/agent/start, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/agent/stop, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/agent/status, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/agent/insights, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/agent/trigger, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[DatabaseService] [39m[32mSQLite database initialized at /mnt/discussion_new2/backend/data/meetmind.db[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[DatabaseService] [39m[32mDatabase tables initialized[39m
+[32m[Nest] 59199  - [39m12/26/2025, 8:43:02 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +0ms[39m
+Backend listening on port 4000
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
+[Agent] getAgentInsights: sessionId=9537cf94-5032-4dfb-ad31-b470ef92b80b, afterId=undefined, count=0
