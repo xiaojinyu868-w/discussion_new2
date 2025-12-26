@@ -2706,14 +2706,11 @@
       </div>
       <div class="form-group">
         <label>后端服务地址</label>
-        <input type="text" id="apiUrlInput" placeholder="例如: https://xxxx.ngrok-free.app">
+        <input type="text" id="apiUrlInput" placeholder="http://47.112.160.134:4000">
         <p class="form-hint">
-          💡 <strong>内网穿透说明：</strong><br>
-          如果前端部署在 Netlify，后端在本地，需要使用内网穿透工具：<br>
-          • <strong>ngrok</strong>: <code>ngrok http 4000</code><br>
-          • <strong>localtunnel</strong>: <code>lt --port 4000</code><br>
-          • <strong>cloudflared</strong>: <code>cloudflared tunnel --url http://localhost:4000</code><br>
-          获得公网地址后填入上方输入框。
+          💡 <strong>服务器地址说明：</strong><br>
+          默认后端地址：<code>http://47.112.160.134:4000</code><br>
+          如需修改，请确保服务器防火墙/安全组已开放对应端口。
         </p>
       </div>
       <div class="settings-actions">
