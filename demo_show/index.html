@@ -3207,6 +3207,10 @@
       recordingStartTime: null,
       transcription: [],
       summaries: [],
+      // 暂停前保存的转写内容（用于恢复时合并）
+      savedTranscriptionBeforePause: [],
+      savedSummariesBeforePause: [],
+      savedAgentInsightsBeforePause: [],
       autoPushInterval: null, // 保留以兼容旧代码
       mediaRecorder: null,
       mediaStream: null, // 保存 MediaStream 以便暂停后恢复
@@ -4540,6 +4544,12 @@
 
       state.isRecording = false;
       state.isPaused = false;
+      
+      // 清空暂停保存的内容（停止录音意味着会话结束）
+      state.savedTranscriptionBeforePause = [];
+      state.savedSummariesBeforePause = [];
+      state.savedAgentInsightsBeforePause = [];
+      
       stopWaveformAnimation();
       stopTimerUpdate();
       stopAutoPush(); // 停止自动推送
@@ -4602,7 +4612,12 @@
         }
         stopWaveformAnimation();
         pauseTimerUpdate(); // 暂停计时器
-        console.log('[Pause] Recording paused, MediaRecorder stopped');
+        
+        // 保存当前的转写内容和洞察，以便恢复时合并
+        state.savedTranscriptionBeforePause = [...state.transcription];
+        state.savedSummariesBeforePause = [...state.summaries];
+        state.savedAgentInsightsBeforePause = [...state.agentInsights];
+        console.log('[Pause] Recording paused, saved transcription count:', state.savedTranscriptionBeforePause.length);
       } else {
         // 恢复时：创建新的后端会话（因为通义听悟会超时断开）
         try {
@@ -4610,7 +4625,9 @@
           const res = await apiCall('POST', '/sessions', { meetingId: `meeting-${Date.now()}` });
           state.sessionId = res.sessionId;
           state.taskId = res.taskId;
-          console.log('[Resume] Created new session:', res.sessionId);
+          // 重置 lastInsightId，因为新 session 的洞察 ID 是独立的
+          state.lastInsightId = null;
+          console.log('[Resume] Created new session:', res.sessionId, 'preserved transcription count:', state.savedTranscriptionBeforePause.length);
         } catch (e) {
           console.error('[Resume] Failed to create new session:', e);
           showToast('恢复录音失败: ' + e.message, 'error');
@@ -4637,6 +4654,12 @@
           state.mediaRecorder.start(500); // 优化：500ms 发送一次，减少延迟
           startWaveformAnimation();
           resumeTimerUpdate(); // 恢复计时器
+          
+          // 重新启动 Agent（如果已开启）
+          if (state.agentEnabled) {
+            startAgent();
+          }
+          
           showToast('录音已恢复', 'success');
           console.log('[Resume] Recording resumed, new MediaRecorder created');
         }
@@ -4759,16 +4782,40 @@
         
         console.log('轮询结果:', { 
           transcriptsCount: transcripts.transcription?.length || 0, 
-          summariesCount: summaries.summaries?.length || 0 
+          summariesCount: summaries.summaries?.length || 0,
+          savedCount: state.savedTranscriptionBeforePause.length
         });
         
         if (transcripts.transcription?.length > 0) { 
-          state.transcription = transcripts.transcription; 
+          // 如果有暂停前保存的转写内容，需要合并
+          if (state.savedTranscriptionBeforePause.length > 0) {
+            // 计算时间偏移：暂停前最后一条的结束时间
+            const lastSavedItem = state.savedTranscriptionBeforePause[state.savedTranscriptionBeforePause.length - 1];
+            const timeOffset = lastSavedItem ? (lastSavedItem.endMs || lastSavedItem.startMs || 0) : 0;
+            
+            // 为新的转写内容添加时间偏移
+            const newTranscriptsWithOffset = transcripts.transcription.map(item => ({
+              ...item,
+              startMs: (item.startMs || 0) + timeOffset,
+              endMs: (item.endMs || 0) + timeOffset
+            }));
+            
+            // 合并保存的内容和新内容
+            state.transcription = [...state.savedTranscriptionBeforePause, ...newTranscriptsWithOffset];
+            console.log('[Poll] Merged transcription, total count:', state.transcription.length);
+          } else {
+            state.transcription = transcripts.transcription; 
+          }
           renderTranscription(); 
           updateVisualizationButtonState();
         }
         if (summaries.summaries) { 
-          state.summaries = summaries.summaries; 
+          // 同样合并洞察内容
+          if (state.savedSummariesBeforePause.length > 0) {
+            state.summaries = [...state.savedSummariesBeforePause, ...summaries.summaries];
+          } else {
+            state.summaries = summaries.summaries; 
+          }
           renderSummaries(); 
         }
         
@@ -5804,6 +5851,11 @@
       state.transcription = [];
       state.summaries = [];
       state.recordingStartTime = null;
+      
+      // 重置暂停保存的内容
+      state.savedTranscriptionBeforePause = [];
+      state.savedSummariesBeforePause = [];
+      state.savedAgentInsightsBeforePause = [];
       
       // V3: 重置 Agent 状态
       state.agentInsights = [];
