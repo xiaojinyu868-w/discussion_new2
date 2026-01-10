@@ -3,6 +3,8 @@ import { ConfigService } from "@nestjs/config";
 import { ContextStoreService } from "../context/context-store.service";
 import { LLMAdapterService } from "../llm/llm-adapter.service";
 
+export type ScenarioType = "classroom" | "meeting";
+
 export interface AutoAnalysisResult {
   phase: string;
   keyPoints: string[];
@@ -12,13 +14,45 @@ export interface AutoAnalysisResult {
   timestamp: Date;
 }
 
-const AUTO_ANALYSIS_PROMPT = `你是一位资深的会议分析师，负责实时监控会议状态。
+// ========== 场景化自动分析提示词 ==========
+
+// 课堂场景提示词
+const CLASSROOM_AUTO_ANALYSIS_PROMPT = `你是一位经验丰富的学习顾问，帮助学生实时理解课堂内容。
+
+任务：分析当前课堂进展，帮助学生把握学习重点。
+
+重要提示：
+1. 课堂内容来自实时转写，可能存在同音错别字或识别误差
+2. 请根据上下文逻辑，自动修正原文中可能的错别字后再进行分析
+3. 从学生学习的角度出发，提供有价值的学习建议
+
+课堂内容：
+{context}
+
+请分析：
+1. 课堂阶段（导入/讲解/举例/练习/总结）
+2. 3个核心知识点（基于修正后的内容）
+3. 容易混淆或遗漏的要点
+4. 学习建议（如何更好地理解和记忆）
+5. 可选：老师这段话的言外之意
+
+输出JSON格式（不要包含markdown代码块标记）：
+{
+  "phase": "课堂阶段",
+  "keyPoints": ["知识点1", "知识点2", "知识点3"],
+  "blindSpots": ["容易遗漏的点"],
+  "expertAdvice": "学习建议",
+  "innerOS": "老师言外之意（可选）"
+}`;
+
+// 会议场景提示词
+const MEETING_AUTO_ANALYSIS_PROMPT = `你是一位资深的会议分析师，负责实时监控会议状态。
 
 任务：分析当前会议进展，提供多维度洞察。
 
 重要提示：
 1. 会议内容来自实时转写，可能存在同音错别字或识别误差
-2. 请根据上下文逻辑，自动修正原文中可能的同音错别字（如将"部署"修正为"部署"）后再进行分析
+2. 请根据上下文逻辑，自动修正原文中可能的同音错别字后再进行分析
 3. 修正时需保持原意不变，仅修正明显的识别错误
 4. 在分析时，可以结合上下文逻辑进行合理的推断和补充
 
@@ -50,6 +84,7 @@ interface SessionAnalysis {
   intervalId: NodeJS.Timeout;
   callback: AnalysisCallback;
   enabled: boolean;
+  scenario: ScenarioType;
 }
 
 @Injectable()
@@ -84,7 +119,7 @@ export class AutoPushService implements OnModuleDestroy {
   /**
    * 开启自动分析
    */
-  startAutoAnalysis(sessionId: string, callback: AnalysisCallback): void {
+  startAutoAnalysis(sessionId: string, callback: AnalysisCallback, scenario: ScenarioType = "meeting"): void {
     if (this.sessions.has(sessionId)) {
       this.logger.warn(`Auto analysis already running for session ${sessionId}`);
       return;
@@ -98,7 +133,7 @@ export class AutoPushService implements OnModuleDestroy {
     }
 
     this.logger.log(
-      `Starting auto analysis for session ${sessionId}, interval=${this.intervalMs}ms`
+      `Starting auto analysis for session ${sessionId}, scenario=${scenario}, interval=${this.intervalMs}ms`
     );
 
     const intervalId = setInterval(async () => {
@@ -106,7 +141,7 @@ export class AutoPushService implements OnModuleDestroy {
       if (!session?.enabled) return;
 
       try {
-        const result = await this.analyze(sessionId);
+        const result = await this.analyze(sessionId, session.scenario);
         if (result) {
           await callback(sessionId, result);
         }
@@ -121,6 +156,7 @@ export class AutoPushService implements OnModuleDestroy {
       intervalId,
       callback,
       enabled: true,
+      scenario,
     });
   }
 
@@ -169,7 +205,7 @@ export class AutoPushService implements OnModuleDestroy {
   /**
    * 执行一次分析
    */
-  async analyze(sessionId: string): Promise<AutoAnalysisResult | null> {
+  async analyze(sessionId: string, scenario: ScenarioType = "meeting"): Promise<AutoAnalysisResult | null> {
     const context = this.contextStore.getFullText(sessionId);
     if (!context || context.trim().length === 0) {
       this.logger.debug(
@@ -180,16 +216,26 @@ export class AutoPushService implements OnModuleDestroy {
 
     const stats = this.contextStore.getStats(sessionId);
     this.logger.log(
-      `Running auto analysis for session ${sessionId}, ` +
+      `Running auto analysis for session ${sessionId}, scenario=${scenario}, ` +
         `segments=${stats.segmentCount}, textLength=${stats.totalTextLength}`
     );
 
-    const prompt = AUTO_ANALYSIS_PROMPT.replace("{context}", context);
+    // 根据场景选择提示词
+    const promptTemplate = scenario === "classroom" 
+      ? CLASSROOM_AUTO_ANALYSIS_PROMPT 
+      : MEETING_AUTO_ANALYSIS_PROMPT;
+    const prompt = promptTemplate.replace("{context}", context);
+
+    // 根据场景选择系统提示
+    const systemPrompt = scenario === "classroom"
+      ? "你是一个专业的学习助手，帮助学生更好地理解课堂内容。请按照要求输出JSON格式的结果。"
+      : "你是一个专业的会议分析助手，请按照要求输出JSON格式的结果。";
+
     const startTime = Date.now();
 
     try {
       const response = await this.llmAdapter.chatWithPrompt(
-        "你是一个专业的会议分析助手，请按照要求输出JSON格式的结果。",
+        systemPrompt,
         prompt,
         { temperature: 0.7, maxTokens: 1500 }
       );
@@ -234,7 +280,7 @@ export class AutoPushService implements OnModuleDestroy {
       const parsed = JSON.parse(jsonStr);
 
       return {
-        phase: parsed.phase ?? "讨论",
+        phase: parsed.phase ?? "进行中",
         keyPoints: parsed.keyPoints ?? [],
         blindSpots: parsed.blindSpots ?? [],
         expertAdvice: parsed.expertAdvice ?? "",
@@ -258,7 +304,8 @@ export class AutoPushService implements OnModuleDestroy {
    */
   toSummaryCard(
     sessionId: string,
-    result: AutoAnalysisResult
+    result: AutoAnalysisResult,
+    scenario: ScenarioType = "meeting"
   ): {
     id: string;
     type: string;
@@ -266,10 +313,11 @@ export class AutoPushService implements OnModuleDestroy {
     content: any;
     updatedAt: string;
   } {
+    const titlePrefix = scenario === "classroom" ? "课堂小结" : "会议分析";
     return {
       id: `${sessionId}-auto-${result.timestamp.getTime()}`,
       type: "auto_analysis",
-      title: `会议分析 - ${result.phase}`,
+      title: `${titlePrefix} - ${result.phase}`,
       content: {
         phase: result.phase,
         keyPoints: result.keyPoints,

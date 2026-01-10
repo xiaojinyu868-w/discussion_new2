@@ -92,6 +92,67 @@
       min-height: 100vh;
     }
 
+    /* ========== 按钮基础样式 - 精致设计 ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .btn:hover::before {
+      opacity: 1;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--aurora-cyan), var(--aurora-blue));
+      color: var(--bg-deep);
+      box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3), 0 0 0 1px rgba(0, 212, 255, 0.1) inset;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0, 212, 255, 0.4), 0 0 0 1px rgba(0, 212, 255, 0.2) inset;
+    }
+    
+    .btn-primary:active {
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(0, 212, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
     /* 极光背景效果 */
     .aurora-bg {
       position: fixed;
@@ -283,13 +344,29 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--aurora-cyan), var(--aurora-mint), var(--aurora-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
     
     .hero-subtitle { 
-      font-size: clamp(1rem, 2vw, 1.15rem); 
-      color: var(--text-secondary); 
+      font-size: clamp(1.2rem, 2.5vw, 1.5rem); 
+      color: var(--text-primary); 
       max-width: 480px;
-      font-weight: 400;
+      font-weight: 500;
+      margin-bottom: 12px;
       animation: fadeInUp 0.6s var(--ease-out) 0.2s backwards;
+    }
+
+    .hero-desc {
+      font-size: clamp(0.9rem, 1.5vw, 1rem); 
+      color: var(--text-secondary); 
+      max-width: 520px;
+      font-weight: 400;
+      animation: fadeInUp 0.6s var(--ease-out) 0.3s backwards;
     }
     
     @keyframes fadeInUp { 
@@ -344,56 +421,61 @@
       color: var(--aurora-cyan);
     }
 
-    /* ========== 录制控制栏 ========== */
+    /* ========== 录制控制栏 - 精致设计 ========== */
     .recording-bar {
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 12px 20px;
-      background: var(--bg-card);
-      backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-xl);
+      padding: 16px 24px;
+      background: linear-gradient(135deg, rgba(22, 32, 60, 0.8) 0%, rgba(30, 45, 80, 0.6) 100%);
+      backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
       margin-bottom: 24px;
-      box-shadow: var(--shadow-md);
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
     }
 
     .recording-bar__status {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 8px 16px;
-      background: var(--bg-glass);
-      border-radius: var(--radius-full);
-      font-size: 0.8rem;
+      padding: 10px 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 50px;
+      font-size: 0.85rem;
       font-weight: 500;
       color: var(--text-muted);
-      min-width: 100px;
-      transition: all var(--duration-normal) var(--ease-out);
+      min-width: 110px;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
     }
 
     .recording-bar__status.recording {
-      background: var(--color-recording-glow);
+      background: linear-gradient(135deg, rgba(255, 77, 106, 0.15), rgba(255, 51, 102, 0.1));
       color: var(--color-recording);
-      border: 1px solid rgba(255, 77, 106, 0.3);
+      border-color: rgba(255, 77, 106, 0.3);
+      box-shadow: 0 0 20px rgba(255, 77, 106, 0.15);
     }
 
     .recording-bar__status.paused {
-      background: rgba(251, 191, 36, 0.15);
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1));
       color: var(--color-warning);
-      border: 1px solid rgba(251, 191, 36, 0.3);
+      border-color: rgba(251, 191, 36, 0.3);
     }
 
     .recording-bar__status-dot {
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: currentColor;
-      transition: all var(--duration-normal) var(--ease-out);
+      transition: all 0.3s ease;
     }
 
     .recording-bar__status.recording .recording-bar__status-dot {
       animation: recording-pulse 1.2s ease-in-out infinite;
+      box-shadow: 0 0 10px currentColor;
     }
 
     @keyframes recording-pulse { 
@@ -404,60 +486,77 @@
     .recording-bar__timer {
       font-family: var(--font-mono);
       font-size: 1.75rem;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text-primary);
-      min-width: 80px;
+      min-width: 90px;
       letter-spacing: 0.02em;
+      text-shadow: 0 2px 10px rgba(0, 212, 255, 0.2);
     }
 
     .recording-bar__waveform {
       flex: 1;
-      height: 44px;
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 3px;
-      background: var(--bg-glass);
-      border-radius: var(--radius-md);
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 14px;
       overflow: hidden;
-      padding: 0 16px;
-      border: 1px solid var(--border-subtle);
+      padding: 0 20px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .waveform-bar {
       width: 3px;
       background: linear-gradient(180deg, var(--aurora-cyan), var(--aurora-mint));
-      border-radius: 2px;
+      border-radius: 3px;
       transition: height 0.08s ease;
-      opacity: 0.8;
+      opacity: 0.9;
     }
 
     .recording-bar__controls {
       display: flex;
-      gap: 10px;
+      gap: 12px;
     }
 
     .btn-control {
-      padding: 12px 24px;
-      border: 1px solid var(--border-medium);
-      border-radius: var(--radius-md);
-      background: var(--bg-glass);
+      padding: 14px 28px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
       color: var(--text-secondary);
       font-family: var(--font-body);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 500;
       cursor: pointer;
-      transition: all var(--duration-fast) var(--ease-out);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       display: flex;
       align-items: center;
       gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-control::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
     .btn-control:hover:not(:disabled) {
-      background: var(--bg-elevated);
-      border-color: var(--border-glow);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(0, 212, 255, 0.3);
       color: var(--text-primary);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-control:hover:not(:disabled)::before {
+      opacity: 1;
     }
 
     .btn-control:disabled {
@@ -470,26 +569,26 @@
       border: none;
       color: var(--bg-deep);
       font-weight: 600;
-      box-shadow: 0 4px 20px rgba(0, 212, 255, 0.25);
+      box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3), 0 0 0 1px rgba(0, 212, 255, 0.1) inset;
     }
 
     .btn-control.primary:hover:not(:disabled) {
-      box-shadow: 0 6px 30px rgba(0, 212, 255, 0.4);
-      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0, 212, 255, 0.4), 0 0 0 1px rgba(0, 212, 255, 0.2) inset;
+      transform: translateY(-3px);
     }
 
     .btn-control.primary.recording {
       background: linear-gradient(135deg, var(--color-recording), #ff3366);
-      box-shadow: 0 4px 20px rgba(255, 77, 106, 0.3);
+      box-shadow: 0 4px 20px rgba(255, 77, 106, 0.3), 0 0 0 1px rgba(255, 77, 106, 0.1) inset;
     }
 
     .btn-upload {
-      padding: 12px 20px;
+      padding: 14px 24px;
       background: transparent;
-      border: 1px dashed var(--border-medium);
-      border-radius: var(--radius-md);
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
       color: var(--text-muted);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 500;
       cursor: pointer;
       transition: all var(--duration-fast) var(--ease-out);
@@ -764,26 +863,38 @@
       .toolbar-row { grid-template-columns: 1fr; }
     }
 
-    /* ========== 面板通用样式 ========== */
+    /* ========== 面板通用样式 - 精致玻璃态 ========== */
     .panel {
-      background: var(--bg-card);
-      backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(22, 32, 60, 0.7) 0%, rgba(30, 45, 80, 0.5) 100%);
+      backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       height: 480px;
-      box-shadow: var(--shadow-md);
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 0 80px rgba(0, 212, 255, 0.03);
+      transition: all 0.3s ease;
+    }
+    
+    .panel:hover {
+      border-color: rgba(0, 212, 255, 0.15);
+      box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+        0 0 100px rgba(0, 212, 255, 0.05);
     }
 
     .panel__header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px 24px;
-      border-bottom: 1px solid var(--border-subtle);
-      background: var(--bg-glass);
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
       flex-shrink: 0;
     }
 
@@ -1662,7 +1773,7 @@
       color: var(--aurora-mint);
     }
 
-    /* ========== Toast ========== */
+    /* ========== Toast - 精致通知 ========== */
     .toast-container {
       position: fixed;
       bottom: 24px;
@@ -1674,28 +1785,309 @@
     }
 
     .toast {
-      padding: 14px 20px;
-      background: var(--bg-card-solid);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-lg);
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(22, 32, 60, 0.95), rgba(30, 45, 80, 0.95));
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
       display: flex;
       align-items: center;
       gap: 12px;
-      animation: toastSlideIn 0.4s var(--ease-spring);
-      max-width: 380px;
-      font-size: 0.85rem;
+      animation: toastSlideIn 0.5s var(--ease-spring);
+      max-width: 400px;
+      font-size: 0.9rem;
+      color: var(--text-primary);
     }
 
-    .toast.success { border-left: 3px solid var(--color-success); }
-    .toast.error { border-left: 3px solid var(--color-error); }
-    .toast.info { border-left: 3px solid var(--color-info); }
-    .toast.warning { border-left: 3px solid var(--color-warning); }
+    .toast::before {
+      content: '';
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .toast.success { 
+      border-color: rgba(0, 255, 200, 0.3);
+    }
+    .toast.success::before {
+      background: linear-gradient(135deg, rgba(0, 255, 200, 0.2), rgba(0, 212, 255, 0.2));
+      box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+    }
+    
+    .toast.error { 
+      border-color: rgba(255, 77, 106, 0.3);
+    }
+    .toast.error::before {
+      background: linear-gradient(135deg, rgba(255, 77, 106, 0.2), rgba(255, 51, 102, 0.2));
+      box-shadow: 0 0 20px rgba(255, 77, 106, 0.2);
+    }
+    
+    .toast.info { 
+      border-color: rgba(0, 212, 255, 0.3);
+    }
+    .toast.info::before {
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(59, 130, 246, 0.2));
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+    }
+    
+    .toast.warning { 
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+    .toast.warning::before {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2));
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+    }
 
     @keyframes toastSlideIn { 
-      from { opacity: 0; transform: translateX(60px) scale(0.95); } 
+      from { opacity: 0; transform: translateX(60px) scale(0.9); } 
       to { opacity: 1; transform: translateX(0) scale(1); } 
+    }
+
+
+    /* ========== 登录引导遮罩 - 全新设计 ========== */
+    .login-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1500;
+      background: radial-gradient(ellipse 120% 80% at 50% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
+                  radial-gradient(ellipse 80% 60% at 80% 80%, rgba(168, 85, 247, 0.06) 0%, transparent 40%),
+                  linear-gradient(180deg, #0a0e1a 0%, #0f1629 50%, #151d35 100%);
+      backdrop-filter: blur(30px);
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .login-overlay.show { display: flex; }
+    
+    .login-overlay-content {
+      text-align: center;
+      max-width: 560px;
+      padding: 48px 40px;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .login-overlay-visual {
+      position: relative;
+      margin-bottom: 32px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .visual-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .visual-orb.orb-1 {
+      width: 200px;
+      height: 200px;
+      background: rgba(0, 212, 255, 0.15);
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation-delay: 0s;
+    }
+    .visual-orb.orb-2 {
+      width: 150px;
+      height: 150px;
+      background: rgba(168, 85, 247, 0.12);
+      top: 0;
+      left: 20%;
+      animation-delay: -3s;
+    }
+    .visual-orb.orb-3 {
+      width: 120px;
+      height: 120px;
+      background: rgba(0, 255, 200, 0.1);
+      top: 20px;
+      right: 20%;
+      animation-delay: -5s;
+    }
+    
+    @keyframes orbFloat {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+      50% { transform: translateY(-20px) scale(1.1); opacity: 0.8; }
+    }
+    
+    .login-overlay-icon {
+      position: relative;
+      z-index: 2;
+      animation: iconPulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes iconPulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.3)); }
+      50% { transform: scale(1.05); filter: drop-shadow(0 0 40px rgba(0, 212, 255, 0.5)); }
+    }
+    
+    .login-overlay-title {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #00d4ff 0%, #00ffc8 30%, #a855f7 70%, #ff6b9d 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      animation: gradientShift 6s ease infinite;
+    }
+    
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    .login-overlay-tagline {
+      font-size: 1.1rem;
+      color: var(--aurora-cyan);
+      font-weight: 500;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    
+    .login-overlay-desc {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .login-overlay-features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+    
+    .feature-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 16px 18px;
+      text-align: left;
+      transition: all 0.3s ease;
+    }
+    .feature-card:hover {
+      background: rgba(0, 212, 255, 0.05);
+      border-color: rgba(0, 212, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .feature-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+    
+    .feature-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    
+    .feature-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+    
+    .feature-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    
+    .login-overlay-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .cta-gift {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.12), rgba(168, 85, 247, 0.12));
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 50px;
+      padding: 12px 24px;
+      animation: giftPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes giftPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.2); }
+      50% { box-shadow: 0 0 20px 5px rgba(0, 212, 255, 0.15); }
+    }
+    
+    .gift-icon {
+      font-size: 1.2rem;
+    }
+    
+    .gift-text {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+    .gift-text strong {
+      color: var(--aurora-cyan);
+      font-weight: 600;
+    }
+    
+    .login-overlay-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 48px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--aurora-cyan), var(--aurora-blue));
+      border: none;
+      border-radius: 50px;
+      color: var(--bg-deep);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 212, 255, 0.3);
+    }
+    .login-overlay-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0, 212, 255, 0.4);
+    }
+    .login-overlay-btn svg {
+      transition: transform 0.3s ease;
+    }
+    .login-overlay-btn:hover svg {
+      transform: translateX(4px);
+    }
+    
+    .login-overlay-hint {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     /* ========== 认证弹窗 ========== */
@@ -1797,6 +2189,51 @@
       margin-top: 8px;
     }
     
+    /* 认证弹窗美化 */
+    .auth-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .auth-logo {
+      margin-bottom: 16px;
+    }
+    .auth-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--aurora-cyan), var(--aurora-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+    .auth-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    
+    .auth-benefits {
+      margin-top: 20px;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(168, 85, 247, 0.05));
+      border: 1px solid rgba(0, 212, 255, 0.15);
+      border-radius: var(--radius-md);
+    }
+    .benefit-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    .benefit-item:first-child {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .benefit-icon {
+      font-size: 1rem;
+    }
+    
     .auth-hint {
       text-align: center;
       font-size: 0.75rem;
@@ -1868,7 +2305,18 @@
       padding-bottom: 16px;
       border-bottom: 1px solid var(--border-subtle);
     }
-    .profile-avatar {
+    .profile-avatar-wrapper {
+      position: relative;
+      width: 48px;
+      height: 48px;
+    }
+    .profile-avatar-img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .profile-avatar-default {
       width: 48px;
       height: 48px;
       background: var(--bg-secondary);
@@ -1896,6 +2344,116 @@
       font-size: 0.9rem;
     }
     .quota-item:last-child { border-bottom: none; }
+    .quota-item.highlight {
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(139, 92, 246, 0.1));
+      margin: 0 -12px;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      border-bottom: none;
+    }
+    .quota-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      padding: 8px;
+      background: var(--bg-glass);
+      border-radius: var(--radius-sm);
+    }
+    .btn-recharge {
+      width: 100%;
+      margin-top: 16px;
+      background: linear-gradient(135deg, var(--aurora-cyan), var(--aurora-purple));
+      border: none;
+      color: white;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+    .btn-recharge:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+    }
+    
+    /* 充值弹窗 */
+    .recharge-modal {
+      max-width: 520px;
+    }
+    .recharge-desc {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+    .recharge-packages {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .package-card {
+      background: var(--bg-glass);
+      border: 2px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--duration-fast);
+      position: relative;
+    }
+    .package-card:hover {
+      border-color: var(--aurora-cyan);
+      transform: translateY(-4px);
+    }
+    .package-card.selected {
+      border-color: var(--aurora-cyan);
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(139, 92, 246, 0.1));
+    }
+    .package-card.popular {
+      border-color: var(--aurora-purple);
+    }
+    .package-badge {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--aurora-cyan), var(--aurora-purple));
+      color: white;
+      font-size: 0.7rem;
+      padding: 4px 12px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .package-price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--aurora-cyan);
+      margin-bottom: 8px;
+    }
+    .package-name {
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+    .package-items {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .recharge-btn {
+      width: 100%;
+      padding: 14px;
+    }
+    .recharge-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .recharge-hint {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+    }
     
     /* 语言设置 */
     .language-section {
@@ -2194,21 +2752,34 @@
       animation: spin 0.8s linear infinite;
     }
 
+
     @keyframes spin { to { transform: rotate(360deg); } }
 
     #uploadInput { display: none; }
 
-    .chart-type-select {
-      width: 100%;
-      padding: 12px 14px;
+    /* 风格选择器样式 */
+    .vis-style-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .vis-style-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .vis-style-select {
+      flex: 1;
+      padding: 10px 14px;
       background: var(--bg-secondary);
       border: 1px solid var(--border-medium);
       border-radius: var(--radius-md);
       color: var(--text-primary);
       font-family: var(--font-body);
       font-size: 0.85rem;
-      margin-bottom: 12px;
-      display: none;
       outline: none;
       cursor: pointer;
       transition: all var(--duration-fast) var(--ease-out);
@@ -2220,24 +2791,24 @@
       padding-right: 36px;
     }
 
-    .chart-type-select:hover {
+    .vis-style-select:hover {
       border-color: var(--aurora-cyan);
       background-color: var(--bg-elevated);
     }
 
-    .chart-type-select:focus {
+    .vis-style-select:focus {
       border-color: var(--aurora-cyan);
       box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
     }
 
-    .chart-type-select option {
+    .vis-style-select option {
       background: var(--bg-card-solid);
       color: var(--text-primary);
       padding: 12px;
     }
 
-    .chart-type-select option:hover,
-    .chart-type-select option:checked {
+    .vis-style-select option:hover,
+    .vis-style-select option:checked {
       background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 200, 0.1));
     }
 
@@ -2425,6 +2996,263 @@
       border-color: var(--border-glow);
       box-shadow: var(--shadow-glow);
     }
+
+    /* ========== 场景选择弹窗样式 ========== */
+    .scenario-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(10, 14, 26, 0.98);
+      backdrop-filter: blur(30px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .scenario-modal.show { display: flex; }
+
+    .scenario-content {
+      max-width: 900px;
+      width: 100%;
+      text-align: center;
+      animation: scenarioFadeIn 0.5s ease-out;
+    }
+
+    @keyframes scenarioFadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .scenario-title {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--aurora-cyan), var(--aurora-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    .scenario-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 48px;
+    }
+
+    .scenario-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 768px) {
+      .scenario-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .scenario-card {
+      position: relative;
+      padding: 40px 32px;
+      background: var(--bg-card);
+      border: 2px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .scenario-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .scenario-card.classroom::before {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.08));
+    }
+
+    .scenario-card.meeting::before {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.08));
+    }
+
+    .scenario-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .scenario-card:hover::before {
+      opacity: 1;
+    }
+
+    .scenario-card.classroom:hover {
+      border-color: #F59E0B;
+    }
+
+    .scenario-card.meeting:hover {
+      border-color: #3B82F6;
+    }
+
+    .scenario-card.selected {
+      transform: translateY(-4px);
+    }
+
+    .scenario-card.selected.classroom {
+      border-color: #F59E0B;
+      box-shadow: 0 0 40px rgba(245, 158, 11, 0.3);
+    }
+
+    .scenario-card.selected.meeting {
+      border-color: #3B82F6;
+      box-shadow: 0 0 40px rgba(59, 130, 246, 0.3);
+    }
+
+    .scenario-card.selected::before {
+      opacity: 1;
+    }
+
+    .scenario-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    .scenario-card-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .scenario-card-desc {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .scenario-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .scenario-feature-tag {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .scenario-card.classroom .scenario-feature-tag {
+      background: rgba(245, 158, 11, 0.15);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .scenario-card.meeting .scenario-feature-tag {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60A5FA;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .scenario-confirm-btn {
+      padding: 16px 48px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.3s;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .scenario-confirm-btn.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .scenario-confirm-btn.classroom-active {
+      background: linear-gradient(135deg, #F59E0B, #FBBF24);
+      color: #1F2937;
+    }
+
+    .scenario-confirm-btn.meeting-active {
+      background: linear-gradient(135deg, #3B82F6, #6366F1);
+      color: white;
+    }
+
+    .scenario-confirm-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .scenario-skip {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .scenario-skip a {
+      color: var(--aurora-cyan);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .scenario-skip a:hover {
+      text-decoration: underline;
+    }
+
+    /* 场景指示器（主界面显示当前场景） */
+    .scenario-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .scenario-indicator:hover {
+      border-color: var(--aurora-cyan);
+      background: var(--bg-elevated);
+    }
+
+    .scenario-indicator.classroom {
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    .scenario-indicator.meeting {
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+
+    .scenario-indicator-icon {
+      font-size: 1rem;
+    }
+
+    .scenario-indicator-text {
+      color: var(--text-secondary);
+    }
   </style>
 </head>
 <body>
@@ -2501,11 +3329,16 @@
         <span id="connectionText">检测中...</span>
         <span class="settings-icon">⚙️</span>
       </div>
+      <div class="scenario-indicator meeting" id="scenarioIndicator" onclick="switchScenario()" title="点击切换场景">
+        <span class="scenario-indicator-icon">💼</span>
+        <span class="scenario-indicator-text">会议纪要</span>
+      </div>
       <button class="user-btn" id="userBtn" onclick="handleUserClick()">
         <span id="userBtnText">登录</span>
       </button>
     </div>
   </nav>
+
 
   <!-- Hero 区域 -->
   <section class="hero">
@@ -2513,10 +3346,12 @@
       <span>您的数字参会者 · Digital Participant</span>
     </div>
     <h1 class="hero-title">
-      MeetMind · 视界<br>
-      <span class="hero-title-gradient">不只是记录，而是真正参与</span>
+      MeetMind · <span class="gradient-text">视界</span>
     </h1>
     <p class="hero-subtitle">
+      不只是记录，而是真正参与
+    </p>
+    <p class="hero-desc">
       全程在场、深度理解、主动洞察 — 您会议中最懂行的那位
     </p>
   </section>
@@ -2565,9 +3400,9 @@
       <!-- 左栏：全息记录 -->
       <div class="panel transcript-panel resizable">
         <div class="panel__header">
-          <div class="panel__title">
+          <div class="panel__title" data-panel="transcript">
             <div class="panel__title-icon">📝</div>
-            全息记录
+            <span class="panel__title-text">全息记录</span>
             <span class="panel__count" id="transcriptCount">0</span>
           </div>
           <div class="panel__actions">
@@ -2598,9 +3433,9 @@
       <!-- 右栏：会议洞察 -->
       <div class="panel insight-panel resizable">
         <div class="panel__header">
-          <div class="panel__title">
+          <div class="panel__title" data-panel="insight">
             <div class="panel__title-icon">✨</div>
-            认知同频
+            <span class="panel__title-text">认知同频</span>
             <span class="panel__count" id="insightCount">0</span>
           </div>
         </div>
@@ -2648,19 +3483,15 @@
         <div class="toolbar-section">
           <div class="toolbar-section__title" data-i18n="toolbar.mindVisualization">思维显影</div>
           <div class="vis-section">
-            <div class="vis-type-row">
-              <button class="vis-type-btn active" data-type="chart" onclick="selectVisualizationType('chart')" data-i18n="toolbar.dataChart">📊 数据图表</button>
-              <button class="vis-type-btn" data-type="creative" onclick="selectVisualizationType('creative')" data-i18n="toolbar.creativeImage">🎨 创意图像</button>
-              <button class="vis-type-btn" data-type="poster" onclick="selectVisualizationType('poster')" data-i18n="toolbar.logicPoster">📋 逻辑海报</button>
+            <div class="vis-style-row">
+              <label class="vis-style-label">海报风格：</label>
+              <select class="vis-style-select" id="posterStyleSelect">
+                <option value="chiikawa" selected>🐻 Chiikawa 可爱风</option>
+                <option value="minimal-business">📐 极简商务风</option>
+              </select>
             </div>
-            <select class="chart-type-select" id="chartTypeSelect">
-              <option value="radar" data-i18n="toolbar.radarChart">雷达图</option>
-              <option value="flowchart" data-i18n="toolbar.flowChart">流程图</option>
-              <option value="architecture" data-i18n="toolbar.archChart">架构图</option>
-              <option value="bar" data-i18n="toolbar.barChart">柱状图</option>
-            </select>
-            <button class="vis-generate-btn" id="visGenerateBtn" onclick="generateVisualization()" disabled data-i18n="toolbar.generateVis">
-              ✨ 生成视觉化
+            <button class="vis-generate-btn" id="visGenerateBtn" onclick="generateVisualization()" disabled data-i18n="toolbar.generatePoster">
+              ✨ 生成逻辑海报
             </button>
             <div class="vis-status" id="visStatus"></div>
             <div class="vis-preview" id="visPreview" style="display: none;">
@@ -2696,6 +3527,54 @@
 
   <div class="toast-container" id="toastContainer"></div>
 
+  <!-- 场景选择弹窗 -->
+  <div class="scenario-modal" id="scenarioModal">
+    <div class="scenario-content">
+      <h1 class="scenario-title">选择你的使用场景</h1>
+      <p class="scenario-subtitle">我们将为你提供最贴合场景的智能体验</p>
+      
+      <div class="scenario-cards">
+        <!-- 课堂笔记场景 -->
+        <div class="scenario-card classroom" onclick="selectScenario('classroom')">
+          <span class="scenario-icon">📚</span>
+          <h3 class="scenario-card-title">课堂笔记</h3>
+          <p class="scenario-card-desc">
+            像学霸同学帮你划重点，捕捉老师的每一个知识点和言外之意
+          </p>
+          <div class="scenario-features">
+            <span class="scenario-feature-tag">📝 知识点提取</span>
+            <span class="scenario-feature-tag">💡 老师言外之意</span>
+            <span class="scenario-feature-tag">🎯 重点标记</span>
+            <span class="scenario-feature-tag">📖 复习笔记</span>
+          </div>
+        </div>
+        
+        <!-- 会议纪要场景 -->
+        <div class="scenario-card meeting" onclick="selectScenario('meeting')">
+          <span class="scenario-icon">💼</span>
+          <h3 class="scenario-card-title">会议纪要</h3>
+          <p class="scenario-card-desc">
+            专业高效的会议助手，精准记录每个决策和待办事项
+          </p>
+          <div class="scenario-features">
+            <span class="scenario-feature-tag">✅ 待办追踪</span>
+            <span class="scenario-feature-tag">📊 决策记录</span>
+            <span class="scenario-feature-tag">🎭 潜台词分析</span>
+            <span class="scenario-feature-tag">⚡ 灵感激发</span>
+          </div>
+        </div>
+      </div>
+      
+      <button class="scenario-confirm-btn" id="scenarioConfirmBtn" onclick="confirmScenario()">
+        开始使用
+      </button>
+      
+      <p class="scenario-skip">
+        <a onclick="skipScenarioSelection()">跳过，使用默认设置</a>
+      </p>
+    </div>
+  </div>
+
   <!-- 后端设置弹窗 -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-content settings-modal">
@@ -2724,27 +3603,130 @@
   <!-- 登录/注册弹窗 -->
   <div class="modal-overlay" id="authModal">
     <div class="modal-content auth-modal">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <svg width="40" height="40" viewBox="0 0 100 100" fill="none">
+            <defs>
+              <linearGradient id="authLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00d4ff"/>
+                <stop offset="100%" stop-color="#a855f7"/>
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="45" stroke="url(#authLogoGrad)" stroke-width="3" fill="none"/>
+            <path d="M30 50 L45 65 L70 35" stroke="url(#authLogoGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+        <h2 class="auth-title">欢迎使用 MeetMind</h2>
+        <p class="auth-subtitle">AI 驱动的智能会议助手</p>
+      </div>
       <div class="auth-tabs">
         <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">登录</button>
         <button class="auth-tab" data-tab="register" onclick="switchAuthTab('register')">注册</button>
       </div>
       <form id="authForm" onsubmit="handleAuth(event)">
         <div class="form-group">
-          <label>用户名</label>
-          <input type="text" id="authUsername" placeholder="请输入用户名" required minlength="3">
+          <label>邮箱地址</label>
+          <input type="email" id="authUsername" placeholder="请输入邮箱地址" required>
         </div>
         <div class="form-group">
           <label>密码</label>
-          <input type="password" id="authPassword" placeholder="请输入密码" required minlength="6">
+          <input type="password" id="authPassword" placeholder="请输入密码（至少6位）" required minlength="6">
         </div>
         <div class="form-group" id="confirmPasswordGroup" style="display:none;">
           <label>确认密码</label>
           <input type="password" id="authConfirmPassword" placeholder="请再次输入密码">
         </div>
         <button type="submit" class="btn btn-primary auth-submit" id="authSubmitBtn">登录</button>
-        <p class="auth-hint">内测版本，注册后即可使用</p>
+        
+        <div class="auth-benefits">
+          <div class="benefit-item">
+            <span class="benefit-icon">🎁</span>
+            <span>新用户免费获得 2 张海报生成额度</span>
+          </div>
+          <div class="benefit-item">
+            <span class="benefit-icon">🔒</span>
+            <span>数据安全加密，隐私有保障</span>
+          </div>
+        </div>
+        
+        <p class="auth-hint">注册即表示您同意我们的服务条款和隐私政策</p>
       </form>
       <button class="modal-close" onclick="closeAuthModal()">×</button>
+    </div>
+  </div>
+
+  <!-- 登录引导遮罩 -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-overlay-content">
+      <div class="login-overlay-visual">
+        <div class="visual-orb orb-1"></div>
+        <div class="visual-orb orb-2"></div>
+        <div class="visual-orb orb-3"></div>
+        <div class="login-overlay-icon">
+          <svg width="80" height="80" viewBox="0 0 100 100" fill="none">
+            <defs>
+              <linearGradient id="overlayGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00d4ff"/>
+                <stop offset="50%" stop-color="#00ffc8"/>
+                <stop offset="100%" stop-color="#a855f7"/>
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="45" stroke="url(#overlayGrad1)" stroke-width="2" fill="rgba(0,212,255,0.1)"/>
+            <circle cx="50" cy="35" r="12" fill="url(#overlayGrad1)" opacity="0.8"/>
+            <path d="M25 70 Q50 55 75 70" stroke="url(#overlayGrad1)" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <circle cx="35" cy="50" r="4" fill="#00d4ff"/>
+            <circle cx="65" cy="50" r="4" fill="#a855f7"/>
+          </svg>
+        </div>
+      </div>
+      <h2 class="login-overlay-title">MeetMind · 视界</h2>
+      <p class="login-overlay-tagline">让每一次会议都有迹可循</p>
+      <p class="login-overlay-desc">AI 驱动的智能会议助手，实时转录、深度洞察、一键生成精美海报</p>
+      
+      <div class="login-overlay-features">
+        <div class="feature-card">
+          <div class="feature-icon">🎙️</div>
+          <div class="feature-text">
+            <span class="feature-title">实时转录</span>
+            <span class="feature-desc">语音秒变文字</span>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🤖</div>
+          <div class="feature-text">
+            <span class="feature-title">AI 洞察</span>
+            <span class="feature-desc">智能分析要点</span>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <div class="feature-text">
+            <span class="feature-title">海报生成</span>
+            <span class="feature-desc">一键可视化</span>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <div class="feature-text">
+            <span class="feature-title">智能问答</span>
+            <span class="feature-desc">会议内容随问随答</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="login-overlay-cta">
+        <div class="cta-gift">
+          <span class="gift-icon">🎁</span>
+          <span class="gift-text">新用户免费体验 <strong>2 张</strong> AI 海报生成</span>
+        </div>
+        <button class="btn btn-primary login-overlay-btn" onclick="openAuthModal()">
+          <span>📧 邮箱注册 / 登录</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+        <p class="login-overlay-hint">30 秒快速注册，立即开启智能会议之旅</p>
+      </div>
     </div>
   </div>
 
@@ -2753,23 +3735,34 @@
     <div class="modal-content profile-modal">
       <h3 class="modal-title" data-i18n="profile.title">个人中心</h3>
       <div class="profile-info">
-        <div class="profile-avatar">👤</div>
+        <div class="profile-avatar-wrapper">
+          <img id="profileAvatar" class="profile-avatar-img" style="display:none;" alt="头像">
+          <div class="profile-avatar-default">👤</div>
+        </div>
         <div class="profile-name" id="profileUsername">-</div>
       </div>
       <div class="quota-section">
         <h4 data-i18n="profile.quota">配额使用情况</h4>
+        <div class="quota-item highlight">
+          <span>🎨 图片生成（本月）</span>
+          <span id="quotaImage">-/-</span>
+        </div>
         <div class="quota-item">
-          <span data-i18n="profile.aiInsight">AI 洞察</span>
+          <span>🤖 AI 洞察（今日）</span>
           <span id="quotaInsight">-/-</span>
         </div>
         <div class="quota-item">
-          <span data-i18n="profile.meetingQa">会议问答</span>
+          <span>💬 会议问答（今日）</span>
           <span id="quotaQa">-/-</span>
         </div>
         <div class="quota-item">
-          <span data-i18n="profile.imageGen">图片生成</span>
-          <span id="quotaImage">-/-</span>
+          <span>🎙️ 语音转录（今日）</span>
+          <span id="quotaTranscribe">-/-</span>
         </div>
+
+        <button class="btn btn-recharge" onclick="openRechargeModal()">
+          💎 充值获取更多额度
+        </button>
       </div>
       <div class="language-section">
         <h4 data-i18n="profile.language">语言设置</h4>
@@ -2822,6 +3815,51 @@
         </div>
       </div>
       <button class="modal-close" onclick="closeMeetingDetailModal()">×</button>
+    </div>
+  </div>
+
+  <!-- 充值弹窗 -->
+  <div class="modal-overlay" id="rechargeModal">
+    <div class="modal-content recharge-modal">
+      <h3 class="modal-title">💎 充值中心</h3>
+      <p class="recharge-desc">选择套餐，解锁更多 AI 能力</p>
+      
+      <div class="recharge-packages" id="rechargePackages">
+        <div class="package-card" data-pkg="pkg_10" onclick="selectPackage('pkg_10')">
+          <div class="package-price">¥10</div>
+          <div class="package-name">入门套餐</div>
+          <div class="package-items">
+            <div>🎨 12张 图片生成</div>
+            <div>🤖 200次 AI洞察</div>
+            <div>💬 200次 问答</div>
+          </div>
+        </div>
+        <div class="package-card popular" data-pkg="pkg_30" onclick="selectPackage('pkg_30')">
+          <div class="package-badge">推荐</div>
+          <div class="package-price">¥30</div>
+          <div class="package-name">标准套餐</div>
+          <div class="package-items">
+            <div>🎨 40张 图片生成</div>
+            <div>🤖 700次 AI洞察</div>
+            <div>💬 700次 问答</div>
+          </div>
+        </div>
+        <div class="package-card" data-pkg="pkg_100" onclick="selectPackage('pkg_100')">
+          <div class="package-price">¥100</div>
+          <div class="package-name">专业套餐</div>
+          <div class="package-items">
+            <div>🎨 150张 图片生成</div>
+            <div>🤖 2500次 AI洞察</div>
+            <div>💬 2500次 问答</div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary recharge-btn" id="rechargeBtn" onclick="handleRecharge()" disabled>
+        选择套餐后支付
+      </button>
+      <p class="recharge-hint">⚠️ 内测阶段，充值功能即将开放</p>
+      <button class="modal-close" onclick="closeRechargeModal()">×</button>
     </div>
   </div>
 
@@ -3196,6 +4234,144 @@
       return value || key;
     }
 
+    // ========== 场景配置 (Scenario Config) ==========
+    const SCENARIO_CONFIGS = {
+      classroom: {
+        id: 'classroom',
+        name: '课堂笔记',
+        icon: '📚',
+        description: '像学霸同学帮你划重点',
+        color: {
+          primary: '#F59E0B',
+          secondary: '#FBBF24',
+          bg: 'rgba(245, 158, 11, 0.1)'
+        },
+        // UI 文案适配
+        ui: {
+          heroTitle: 'StudyMind · 学霸',
+          heroSubtitle: '不只是记录，而是真正学会',
+          heroDesc: '捕捉重点、理解深意、智能笔记 — 你的AI学习伙伴',
+          heroBadge: '你的AI学习伙伴 · Study Buddy',
+          panelTranscript: '📝 课堂实录',
+          panelInsight: '✨ 学习洞察',
+          startBtn: '🎧 开始听课',
+          stopBtn: '结束听课',
+          emptyTranscript: '开始听课后，老师讲的内容将实时显示',
+          emptyInsight: '触发 AI 分析后，学习洞察将显示在这里',
+          qaWelcome: '👋 有不懂的随时问我，我会基于课堂内容帮你解答',
+          qaPlaceholder: '这节课哪里没听懂？问我...',
+        },
+        // 技能配置
+        skills: {
+          inner_os: {
+            name: '老师言外之意',
+            icon: '🎓',
+            description: '解读老师真正想强调的重点'
+          },
+          brainstorm: {
+            name: '知识拓展',
+            icon: '🌟',
+            description: '基于课堂内容进行知识延伸'
+          },
+          stop_talking: {
+            name: '重点回顾',
+            icon: '📌',
+            description: '帮你梳理本节课的核心要点'
+          }
+        },
+        // 洞察类型配置
+        insightTypes: {
+          inner_os: { title: '老师言外之意', icon: '🎓', color: '#F59E0B' },
+          brainstorm: { title: '知识拓展', icon: '🌟', color: '#10B981' },
+          stop_talking: { title: '重点回顾', icon: '📌', color: '#8B5CF6' },
+          auto_analysis: { title: '课堂小结', icon: '📖', color: '#00ffc8' },
+          data_mention: { title: '关键数据', icon: '📊', color: '#3B82F6' },
+          decision_point: { title: '重要结论', icon: '✅', color: '#10B981' },
+        },
+        // 功能开关
+        features: {
+          impliedMeaning: true,      // 老师言外之意解读
+          knowledgeExpansion: true,  // 知识拓展
+          keyPointReview: true,      // 重点回顾
+          todoTracking: false,       // 待办追踪（课堂不需要）
+          decisionTracking: false,   // 决策追踪（课堂不需要）
+        }
+      },
+      meeting: {
+        id: 'meeting',
+        name: '会议纪要',
+        icon: '💼',
+        description: '专业高效，直击要点',
+        color: {
+          primary: '#3B82F6',
+          secondary: '#6366F1',
+          bg: 'rgba(59, 130, 246, 0.1)'
+        },
+        // UI 文案适配
+        ui: {
+          heroTitle: 'MeetMind · 视界',
+          heroSubtitle: '不只是记录，而是真正参与',
+          heroDesc: '全程在场、深度理解、主动洞察 — 您会议中最懂行的那位',
+          heroBadge: '您的数字参会者 · Digital Participant',
+          panelTranscript: '📝 全息记录',
+          panelInsight: '✨ 认知同频',
+          startBtn: '🎙️ 开始会议',
+          stopBtn: '结束会议',
+          emptyTranscript: '开始录音后，转写内容将实时显示',
+          emptyInsight: '触发 AI 技能后，洞察将显示在这里',
+          qaWelcome: '👋 有问题随时问我，我会基于会议内容为你解答',
+          qaPlaceholder: '输入问题...',
+        },
+        // 技能配置
+        skills: {
+          inner_os: {
+            name: '潜台词分析',
+            icon: '🎭',
+            description: '识别话外音和未说出口的想法'
+          },
+          brainstorm: {
+            name: '破局灵感',
+            icon: '⚡',
+            description: '乔布斯式的颠覆性创意建议'
+          },
+          stop_talking: {
+            name: '议程守护',
+            icon: '🎯',
+            description: '确保讨论聚焦于核心议题'
+          }
+        },
+        // 洞察类型配置
+        insightTypes: {
+          inner_os: { title: '潜台词', icon: '🎭', color: '#00d4ff' },
+          brainstorm: { title: '灵感', icon: '⚡', color: '#fbbf24' },
+          stop_talking: { title: '聚焦', icon: '🎯', color: '#ff6b9d' },
+          auto_analysis: { title: '洞察', icon: '✨', color: '#00ffc8' },
+          data_mention: { title: '数据洞察', icon: '📊', color: '#3B82F6' },
+          decision_point: { title: '决策记录', icon: '✅', color: '#10B981' },
+        },
+        // 功能开关
+        features: {
+          impliedMeaning: true,      // 潜台词分析
+          knowledgeExpansion: false, // 知识拓展（会议不需要）
+          keyPointReview: false,     // 重点回顾（会议不需要）
+          todoTracking: true,        // 待办追踪
+          decisionTracking: true,    // 决策追踪
+        }
+      }
+    };
+
+    // 获取当前场景配置
+    function getScenarioConfig() {
+      const scenarioId = state.scenario || 'meeting';
+      return SCENARIO_CONFIGS[scenarioId] || SCENARIO_CONFIGS.meeting;
+    }
+
+    // 获取场景化的洞察类型配置
+    function getInsightType(type) {
+      const config = getScenarioConfig();
+      return config.insightTypes[type] || { title: type, icon: '💡', color: '#00d4ff' };
+    }
+
     // ========== State ==========
     const state = {
       sessionId: null,
@@ -3216,14 +4392,15 @@
       mediaStream: null, // 保存 MediaStream 以便暂停后恢复
       // 网络模式：自动检测当前访问的主机地址，支持局域网访问
       apiBaseUrl: localStorage.getItem('apiBaseUrl') || getDefaultApiUrl(),
-      currentVisualizationType: 'chart',
-      currentChartType: 'radar',
       // V3 Agent 状态
       agentEnabled: true,
       agentPollingInterval: null,
       agentInsights: [],
       lastInsightId: null,
       transcriptInsightMap: {}, // 转写ID -> 洞察ID 映射
+      // 场景状态
+      scenario: localStorage.getItem('scenario') || null, // 'classroom' | 'meeting' | null
+      scenarioSelected: false, // 本次会话是否已选择场景
       // 用户认证状态
       user: JSON.parse(localStorage.getItem('user') || 'null'),
       token: localStorage.getItem('token') || null,
@@ -3295,7 +4472,7 @@
       uploadBtn: $('uploadBtn'),
       visGenerateBtn: $('visGenerateBtn'),
       visStatus: $('visStatus'),
-      chartTypeSelect: $('chartTypeSelect'),
+      posterStyleSelect: $('posterStyleSelect'),
       visualizationList: $('visualizationList'),
       downloadDropdown: $('downloadDropdown'),
       // V3 Agent 元素
@@ -3314,11 +4491,201 @@
       initAuth(); // 初始化认证状态
       initSidebar(); // 初始化侧边栏
       initLanguage(); // 初始化语言设置
+      initScenario(); // 初始化场景
       
       // 检查后端配置
       if (checkBackendConfig()) {
         testConnection();
       }
+    }
+
+    // ========== 场景选择函数 ==========
+    function initScenario() {
+      // 如果已有保存的场景，应用它
+      if (state.scenario) {
+        applyScenario(state.scenario);
+      }
+    }
+
+    // 显示场景选择弹窗
+    function showScenarioModal() {
+      const modal = $('scenarioModal');
+      modal.classList.add('show');
+      state.scenarioSelected = false;
+      
+      // 重置选择状态
+      document.querySelectorAll('.scenario-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      const btn = $('scenarioConfirmBtn');
+      btn.classList.remove('active', 'classroom-active', 'meeting-active');
+    }
+
+    // 隐藏场景选择弹窗
+    function hideScenarioModal() {
+      const modal = $('scenarioModal');
+      modal.classList.remove('show');
+    }
+
+    // 选择场景
+    function selectScenario(scenarioId) {
+      // 更新卡片选中状态
+      document.querySelectorAll('.scenario-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      document.querySelector(`.scenario-card.${scenarioId}`).classList.add('selected');
+      
+      // 更新确认按钮状态
+      const btn = $('scenarioConfirmBtn');
+      btn.classList.remove('classroom-active', 'meeting-active');
+      btn.classList.add('active', `${scenarioId}-active`);
+      
+      // 临时保存选择
+      state.pendingScenario = scenarioId;
+    }
+
+    // 确认场景选择
+    function confirmScenario() {
+      if (!state.pendingScenario) return;
+      
+      state.scenario = state.pendingScenario;
+      state.scenarioSelected = true;
+      localStorage.setItem('scenario', state.scenario);
+      
+      applyScenario(state.scenario);
+      hideScenarioModal();
+      
+      showToast(`已切换到${getScenarioConfig().name}模式`, 'success');
+    }
+
+    // 跳过场景选择（使用默认会议模式）
+    function skipScenarioSelection() {
+      state.scenario = 'meeting';
+      state.scenarioSelected = true;
+      localStorage.setItem('scenario', state.scenario);
+      
+      applyScenario(state.scenario);
+      hideScenarioModal();
+    }
+
+    // 应用场景配置到 UI
+    function applyScenario(scenarioId) {
+      const config = SCENARIO_CONFIGS[scenarioId];
+      if (!config) return;
+      
+      // 更新 Hero 区域
+      const heroBadge = document.querySelector('.hero-badge span');
+      const heroTitle = document.querySelector('.hero-title');
+      const heroSubtitle = document.querySelector('.hero-subtitle');
+      const heroDesc = document.querySelector('.hero-desc');
+      
+      if (heroBadge) heroBadge.textContent = config.ui.heroBadge;
+      if (heroTitle) {
+        // 保持渐变效果的标题
+        const parts = config.ui.heroTitle.split(' · ');
+        heroTitle.innerHTML = `${parts[0]} · <span class="gradient-text">${parts[1] || ''}</span>`;
+      }
+      if (heroSubtitle) heroSubtitle.textContent = config.ui.heroSubtitle;
+      if (heroDesc) heroDesc.textContent = config.ui.heroDesc;
+      
+      // 更新面板标题（只更新文本部分）
+      const transcriptTitleText = document.querySelector('.panel__title[data-panel="transcript"] .panel__title-text');
+      const insightTitleText = document.querySelector('.panel__title[data-panel="insight"] .panel__title-text');
+      const transcriptTitleIcon = document.querySelector('.panel__title[data-panel="transcript"] .panel__title-icon');
+      const insightTitleIcon = document.querySelector('.panel__title[data-panel="insight"] .panel__title-icon');
+      
+      if (transcriptTitleText) {
+        const parts = config.ui.panelTranscript.split(' ');
+        if (transcriptTitleIcon && parts.length > 1) {
+          transcriptTitleIcon.textContent = parts[0];
+          transcriptTitleText.textContent = parts.slice(1).join(' ');
+        } else {
+          transcriptTitleText.textContent = config.ui.panelTranscript;
+        }
+      }
+      if (insightTitleText) {
+        const parts = config.ui.panelInsight.split(' ');
+        if (insightTitleIcon && parts.length > 1) {
+          insightTitleIcon.textContent = parts[0];
+          insightTitleText.textContent = parts.slice(1).join(' ');
+        } else {
+          insightTitleText.textContent = config.ui.panelInsight;
+        }
+      }
+      
+      // 更新录音按钮文字
+      const recordBtnText = $('recordBtnText');
+      if (recordBtnText && !state.isRecording) {
+        recordBtnText.textContent = config.ui.startBtn;
+      }
+      
+      // 更新空状态提示
+      const transcriptEmpty = document.querySelector('#transcriptEmptyState .empty-state__text');
+      const insightEmpty = document.querySelector('#insightEmptyState .empty-state__text');
+      if (transcriptEmpty) transcriptEmpty.textContent = config.ui.emptyTranscript;
+      if (insightEmpty) insightEmpty.textContent = config.ui.emptyInsight;
+      
+      // 更新技能按钮
+      updateSkillButtons(config);
+      
+      // 更新问答区域
+      const qaWelcome = document.querySelector('.qa-welcome');
+      const qaInput = $('qaInput');
+      if (qaWelcome) qaWelcome.innerHTML = config.ui.qaWelcome;
+      if (qaInput) qaInput.placeholder = config.ui.qaPlaceholder;
+      
+      // 更新场景指示器（如果存在）
+      updateScenarioIndicator(scenarioId);
+      
+      // 更新 CSS 变量以应用主题色
+      document.documentElement.style.setProperty('--scenario-primary', config.color.primary);
+      document.documentElement.style.setProperty('--scenario-secondary', config.color.secondary);
+    }
+
+    // 更新技能按钮
+    function updateSkillButtons(config) {
+      const skillInnerOS = $('skillInnerOS');
+      const skillBrainstorm = $('skillBrainstorm');
+      const skillStopTalking = $('skillStopTalking');
+      
+      if (skillInnerOS) {
+        const skill = config.skills.inner_os;
+        skillInnerOS.querySelector('.skill-btn__icon').textContent = skill.icon;
+        skillInnerOS.querySelector('.skill-btn__name').textContent = skill.name;
+        skillInnerOS.title = skill.description;
+      }
+      
+      if (skillBrainstorm) {
+        const skill = config.skills.brainstorm;
+        skillBrainstorm.querySelector('.skill-btn__icon').textContent = skill.icon;
+        skillBrainstorm.querySelector('.skill-btn__name').textContent = skill.name;
+        skillBrainstorm.title = skill.description;
+      }
+      
+      if (skillStopTalking) {
+        const skill = config.skills.stop_talking;
+        skillStopTalking.querySelector('.skill-btn__icon').textContent = skill.icon;
+        skillStopTalking.querySelector('.skill-btn__name').textContent = skill.name;
+        skillStopTalking.title = skill.description;
+      }
+    }
+
+    // 更新场景指示器
+    function updateScenarioIndicator(scenarioId) {
+      const indicator = $('scenarioIndicator');
+      if (!indicator) return;
+      
+      const config = SCENARIO_CONFIGS[scenarioId];
+      indicator.className = `scenario-indicator ${scenarioId}`;
+      indicator.innerHTML = `
+        <span class="scenario-indicator-icon">${config.icon}</span>
+        <span class="scenario-indicator-text">${config.name}</span>
+      `;
+    }
+
+    // 切换场景（从指示器点击）
+    function switchScenario() {
+      showScenarioModal();
     }
 
     // ========== Sidebar Functions ==========
@@ -3681,18 +5048,20 @@
       state.transcription = [];
       state.summaries = [];
       state.agentInsights = [];
+      state.scenarioSelected = false; // 重置场景选择状态
       
       // 清空UI
+      const config = getScenarioConfig();
       elements.transcriptionList.innerHTML = `
         <div class="empty-state" id="transcriptEmptyState">
           <div class="empty-state__icon">🎤</div>
-          <p class="empty-state__text">开始录音后，转写内容将实时显示</p>
+          <p class="empty-state__text">${config.ui.emptyTranscript}</p>
         </div>
       `;
       elements.summaryList.innerHTML = `
         <div class="empty-state" id="insightEmptyState">
           <div class="empty-state__icon">💡</div>
-          <p class="empty-state__text">触发 AI 技能后，洞察将显示在这里</p>
+          <p class="empty-state__text">${config.ui.emptyInsight}</p>
         </div>
         <div id="visualizationList"></div>
       `;
@@ -3701,7 +5070,9 @@
       elements.downloadDropdown.style.display = 'none';
       
       closeSidebar();
-      showToast('已创建新会议，点击录音按钮开始', 'info');
+      
+      // 显示场景选择弹窗
+      showScenarioModal();
     }
 
     // ========== Auth Functions ==========
@@ -3710,12 +5081,40 @@
         updateUserUI();
         fetchQuota();
         loadSidebarMeetings(); // 登录状态下加载会议列表
+        hideLoginOverlay();
+      } else {
+        // 未登录时显示登录引导
+        showLoginOverlay();
       }
+    }
+
+    // 显示登录引导遮罩
+    function showLoginOverlay() {
+      const overlay = $('loginOverlay');
+      if (overlay) overlay.classList.add('show');
+    }
+
+    // 隐藏登录引导遮罩
+    function hideLoginOverlay() {
+      const overlay = $('loginOverlay');
+      if (overlay) overlay.classList.remove('show');
+    }
+
+    // 显示登录提示（用于功能按钮点击时）
+    function showLoginRequired(action) {
+      const msg = state.language === 'zh' 
+        ? `请先登录后再${action}` 
+        : `Please login to ${action}`;
+      showToast(msg, 'warning');
+      openAuthModal();
     }
 
     function updateUserUI() {
       if (state.user) {
-        elements.userBtnText.textContent = state.user.username;
+        // 优先显示昵称，其次是用户名
+        const displayName = state.user.nickname || state.user.username;
+        elements.userBtnText.textContent = displayName;
+        hideLoginOverlay();
       } else {
         elements.userBtnText.textContent = t('nav.login');
       }
@@ -3777,7 +5176,24 @@
 
     function openProfileModal() {
       $('profileModal').classList.add('show');
-      $('profileUsername').textContent = state.user?.username || '-';
+      // 显示昵称或用户名
+      const displayName = state.user?.nickname || state.user?.username || '-';
+      $('profileUsername').textContent = displayName;
+      
+      // 如果有头像，显示头像
+      const avatarImg = $('profileAvatar');
+      const avatarDefault = document.querySelector('.profile-avatar-default');
+      if (state.user?.avatar_url) {
+        if (avatarImg) {
+          avatarImg.src = state.user.avatar_url;
+          avatarImg.style.display = 'block';
+        }
+        if (avatarDefault) avatarDefault.style.display = 'none';
+      } else {
+        if (avatarImg) avatarImg.style.display = 'none';
+        if (avatarDefault) avatarDefault.style.display = 'flex';
+      }
+      
       updateQuotaDisplay();
       fetchMeetings();
     }
@@ -3851,6 +5267,7 @@
       localStorage.removeItem('token');
       updateUserUI();
       closeProfileModal();
+      showLoginOverlay(); // 退出后显示登录引导
       showToast(t('auth.logoutSuccess'), 'info');
     }
 
@@ -4017,16 +5434,6 @@
       if (meetingTabs[1]) meetingTabs[1].textContent = t('meetingDetail.insights');
       if (meetingTabs[2]) meetingTabs[2].textContent = t('meetingDetail.visualizations');
       
-      // 更新图表类型选择器
-      const chartTypeSelect = $('chartTypeSelect');
-      if (chartTypeSelect) {
-        const options = chartTypeSelect.querySelectorAll('option');
-        if (options[0]) options[0].textContent = t('toolbar.radarChart');
-        if (options[1]) options[1].textContent = t('toolbar.flowChart');
-        if (options[2]) options[2].textContent = t('toolbar.archChart');
-        if (options[3]) options[3].textContent = t('toolbar.barChart');
-      }
-      
       // 更新问答输入框 placeholder
       const qaInput = $('qaInput');
       if (qaInput) qaInput.placeholder = t('toolbar.inputQuestion');
@@ -4073,6 +5480,71 @@
       $('quotaInsight').textContent = `${state.quota.dailyInsight.used}/${state.quota.dailyInsight.limit}`;
       $('quotaQa').textContent = `${state.quota.dailyQa.used}/${state.quota.dailyQa.limit}`;
       $('quotaImage').textContent = `${state.quota.monthlyImage.used}/${state.quota.monthlyImage.limit}`;
+      // 转录配额（如果有）
+      const transcribeEl = $('quotaTranscribe');
+      if (transcribeEl && state.quota.dailyTranscribe) {
+        transcribeEl.textContent = `${state.quota.dailyTranscribe.used}/${state.quota.dailyTranscribe.limit}`;
+      }
+    }
+
+    // ========== 充值功能 ==========
+    let selectedPackage = null;
+
+    function openRechargeModal() {
+      $('rechargeModal').classList.add('show');
+      selectedPackage = null;
+      document.querySelectorAll('.package-card').forEach(c => c.classList.remove('selected'));
+      $('rechargeBtn').disabled = true;
+      $('rechargeBtn').textContent = '选择套餐后支付';
+    }
+
+    function closeRechargeModal() {
+      $('rechargeModal').classList.remove('show');
+    }
+
+    function selectPackage(pkgId) {
+      selectedPackage = pkgId;
+      document.querySelectorAll('.package-card').forEach(c => {
+        c.classList.toggle('selected', c.dataset.pkg === pkgId);
+      });
+      const prices = { pkg_10: 10, pkg_30: 30, pkg_100: 100 };
+      $('rechargeBtn').disabled = false;
+      $('rechargeBtn').textContent = `立即支付 ¥${prices[pkgId]}`;
+    }
+
+    async function handleRecharge() {
+      if (!selectedPackage) {
+        showToast('请先选择套餐', 'warning');
+        return;
+      }
+      
+      // TODO: 对接实际支付系统
+      // 目前显示提示
+      showToast('支付功能即将开放，敬请期待！', 'info');
+      
+      // 内测阶段可以直接增加配额（测试用）
+      // try {
+      //   const response = await fetch(`${state.apiBaseUrl}/quota/recharge`, {
+      //     method: 'POST',
+      //     headers: { 
+      //       'Content-Type': 'application/json',
+      //       'Authorization': `Bearer ${state.token}`,
+      //       ...getNgrokHeaders() 
+      //     },
+      //     body: JSON.stringify({ packageId: selectedPackage }),
+      //   });
+      //   const data = await response.json();
+      //   if (data.success) {
+      //     showToast(data.message, 'success');
+      //     state.quota = data.quota;
+      //     updateQuotaDisplay();
+      //     closeRechargeModal();
+      //   } else {
+      //     showToast(data.message || '充值失败', 'error');
+      //   }
+      // } catch (error) {
+      //   showToast('充值失败: ' + error.message, 'error');
+      // }
     }
 
     async function fetchMeetings() {
@@ -4458,6 +5930,12 @@
     }
 
     async function startRecording() {
+      // 强制登录检查
+      if (!state.token || !state.user) {
+        showLoginRequired('开始录音');
+        return;
+      }
+
       if (!state.isConnected) {
         showToast(t('toast.connectBackendFirst'), 'error');
         return;
@@ -4901,23 +6379,24 @@
       return merged;
     }
 
-    // 洞察卡片类型配置
-    const INSIGHT_TYPES = {
-      inner_os: { title: '潜台词', icon: '🔮', color: 'var(--color-inner-os)' },
-      brainstorm: { title: '灵感', icon: '⚡', color: 'var(--color-brainstorm)' },
-      stop_talking: { title: '聚焦', icon: '🎯', color: 'var(--color-stop-talking)' },
-      auto_analysis: { title: '洞察', icon: '✨', color: 'var(--color-auto-analysis)' }
-    };
+    // 洞察卡片类型配置 - 使用场景化配置
+    function getInsightTypeConfig(type) {
+      const config = getScenarioConfig();
+      return config.insightTypes[type] || { title: type, icon: '💡', color: 'var(--color-auto-analysis)' };
+    }
 
     function renderSummaries() {
       // 计算总数：手动技能洞察 + Agent 洞察
       const totalCount = state.summaries.length + state.agentInsights.length;
       elements.insightCount.textContent = totalCount;
       
+      const scenarioConfig = getScenarioConfig();
+      
       console.log('renderSummaries called:', { 
         summaries: state.summaries.length, 
         agentInsights: state.agentInsights.length,
-        totalCount 
+        totalCount,
+        scenario: state.scenario
       });
       
       // 如果没有任何内容，显示空状态（但不清除已有的 Agent 洞察 DOM）
@@ -4929,7 +6408,7 @@
           elements.summaryList.innerHTML = `
             <div class="empty-state" id="insightEmptyState">
               <div class="empty-state__icon">💡</div>
-              <p class="empty-state__text">触发 AI 技能后，洞察将显示在这里</p>
+              <p class="empty-state__text">${scenarioConfig.ui.emptyInsight}</p>
             </div>
             <div id="visualizationList"></div>
           `;
@@ -4955,9 +6434,9 @@
         elements.summaryList.insertBefore(manualInsightsContainer, elements.summaryList.firstChild);
       }
       
-      // 渲染手动技能洞察
+      // 渲染手动技能洞察（使用场景化配置）
       const html = state.summaries.map(card => {
-        const typeInfo = INSIGHT_TYPES[card.type] || INSIGHT_TYPES.auto_analysis;
+        const typeInfo = getInsightTypeConfig(card.type);
         const content = formatInsightContent(card.content, card.type);
         const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
         
@@ -5169,7 +6648,12 @@
       if (!state.sessionId) { showToast(t('toast.startRecordFirst'), 'error'); return; }
 
       const names = { inner_os: 'InnerOS', brainstorm: 'Brainstorm', stop_talking: 'StopTalking' };
-      const displayNames = { inner_os: '潜台词', brainstorm: '灵感', stop_talking: '聚焦' };
+      const config = getScenarioConfig();
+      const displayNames = {
+        inner_os: config.skills.inner_os.name,
+        brainstorm: config.skills.brainstorm.name,
+        stop_talking: config.skills.stop_talking.name
+      };
       const statusEl = $(`skill${names[skill]}Status`);
       const btnEl = $(`skill${names[skill]}`);
       
@@ -5180,16 +6664,19 @@
       statusEl.innerHTML = '<div class="spinner"></div>';
 
       try {
-        const response = await apiCall('POST', `/sessions/${state.sessionId}/skills/${skill}`);
+        // 传递场景参数到后端
+        const response = await apiCall('POST', `/sessions/${state.sessionId}/skills/${skill}`, {
+          scenario: state.scenario || 'meeting'
+        });
         if (response.cards?.length) {
           state.summaries = [...state.summaries, ...response.cards];
           renderSummaries();
         }
         statusEl.textContent = '✓';
-        showToast(`${displayNames[skill]} ${t('toast.analysisDone')}`, 'success');
+        showToast(`${displayNames[skill]} 分析完成`, 'success');
       } catch (error) {
         statusEl.textContent = '⚠️';
-        showToast(`${displayNames[skill]} ${t('toast.analysisFailed')}: ${error.message}`, 'error');
+        showToast(`${displayNames[skill]} 分析失败: ${error.message}`, 'error');
       } finally {
         btnEl.disabled = false;
         btnEl.classList.remove('loading');
@@ -5343,7 +6830,12 @@
       card.dataset.type = insight.type;
       card.dataset.insightId = insight.id;
 
-      const typeIcons = {
+      // 使用场景化配置获取图标和标签
+      const scenarioConfig = getScenarioConfig();
+      const insightTypeConfig = scenarioConfig.insightTypes[insight.type];
+      
+      // 默认配置（用于未在场景配置中定义的类型）
+      const defaultTypeIcons = {
         'data_chart': '📊',
         'chart_generated': '📊',
         'skill_result': '🎭',
@@ -5354,19 +6846,19 @@
         'periodic_summary': '📋'
       };
 
-      const typeLabels = {
-        'data_chart': '数据洞察',
+      const defaultTypeLabels = {
+        'data_chart': state.scenario === 'classroom' ? '关键数据' : '数据洞察',
         'chart_generated': '数据图表',
         'skill_result': 'AI技能',
         'visualization_generated': '视觉化',
-        'focus_reminder': '聚焦提醒',
-        'redundancy_hint': '冗余提示',
-        'decision_record': '决策记录',
-        'periodic_summary': '阶段总结'
+        'focus_reminder': state.scenario === 'classroom' ? '学习提醒' : '聚焦提醒',
+        'redundancy_hint': state.scenario === 'classroom' ? '知识盲点' : '冗余提示',
+        'decision_record': state.scenario === 'classroom' ? '重要结论' : '决策记录',
+        'periodic_summary': state.scenario === 'classroom' ? '课堂小结' : '阶段总结'
       };
 
-      const icon = typeIcons[insight.type] || '💡';
-      const label = typeLabels[insight.type] || '智能洞察';
+      const icon = insightTypeConfig?.icon || defaultTypeIcons[insight.type] || '💡';
+      const label = insightTypeConfig?.title || defaultTypeLabels[insight.type] || '智能洞察';
 
       // 处理 content 对象
       const content = insight.content || {};
@@ -5437,35 +6929,46 @@
         }
       }
 
-      // 技能结果特殊处理（认知转译、破局灵感等）
+      // 技能结果特殊处理（根据场景显示不同文案）
       let skillContentHtml = '';
       if (insight.type === 'skill_result') {
         const skillType = content.skillType;
+        const skillConfig = scenarioConfig.skills[skillType];
+        const isClassroom = state.scenario === 'classroom';
+        
         if (skillType === 'inner_os' && content.quote) {
+          const innerOsLabel = isClassroom ? '🎓 老师言外之意' : '🎭 潜台词分析';
+          const emotionLabel = isClassroom ? '教学意图' : '情绪';
           skillContentHtml = `
-            <div class="skill-content" style="margin-top: 8px; padding: 12px; background: rgba(139, 92, 246, 0.1); border-radius: 8px;">
-              <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">💬 原话</div>
+            <div class="skill-content" style="margin-top: 8px; padding: 12px; background: ${isClassroom ? 'rgba(245, 158, 11, 0.1)' : 'rgba(139, 92, 246, 0.1)'}; border-radius: 8px;">
+              <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">💬 ${isClassroom ? '老师原话' : '原话'}</div>
               <div style="font-style: italic; margin-bottom: 8px;">"${content.quote}"</div>
-              <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">🎭 认知转译</div>
-              <div style="color: var(--aurora-purple);">${content.innerThought || ''}</div>
-              ${content.emotion ? `<div style="margin-top: 4px; font-size: 12px; color: var(--text-muted);">情绪: ${content.emotion}</div>` : ''}
+              <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">${innerOsLabel}</div>
+              <div style="color: ${isClassroom ? 'var(--color-warning)' : 'var(--aurora-purple)'};">${content.innerThought || ''}</div>
+              ${content.emotion ? `<div style="margin-top: 4px; font-size: 12px; color: var(--text-muted);">${emotionLabel}: ${content.emotion}</div>` : ''}
             </div>
           `;
         } else if (skillType === 'brainstorm' && content.idea) {
+          const brainstormLabel = isClassroom ? '🌟 知识拓展' : '💡 破局灵感';
+          const rationaleLabel = isClassroom ? '为什么重要' : '乔布斯式解释';
+          const challengeLabel = isClassroom ? '思考题' : '挑战';
           skillContentHtml = `
-            <div class="skill-content" style="margin-top: 8px; padding: 12px; background: rgba(251, 191, 36, 0.1); border-radius: 8px;">
-              <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">💡 破局灵感</div>
-              <div style="color: var(--color-warning); font-weight: 500; margin-bottom: 8px;">${content.idea}</div>
-              ${content.rationale ? `<div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">📖 ${content.rationale}</div>` : ''}
-              ${content.challenge ? `<div style="font-size: 12px; color: var(--text-muted);">🎯 挑战: ${content.challenge}</div>` : ''}
+            <div class="skill-content" style="margin-top: 8px; padding: 12px; background: ${isClassroom ? 'rgba(16, 185, 129, 0.1)' : 'rgba(251, 191, 36, 0.1)'}; border-radius: 8px;">
+              <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 4px;">${brainstormLabel}</div>
+              <div style="color: ${isClassroom ? 'var(--color-success)' : 'var(--color-warning)'}; font-weight: 500; margin-bottom: 8px;">${content.idea}</div>
+              ${content.rationale ? `<div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">📖 ${rationaleLabel}: ${content.rationale}</div>` : ''}
+              ${content.challenge ? `<div style="font-size: 12px; color: var(--text-muted);">🎯 ${challengeLabel}: ${content.challenge}</div>` : ''}
             </div>
           `;
         } else if (skillType === 'stop_talking') {
+          const topicLabel = isClassroom ? '本节课主题' : '主题';
+          const deviationLabel = isClassroom ? '需要注意' : '偏离';
+          const reminderLabel = isClassroom ? '学习建议' : '提醒';
           skillContentHtml = `
-            <div class="skill-content" style="margin-top: 8px; padding: 12px; background: rgba(255, 107, 157, 0.1); border-radius: 8px;">
-              ${content.mainTopic ? `<div style="margin-bottom: 4px;"><span style="color: var(--text-secondary);">主题:</span> ${content.mainTopic}</div>` : ''}
-              ${content.deviation ? `<div style="margin-bottom: 4px; color: var(--color-warning);"><span style="color: var(--text-secondary);">偏离:</span> ${content.deviation}</div>` : ''}
-              ${content.reminder ? `<div style="color: var(--aurora-pink);">💬 ${content.reminder}</div>` : ''}
+            <div class="skill-content" style="margin-top: 8px; padding: 12px; background: ${isClassroom ? 'rgba(139, 92, 246, 0.1)' : 'rgba(255, 107, 157, 0.1)'}; border-radius: 8px;">
+              ${content.mainTopic ? `<div style="margin-bottom: 4px;"><span style="color: var(--text-secondary);">${topicLabel}:</span> ${content.mainTopic}</div>` : ''}
+              ${content.deviation ? `<div style="margin-bottom: 4px; color: var(--color-warning);"><span style="color: var(--text-secondary);">${deviationLabel}:</span> ${content.deviation}</div>` : ''}
+              ${content.reminder ? `<div style="color: ${isClassroom ? 'var(--aurora-purple)' : 'var(--aurora-pink)'};">💬 ${reminderLabel}: ${content.reminder}</div>` : ''}
             </div>
           `;
         }
@@ -5652,6 +7155,11 @@
     function handleQAKeypress(event) { if (event.key === 'Enter') askQuestion(); }
 
     async function askQuestion() {
+      // 强制登录检查
+      if (!state.token || !state.user) {
+        showLoginRequired('问答功能');
+        return;
+      }
       const question = elements.qaInput.value.trim();
       if (!question) return;
       if (!state.sessionId) { showToast(t('toast.startRecordFirst'), 'error'); return; }
@@ -5661,7 +7169,11 @@
       elements.qaSendBtn.disabled = true;
 
       try {
-        const response = await apiCall('POST', `/sessions/${state.sessionId}/qa`, { question });
+        // 传递场景参数
+        const response = await apiCall('POST', `/sessions/${state.sessionId}/qa`, { 
+          question,
+          scenario: state.scenario || 'meeting'
+        });
         addQAMessage(response.answer, 'assistant');
       } catch (error) {
         addQAMessage('抱歉，出错了: ' + error.message, 'assistant');
@@ -5679,28 +7191,23 @@
     }
 
     // ========== Visualization ==========
-    function selectVisualizationType(type) {
-      state.currentVisualizationType = type;
-      document.querySelectorAll('.vis-type-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.type === type);
-      });
-      elements.chartTypeSelect.style.display = type === 'chart' ? 'block' : 'none';
-      updateVisualizationButtonState();
-    }
-
     function updateVisualizationButtonState() {
       elements.visGenerateBtn.disabled = !state.sessionId || !state.transcription?.length;
     }
 
     async function generateVisualization() {
+      // 强制登录检查
+      if (!state.token || !state.user) {
+        showLoginRequired('生成海报');
+        return;
+      }
       if (!state.sessionId) { showToast(t('toast.startRecordFirst'), 'error'); return; }
       
-      const type = state.currentVisualizationType;
-      const chartType = type === 'chart' ? elements.chartTypeSelect.value : undefined;
+      const style = $('posterStyleSelect').value;
       
       const generatingText = state.language === 'zh' ? '⏳ 生成中...' : '⏳ Generating...';
-      const genStatusText = state.language === 'zh' ? '正在生成...' : 'Generating...';
-      const genBtnText = state.language === 'zh' ? '✨ 生成视觉化' : '✨ Generate';
+      const genStatusText = state.language === 'zh' ? '正在生成海报...' : 'Generating poster...';
+      const genBtnText = state.language === 'zh' ? '✨ 生成逻辑海报' : '✨ Generate Poster';
       
       elements.visGenerateBtn.disabled = true;
       elements.visGenerateBtn.textContent = generatingText;
@@ -5709,7 +7216,7 @@
       elements.visStatus.className = 'vis-status';
       
       try {
-        const response = await apiCall('POST', `/sessions/${state.sessionId}/visualization`, { type, chartType });
+        const response = await apiCall('POST', `/sessions/${state.sessionId}/visualization`, { type: 'poster', style });
         displayVisualization(response);
         elements.visStatus.style.display = 'none';
         showToast(t('toast.visualGenSuccess'), 'success');
@@ -5723,6 +7230,7 @@
       }
     }
 
+
     function displayVisualization(result) {
       const imageSrc = result.imageUrl || (result.imageBase64 ? `data:${result.metadata?.mimeType || 'image/png'};base64,${result.imageBase64}` : '');
       
@@ -5735,16 +7243,17 @@
       }
       
       // 添加到洞察面板
-      const typeLabels = { chart: '科研图表', creative: '创意图像', poster: '逻辑海报' };
+      const styleLabels = { 'chiikawa': 'Chiikawa风格', 'minimal-business': '极简商务风格' };
+      const styleName = styleLabels[result.style] || '逻辑海报';
       const card = document.createElement('div');
       card.className = 'insight-card';
       card.dataset.visId = result.id;
       card.innerHTML = `
         <header class="insight-card__header">
-          <span class="insight-card__icon">🎨</span>
-          <h3 class="insight-card__title">${typeLabels[result.type] || result.type}</h3>
+          <span class="insight-card__icon">📋</span>
+          <h3 class="insight-card__title">${styleName}</h3>
         </header>
-        ${imageSrc ? `<img src="${imageSrc}" alt="视觉化" style="width:100%;border-radius:var(--radius-md);cursor:pointer;margin-top:12px;" onclick="viewVisualization('${result.id}')">` : ''}
+        ${imageSrc ? `<img src="${imageSrc}" alt="逻辑海报" style="width:100%;border-radius:var(--radius-md);cursor:pointer;margin-top:12px;" onclick="viewVisualization('${result.id}')">` : ''}
       `;
       
       if (elements.visualizationList) {
@@ -6106,9 +7615,6 @@
     // Event bindings
     elements.recordBtn.addEventListener('click', toggleRecording);
     elements.pauseBtn.addEventListener('click', togglePause);
-    elements.chartTypeSelect.addEventListener('change', function() {
-      state.currentChartType = this.value;
-    });
 
     // Initialize
     init();

@@ -88,11 +88,10 @@ export class ImageGenerationAdapter {
     const baseWithVersion = normalizedBase.includes("/v1beta")
       ? normalizedBase
       : `${normalizedBase}/v1beta`;
-    const isUndyingApi = baseWithVersion.includes("undyingapi");
+    const isProxyApi = normalizedBase.includes("undyingapi") || normalizedBase.includes("vip.");
     const url = `${baseWithVersion}/models/${this.model}:generateContent`;
-    const urlWithAuth = isUndyingApi && this.apiKey
-      ? `${url}?key=${encodeURIComponent(this.apiKey)}`
-      : url;
+    // 代理 API 使用 Bearer token，不需要 URL 参数；Google 官方 API 也只需要 header
+    const urlWithAuth = url;
 
     // 记录实际请求的 URL（隐藏 API key）
     const urlForLog = urlWithAuth.replace(/key=[^&]*/, "key=***");
@@ -148,14 +147,21 @@ export class ImageGenerationAdapter {
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
+        // 根据 API 类型选择认证方式
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json",
+        };
+        if (isProxyApi) {
+          // 代理 API (undyingapi) 只使用 Bearer token
+          headers["Authorization"] = `Bearer ${this.apiKey}`;
+        } else {
+          // Google 官方 API 使用 x-goog-api-key
+          headers["x-goog-api-key"] = this.apiKey;
+        }
+
         const response = await fetch(urlWithAuth, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // 同时兼容 Google 官方 (x-goog-api-key) 与代理 (Authorization: Bearer)
-            "x-goog-api-key": this.apiKey,
-            Authorization: `Bearer ${this.apiKey}`,
-          },
+          headers,
           body: JSON.stringify(requestBody),
         });
 

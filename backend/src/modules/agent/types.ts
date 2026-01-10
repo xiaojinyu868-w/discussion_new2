@@ -9,9 +9,7 @@ export type AnalysisType =
   | 'off_topic' // 跑题
   | 'redundancy' // 冗余/兜圈子
   | 'decision_point' // 决策时刻
-  | 'chart_request' // 用户请求生成图表
-  | 'skill_request' // 用户请求AI技能（潜台词、灵感、聚焦）
-  | 'visualization_request'; // 用户请求视觉化（创意图像、逻辑海报）
+  | 'skill_request'; // 用户请求AI技能（潜台词、灵感、聚焦）
 
 // 分析结果
 export interface AnalysisResult {
@@ -21,23 +19,18 @@ export interface AnalysisResult {
   context: string;
   metadata?: {
     matches?: string[]; // 匹配到的数据/关键词
-    chartType?: string; // 推荐的图表类型
     reason?: string; // 检测原因
     skillType?: 'inner_os' | 'brainstorm' | 'stop_talking'; // 技能类型
-    visualizationType?: 'creative' | 'poster'; // 视觉化类型
   };
 }
 
 // 洞察类型
 export type InsightType =
-  | 'data_chart' // 数据图表
   | 'focus_reminder' // 聚焦提醒
   | 'redundancy_hint' // 冗余提示
   | 'decision_record' // 决策记录
   | 'periodic_summary' // 周期性总结
-  | 'chart_generated' // 用户请求生成的图表
-  | 'skill_result' // AI技能结果（潜台词、灵感等）
-  | 'visualization_generated'; // 视觉化结果（创意图像、逻辑海报）
+  | 'skill_result'; // AI技能结果（潜台词、灵感等）
 
 // Agent 洞察
 export interface AgentInsight {
@@ -56,11 +49,6 @@ export interface AgentInsight {
     nextSteps?: string[];
     timestamp?: string;
     [key: string]: any;
-  };
-  visualization?: {
-    type: 'chart' | 'creative' | 'poster';
-    imageUrl?: string;
-    imageBase64?: string;
   };
   createdAt: Date;
   isAuto: true; // 标记为自动生成

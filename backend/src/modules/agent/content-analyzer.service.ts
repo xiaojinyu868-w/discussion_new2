@@ -21,9 +21,7 @@ export class ContentAnalyzerService {
     off_topic: 120000, // 跑题检测：120秒
     redundancy: 90000, // 冗余检测：90秒
     llm_detection: 60000, // LLM检测总冷却：60秒
-    chart_request: 15000, // 图表请求检测：15秒
-    skill_request: 15000, // 技能请求检测：15秒（减少冷却时间以便更快响应）
-    visualization_request: 15000, // 视觉化请求检测：15秒
+    skill_request: 15000, // 技能请求检测：15秒
   };
 
   constructor(private readonly llmAdapter: LLMAdapterService) {}
@@ -47,25 +45,11 @@ export class ContentAnalyzerService {
     );
     this.logger.debug(`Text content: ${text.substring(0, 200)}...`);
 
-    // 0. 图表请求检测（最高优先级，用户明确指令）
-    const chartRequestResult = this.detectChartRequest(sessionId, segments, text);
-    if (chartRequestResult) {
-      results.push(chartRequestResult);
-      this.logger.log(`Chart request detected in session ${sessionId}`);
-    }
-
-    // 0.1 技能请求检测（潜台词、灵感、聚焦）
+    // 0. 技能请求检测（潜台词、灵感、聚焦）
     const skillRequestResult = this.detectSkillRequest(sessionId, segments, text);
     if (skillRequestResult) {
       results.push(skillRequestResult);
       this.logger.log(`Skill request detected in session ${sessionId}: ${skillRequestResult.metadata?.skillType}`);
-    }
-
-    // 0.2 视觉化请求检测（创意图像、逻辑海报）
-    const visualizationRequestResult = this.detectVisualizationRequest(sessionId, segments, text);
-    if (visualizationRequestResult) {
-      results.push(visualizationRequestResult);
-      this.logger.log(`Visualization request detected in session ${sessionId}: ${visualizationRequestResult.metadata?.visualizationType}`);
     }
 
     // 1. 数据检测（正则 + 关键词，快速）
@@ -98,74 +82,6 @@ export class ContentAnalyzerService {
     }
 
     return results;
-  }
-
-  /**
-   * 图表请求检测 - 用户明确要求生成图表
-   */
-  private detectChartRequest(
-    sessionId: string,
-    segments: ContextSegment[],
-    text: string,
-  ): AnalysisResult | null {
-    if (this.isInCooldown(sessionId, 'chart_request')) return null;
-
-    // 图表请求关键词
-    const chartKeywords = [
-      '生成.*图表',
-      '生成.*图',
-      '画.*图',
-      '做.*图',
-      '创建.*图',
-      '帮我.*图表',
-      '帮我.*图',
-      '来.*图',
-      '要.*图表',
-      '数据图表',
-      '柱状图',
-      '饼图',
-      '折线图',
-      '流程图',
-      '雷达图',
-      '可视化',
-    ];
-
-    // 检测是否包含图表请求
-    const matched: string[] = [];
-    for (const keyword of chartKeywords) {
-      const regex = new RegExp(keyword, 'i');
-      if (regex.test(text)) {
-        matched.push(keyword);
-      }
-    }
-
-    if (matched.length > 0) {
-      this.updateCooldown(sessionId, 'chart_request');
-      this.logger.log(`Chart request detected: ${matched.join(', ')}`);
-      
-      // 推断图表类型
-      let chartType = 'bar';
-      if (text.includes('饼图') || text.includes('占比') || text.includes('比例')) {
-        chartType = 'radar';
-      } else if (text.includes('折线') || text.includes('趋势') || text.includes('变化')) {
-        chartType = 'line';
-      } else if (text.includes('流程')) {
-        chartType = 'flowchart';
-      }
-
-      return {
-        type: 'chart_request',
-        confidence: 0.95,
-        triggerSegmentIds: segments.map((s) => s.id),
-        context: text,
-        metadata: {
-          matches: matched,
-          chartType,
-        },
-      };
-    }
-
-    return null;
   }
 
   /**
@@ -292,80 +208,6 @@ export class ContentAnalyzerService {
   }
 
   /**
-   * 视觉化请求检测 - 用户请求创意图像或逻辑海报
-   */
-  private detectVisualizationRequest(
-    sessionId: string,
-    segments: ContextSegment[],
-    text: string,
-  ): AnalysisResult | null {
-    if (this.isInCooldown(sessionId, 'visualization_request')) return null;
-
-    // 创意图像相关关键词
-    const creativeKeywords = [
-      '创意图[像片]',
-      '创意.*图',
-      '生成.*图[像片]',
-      '画.*图[像片]',
-      '艺术.*图',
-      '插画',
-      '配图',
-    ];
-
-    // 逻辑海报相关关键词
-    const posterKeywords = [
-      '逻辑海报',
-      '海报',
-      '思维导图',
-      '脑图',
-      '结构图',
-      '总结.*图',
-      '生成.*海报',
-      '做.*海报',
-    ];
-
-    // 检测创意图像请求
-    for (const keyword of creativeKeywords) {
-      const regex = new RegExp(keyword, 'i');
-      if (regex.test(text)) {
-        this.updateCooldown(sessionId, 'visualization_request');
-        this.logger.log(`Creative visualization request detected: ${keyword}`);
-        return {
-          type: 'visualization_request',
-          confidence: 0.9,
-          triggerSegmentIds: segments.map((s) => s.id),
-          context: text,
-          metadata: {
-            matches: [keyword],
-            visualizationType: 'creative',
-          },
-        };
-      }
-    }
-
-    // 检测逻辑海报请求
-    for (const keyword of posterKeywords) {
-      const regex = new RegExp(keyword, 'i');
-      if (regex.test(text)) {
-        this.updateCooldown(sessionId, 'visualization_request');
-        this.logger.log(`Poster visualization request detected: ${keyword}`);
-        return {
-          type: 'visualization_request',
-          confidence: 0.9,
-          triggerSegmentIds: segments.map((s) => s.id),
-          context: text,
-          metadata: {
-            matches: [keyword],
-            visualizationType: 'poster',
-          },
-        };
-      }
-    }
-
-    return null;
-  }
-
-  /**
    * 数据检测 - 使用正则和关键词
    */
   private detectData(
@@ -403,42 +245,11 @@ export class ContentAnalyzerService {
         context: text,
         metadata: {
           matches: uniqueMatches.slice(0, 10), // 最多保留10个
-          chartType: this.inferChartType(uniqueMatches, text),
         },
       };
     }
 
     return null;
-  }
-
-  /**
-   * 推断图表类型
-   */
-  private inferChartType(matches: string[], text: string): string {
-    if (text.includes('对比') || text.includes('比较') || text.includes('VS')) {
-      return 'bar';
-    }
-    if (
-      text.includes('趋势') ||
-      text.includes('变化') ||
-      text.includes('走势')
-    ) {
-      return 'line';
-    }
-    if (
-      text.includes('占比') ||
-      text.includes('比例') ||
-      text.includes('分布')
-    ) {
-      return 'radar';
-    }
-    if (text.includes('流程') || text.includes('步骤')) {
-      return 'flowchart';
-    }
-    if (matches.some((m) => m.includes('%'))) {
-      return 'radar';
-    }
-    return 'bar';
   }
 
   /**

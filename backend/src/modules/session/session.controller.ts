@@ -66,10 +66,11 @@ export class SessionController {
   async triggerSkill(
     @Param("id") id: string,
     @Param("skillType") skillType: SkillType,
-    @Headers("authorization") authHeader?: string
+    @Headers("authorization") authHeader?: string,
+    @Body() body?: { scenario?: 'classroom' | 'meeting' }
   ) {
     const userId = this.getUserId(authHeader);
-    return this.sessionService.triggerSkill(id, skillType, userId);
+    return this.sessionService.triggerSkill(id, skillType, userId, body?.scenario);
   }
 
   @Post(":id/audio")
@@ -124,11 +125,11 @@ export class SessionController {
   @Post(":id/qa")
   async askQuestion(
     @Param("id") id: string,
-    @Body() body: AskQuestionDto,
+    @Body() body: AskQuestionDto & { scenario?: 'classroom' | 'meeting' },
     @Headers("authorization") authHeader?: string
   ) {
     const userId = this.getUserId(authHeader);
-    return this.sessionService.askQuestion(id, body.question, userId);
+    return this.sessionService.askQuestion(id, body.question, userId, body.scenario);
   }
 
   @Get(":id/messages")
@@ -136,20 +137,20 @@ export class SessionController {
     return this.sessionService.getMessages(id);
   }
 
-  // ===== 视觉化 API (V2) =====
+  // ===== 视觉化 API (V2) - 仅支持逻辑海报 =====
 
   @Post(":id/visualization")
   async generateVisualization(
     @Param("id") id: string,
     @Body()
     body: {
-      type: "chart" | "creative" | "poster";
-      chartType?: "radar" | "flowchart" | "architecture" | "bar" | "line";
+      type?: "poster"; // 只支持 poster 类型
+      style?: "chiikawa" | "minimal-business"; // 风格选择
     },
     @Headers("authorization") authHeader?: string
   ) {
     const userId = this.getUserId(authHeader);
-    return this.sessionService.generateVisualization(id, body.type, body.chartType, userId);
+    return this.sessionService.generateVisualization(id, body.style, userId);
   }
 
   @Get(":id/visualizations")

@@ -5,11 +5,9 @@ import {
   BadRequestException,
   ForbiddenException,
 } from "@nestjs/common";
-import { TingwuService } from "../tingwu/tingwu.service";
 import { CreateSessionDto } from "./session.dto";
 import { v4 as uuid } from "uuid";
-import { PollerService } from "../task-poller/poller.service";
-import { AudioRelayService } from "../tingwu/audio-relay.service";
+import { DashScopeASRService } from "../dashscope-asr/dashscope-asr.service";
 import { SkillService, SkillType } from "../skill/skill.service";
 import { AutoPushService } from "../auto-push/auto-push.service";
 import { ContextStoreService } from "../context/context-store.service";
@@ -32,16 +30,14 @@ export class SessionService {
   private readonly logger = new Logger(SessionService.name);
   private sessions = new Map<
     string,
-    { taskId: string; meetingJoinUrl: string; userId?: number }
+    { userId?: number }
   >();
   private transcripts = new Map<string, Transcript[]>();
   private summaries = new Map<string, any[]>();
   private taskStatuses = new Map<string, string | undefined>();
 
   constructor(
-    private readonly tingwuService: TingwuService,
-    private readonly pollerService: PollerService,
-    private readonly audioRelayService: AudioRelayService,
+    private readonly dashScopeASR: DashScopeASRService,
     private readonly skillService: SkillService,
     private readonly autoPushService: AutoPushService,
     private readonly contextStore: ContextStoreService,
@@ -53,59 +49,31 @@ export class SessionService {
 
   async createRealtimeSession(body: CreateSessionDto, userId?: number) {
     const sessionId = uuid();
-    const { taskId, meetingJoinUrl } =
-      await this.tingwuService.createRealtimeTask(body);
 
-    this.sessions.set(sessionId, { taskId, meetingJoinUrl, userId });
+    // 创建 DashScope ASR 会话
+    this.dashScopeASR.create(sessionId);
+
+    this.sessions.set(sessionId, { userId });
     this.taskStatuses.set(sessionId, "NEW");
-    this.audioRelayService.create(sessionId, meetingJoinUrl);
     
     // 初始化上下文存储
     this.contextStore.initialize(sessionId);
     
     // 如果有登录用户，创建会议记录并关联到上下文
+    let meetingId: number | undefined;
     if (userId) {
       try {
         const meeting = this.userService.createMeeting(userId, sessionId);
+        meetingId = meeting.id;
         this.contextStore.setMeetingId(sessionId, meeting.id);
         this.logger.log(`Meeting created for user ${userId}, session ${sessionId}, meetingId ${meeting.id}`);
       } catch (error) {
         this.logger.error(`Failed to create meeting record: ${error.message}`);
       }
     }
-    
-    this.pollerService.registerTask(sessionId, taskId, async (payload) => {
-      if (payload.transcription?.length) {
-        const existing = this.transcripts.get(sessionId) ?? [];
-        const map = new Map<string, Transcript>();
-        [...existing, ...payload.transcription].forEach((segment) => {
-          map.set(segment.id, segment);
-        });
-        const merged = Array.from(map.values()).sort(
-          (a, b) => a.startMs - b.startMs
-        );
-        this.transcripts.set(sessionId, merged);
-      }
-      if (payload.summaries?.length) {
-        const existing = this.summaries.get(sessionId) ?? [];
-        const combined = new Map<string, any>();
-        [...existing, ...payload.summaries].forEach((card) => {
-          combined.set(card.id, card);
-        });
-        this.summaries.set(sessionId, Array.from(combined.values()));
-      }
-      if (payload.taskStatus) {
-        this.taskStatuses.set(sessionId, payload.taskStatus);
-      }
-    });
-
-    // 获取会议ID（如果有）
-    const meetingId = this.contextStore.getMeetingId(sessionId);
 
     return {
       sessionId,
-      taskId,
-      meetingJoinUrl,
       meetingId,
     };
   }
@@ -116,71 +84,26 @@ export class SessionService {
     }
     const buffer = Buffer.from(base64Chunk, "base64");
     try {
-      await this.audioRelayService.ingestWebmChunk(sessionId, buffer);
+      await this.dashScopeASR.ingestWebmChunk(sessionId, buffer);
     } catch (error) {
       const relayError = error as Error;
       
-      // 处理连接断开或 relay 不存在的情况
+      // 处理连接断开的情况
       if (
-        relayError?.message.includes("Relay not found") ||
-        relayError?.message.includes("Relay input closed") ||
-        relayError?.message.includes("Tingwu socket not ready") ||
-        relayError?.message.includes("Failed to establish connection")
+        relayError?.message.includes("Session not found") ||
+        relayError?.message.includes("connection timeout") ||
+        relayError?.message.includes("ffmpeg stream not ready")
       ) {
-        const session = this.sessions.get(sessionId);
-        if (!session) {
-          throw relayError;
-        }
-        
         this.logger.warn(
-          `Audio relay unavailable for session ${sessionId}, creating new task and reconnecting...`
+          `ASR session unavailable for session ${sessionId}, reconnecting...`
         );
         
         try {
-          // 创建新的通义听悟任务获取新的 meetingJoinUrl
-          const { taskId, meetingJoinUrl } = await this.tingwuService.createRealtimeTask({
-            meetingId: `meeting-${Date.now()}`,
-          });
-          
-          // 更新 session 信息
-          session.taskId = taskId;
-          session.meetingJoinUrl = meetingJoinUrl;
-          this.sessions.set(sessionId, session);
-          
-          // 重新注册轮询
-          this.pollerService.unregisterTask(sessionId);
-          this.pollerService.registerTask(sessionId, taskId, async (payload) => {
-            if (payload.transcription?.length) {
-              const existing = this.transcripts.get(sessionId) ?? [];
-              const map = new Map<string, Transcript>();
-              [...existing, ...payload.transcription].forEach((segment) => {
-                map.set(segment.id, segment);
-              });
-              const merged = Array.from(map.values()).sort(
-                (a, b) => a.startMs - b.startMs
-              );
-              this.transcripts.set(sessionId, merged);
-            }
-            if (payload.summaries?.length) {
-              const existing = this.summaries.get(sessionId) ?? [];
-              const combined = new Map<string, any>();
-              [...existing, ...payload.summaries].forEach((card) => {
-                combined.set(card.id, card);
-              });
-              this.summaries.set(sessionId, Array.from(combined.values()));
-            }
-            if (payload.taskStatus) {
-              this.taskStatuses.set(sessionId, payload.taskStatus);
-            }
-          });
-          
-          // 更新 relay 的 URL 并重新创建
-          this.audioRelayService.updateUrl(sessionId, meetingJoinUrl);
-          
-          this.logger.log(`New task created for session ${sessionId}: ${taskId}`);
+          // 重新创建 ASR 会话
+          this.dashScopeASR.updateSession(sessionId);
           
           // 重试发送音频数据
-          await this.audioRelayService.ingestWebmChunk(sessionId, buffer);
+          await this.dashScopeASR.ingestWebmChunk(sessionId, buffer);
           return;
         } catch (reconnectError) {
           this.logger.error(`Failed to reconnect for session ${sessionId}: ${reconnectError}`);
@@ -199,53 +122,16 @@ export class SessionService {
       throw new NotFoundException("Session not found");
     }
     
-    // 重新创建任务获取新的 meetingJoinUrl（旧的可能已过期）
-    this.logger.log(`Refreshing realtime task for session ${sessionId}...`);
-    const { taskId, meetingJoinUrl } = await this.tingwuService.createRealtimeTask({
-      meetingId: `meeting-${Date.now()}`,
-    });
+    // DashScope ASR 是实时处理的，不需要额外的处理步骤
+    // 只需确保会话存在并且连接正常
+    const status = this.dashScopeASR.getStatus(sessionId);
+    if (status === "failed" || status === "not_found") {
+      this.logger.log(`Refreshing ASR session for ${sessionId}...`);
+      this.dashScopeASR.updateSession(sessionId);
+    }
     
-    // 更新 session 信息
-    session.taskId = taskId;
-    session.meetingJoinUrl = meetingJoinUrl;
-    this.sessions.set(sessionId, session);
-    
-    // 更新 relay 的 URL
-    this.audioRelayService.updateUrl(sessionId, meetingJoinUrl);
-    
-    // 重新注册轮询
-    this.pollerService.unregisterTask(sessionId);
-    this.pollerService.registerTask(sessionId, taskId, async (payload) => {
-      if (payload.transcription?.length) {
-        const existing = this.transcripts.get(sessionId) ?? [];
-        const map = new Map<string, Transcript>();
-        [...existing, ...payload.transcription].forEach((segment) => {
-          map.set(segment.id, segment);
-        });
-        const merged = Array.from(map.values()).sort(
-          (a, b) => a.startMs - b.startMs
-        );
-        this.transcripts.set(sessionId, merged);
-      }
-      if (payload.summaries?.length) {
-        const existing = this.summaries.get(sessionId) ?? [];
-        const combined = new Map<string, any>();
-        [...existing, ...payload.summaries].forEach((card) => {
-          combined.set(card.id, card);
-        });
-        this.summaries.set(sessionId, Array.from(combined.values()));
-      }
-      if (payload.taskStatus) {
-        this.taskStatuses.set(sessionId, payload.taskStatus);
-      }
-    });
-    
-    this.logger.log(`New task created: ${taskId}, meetingJoinUrl: ${meetingJoinUrl.slice(0, 50)}...`);
-    
-    this.logger.log(`Calling audioRelayService.processAndSend for session ${sessionId}...`);
-    await this.audioRelayService.processAndSend(sessionId);
-    this.logger.log(`=== processAudio completed for session ${sessionId} ===`);
-    return { ok: true, taskId };
+    this.logger.log(`=== processAudio completed for session ${sessionId}, status: ${status} ===`);
+    return { ok: true, status };
   }
 
   async completeSession(sessionId: string) {
@@ -257,17 +143,9 @@ export class SessionService {
     }
     
     try {
-      await this.audioRelayService.stop(sessionId);
+      await this.dashScopeASR.stop(sessionId);
     } catch (e) {
-      this.logger.warn(`Failed to stop audio relay for ${sessionId}: ${e}`);
-    }
-    
-    this.pollerService.unregisterTask(sessionId);
-    
-    try {
-      await this.tingwuService.stopRealtimeTask(session.taskId);
-    } catch (e) {
-      this.logger.warn(`Failed to stop Tingwu task for ${sessionId}: ${e}`);
+      this.logger.warn(`Failed to stop ASR session for ${sessionId}: ${e}`);
     }
     
     // 强制刷新待持久化的转写内容
@@ -350,7 +228,7 @@ ${preview}
     };
   }
 
-  async triggerSkill(sessionId: string, skill: SkillType, userId?: number) {
+  async triggerSkill(sessionId: string, skill: SkillType, userId?: number, scenario?: 'classroom' | 'meeting') {
     const session = this.sessions.get(sessionId);
     if (!session) {
       throw new NotFoundException("Session not found");
@@ -364,9 +242,15 @@ ${preview}
       }
     }
 
-    // 使用新的 SkillService（基于 Qwen3-Max）
+    // 检查是否有足够的上下文内容
+    const contextStats = this.contextStore.getStats(sessionId);
+    if (contextStats.totalTextLength < 20) {
+      throw new BadRequestException("内容不足，请先进行一些对话后再分析");
+    }
+
+    // 使用新的 SkillService（基于 Qwen3-Max），传递场景参数
     try {
-      const result = await this.skillService.triggerSkill(sessionId, skill);
+      const result = await this.skillService.triggerSkill(sessionId, skill, scenario || 'meeting');
       const cards = this.skillService.toSummaryCards(sessionId, result);
 
       // 配额扣减
@@ -394,22 +278,22 @@ ${preview}
 
       return { cards };
     } catch (error) {
-      this.logger.error(`Skill ${skill} failed: ${error}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Skill ${skill} failed: ${errorMessage}`);
       
-      // 如果 LLM 不可用，回退到通义听悟 CustomPrompt（仅支持 inner_os 和 brainstorm）
-      if (skill !== "stop_talking") {
-        this.logger.warn(`Falling back to Tingwu CustomPrompt for ${skill}`);
-        return this.triggerSkillFallback(sessionId, skill as "inner_os" | "brainstorm");
+      // 如果是上下文不足的错误，直接抛出
+      if (errorMessage.includes("No context available") || errorMessage.includes("会议内容不足")) {
+        throw new BadRequestException("会议内容不足，请先进行一些对话后再分析");
       }
       
-      throw error;
+      throw new BadRequestException("分析服务暂时不可用，请稍后重试");
     }
   }
 
   async uploadAudioFile(
     file: Express.Multer.File,
     meetingId?: string
-  ): Promise<{ sessionId: string; taskId: string }> {
+  ): Promise<{ sessionId: string }> {
     if (!file?.buffer || file.size === 0) {
       throw new BadRequestException("文件为空");
     }
@@ -418,70 +302,11 @@ ${preview}
       meetingId: meetingId ?? `upload-${Date.now()}`,
     });
 
-    await this.audioRelayService.ingestAudioFile(
-      session.sessionId,
-      file.buffer,
-      file.mimetype?.split("/")?.[1] ?? undefined
-    );
+    // TODO: 实现音频文件上传处理
+    // DashScope ASR 主要支持实时流式转录，文件上传需要使用批量 API
+    this.logger.warn(`Audio file upload not fully implemented for DashScope ASR`);
 
-    return { sessionId: session.sessionId, taskId: session.taskId };
-  }
-
-  /**
-   * 回退到通义听悟 CustomPrompt（旧实现）
-   */
-  private async triggerSkillFallback(
-    sessionId: string,
-    skill: "inner_os" | "brainstorm"
-  ) {
-    const session = this.sessions.get(sessionId);
-    if (!session) {
-      throw new NotFoundException("Session not found");
-    }
-    
-    const result = await this.tingwuService.triggerCustomPrompt(
-      session.taskId,
-      skill
-    );
-    const cards = this.normalizeCustomPrompt(result, skill, session.taskId);
-    if (cards.length) {
-      const existing = this.summaries.get(sessionId) ?? [];
-      const combined = new Map<string, any>();
-      [...existing, ...cards].forEach((card) => {
-        combined.set(card.id, card);
-      });
-      this.summaries.set(sessionId, Array.from(combined.values()));
-    }
-    return { cards };
-  }
-
-  private normalizeCustomPrompt(
-    raw: any,
-    skill: "inner_os" | "brainstorm",
-    taskId: string
-  ) {
-    const data = raw?.Data ?? raw?.data ?? {};
-    const result =
-      data.Result ??
-      data?.results ??
-      raw?.result ??
-      raw ??
-      {};
-    const items: any[] =
-      result?.Items ??
-      result?.items ??
-      result ??
-      [];
-    if (!Array.isArray(items)) {
-      return [];
-    }
-    return items.map((item: any, index: number) => ({
-      id: `${taskId}-${skill}-${index}`,
-      type: skill === "inner_os" ? "inner_os" : "brainstorm",
-      title: skill === "inner_os" ? "内心OS" : "头脑风暴",
-      content: item,
-      updatedAt: new Date().toISOString(),
-    }));
+    return { sessionId: session.sessionId };
   }
 
   // ===== 自动推送 =====
@@ -527,7 +352,7 @@ ${preview}
 
   // ===== 自由问答 =====
 
-  async askQuestion(sessionId: string, question: string, userId?: number) {
+  async askQuestion(sessionId: string, question: string, userId?: number, scenario?: 'classroom' | 'meeting') {
     if (!this.sessions.has(sessionId)) {
       throw new NotFoundException("Session not found");
     }
@@ -541,12 +366,14 @@ ${preview}
     }
 
     const context = this.contextStore.getFullText(sessionId);
-    this.logger.log(`[QA] Session ${sessionId}, context length: ${context?.length || 0} chars`);
-    this.logger.log(`[QA] Context preview: ${context?.slice(0, 200)}...`);
+    this.logger.log(`[QA] Session ${sessionId}, scenario=${scenario}, context length: ${context?.length || 0} chars`);
     
     if (!context || context.trim().length === 0) {
+      const emptyMsg = scenario === 'classroom' 
+        ? "当前没有可用的课堂内容，请先开始听课。"
+        : "当前没有可用的会议内容，请先开始录音。";
       return {
-        answer: "当前没有可用的会议内容，请先开始录音。",
+        answer: emptyMsg,
         messageId: null,
       };
     }
@@ -559,18 +386,25 @@ ${preview}
       type: "qa",
     });
 
-    const prompt = `你是一个专业的会议助手。基于以下会议内容回答用户的问题。
+    // 根据场景选择提示词
+    const isClassroom = scenario === 'classroom';
+    const contentType = isClassroom ? '课堂内容' : '会议内容';
+    const roleDesc = isClassroom 
+      ? '你是一个耐心的学习助手，帮助学生理解课堂内容。用通俗易懂的方式解答问题，必要时举例说明。'
+      : '你是一个专业的会议助手，帮助用户理解和分析会议内容。';
+    
+    const prompt = `你是一个专业的${isClassroom ? '学习' : '会议'}助手。基于以下${contentType}回答用户的问题。
 
-会议内容：
+${contentType}：
 ${context}
 
 用户问题：${question}
 
-请简洁、准确地回答问题。如果问题与会议内容无关，请礼貌地说明。`;
+请简洁、准确地回答问题。${isClassroom ? '如果问题涉及课堂外的知识，可以适当拓展但要标明。' : '如果问题与会议内容无关，请礼貌地说明。'}`;
 
     try {
       const answer = await this.llmAdapter.chatWithPrompt(
-        "你是一个专业的会议助手，帮助用户理解和分析会议内容。",
+        roleDesc,
         prompt,
         { temperature: 0.7, maxTokens: 1000 }
       );
@@ -609,12 +443,11 @@ ${context}
     };
   }
 
-  // ===== 视觉化功能 (V2) =====
+  // ===== 视觉化功能 (V2) - 仅支持逻辑海报 =====
 
   async generateVisualization(
     sessionId: string,
-    type: "chart" | "creative" | "poster",
-    chartType?: "radar" | "flowchart" | "architecture" | "bar" | "line",
+    style?: "chiikawa" | "minimal-business",
     userId?: number
   ) {
     if (!this.sessions.has(sessionId)) {
@@ -631,8 +464,8 @@ ${context}
 
     const result = await this.visualizationService.generateVisualization({
       sessionId,
-      type,
-      chartType,
+      type: "poster",
+      style: style || "chiikawa",
     });
 
     // 配额扣减
@@ -651,7 +484,7 @@ ${context}
       const imageBuffer = Buffer.from(result.imageBase64, 'base64');
       fs.writeFileSync(path.join(uploadsDir, imagePath), imageBuffer);
       
-      this.userService.saveVisualization(meeting.id, type, chartType || null, imagePath, result.prompt || '');
+      this.userService.saveVisualization(meeting.id, "poster", style || "chiikawa", imagePath, result.prompt || '');
       this.logger.log(`Saved visualization for meeting ${meeting.id}: ${imagePath}`);
     }
 

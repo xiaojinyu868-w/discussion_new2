@@ -2,7 +2,8 @@ import { Injectable, Logger } from "@nestjs/common";
 import { DatabaseService } from "../database/database.service";
 
 /**
- * 通义听悟 WebSocket 返回格式（TranscriptionResultChanged）
+ * ASR 转录词语结构（兼容多种 ASR 服务）
+ * @deprecated 保留用于向后兼容，新代码应使用 ContextSegment
  */
 export interface TingwuWord {
   startTime: number;
@@ -12,6 +13,10 @@ export interface TingwuWord {
   punc?: string;
 }
 
+/**
+ * ASR 转录结果结构（兼容多种 ASR 服务）
+ * @deprecated 保留用于向后兼容，新代码应直接使用 appendSegment
+ */
 export interface TingwuTranscriptionPayload {
   result: string;
   words: TingwuWord[];

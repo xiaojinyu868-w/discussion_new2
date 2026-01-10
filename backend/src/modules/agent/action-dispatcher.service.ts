@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { SkillService } from '../skill/skill.service';
-import { VisualizationService } from '../visualization/visualization.service';
 import { ContextStoreService } from '../context/context-store.service';
 import { LLMAdapterService } from '../llm/llm-adapter.service';
 import { AnalysisResult, AgentInsight } from './types';
@@ -11,7 +10,6 @@ export class ActionDispatcherService {
 
   constructor(
     private readonly skillService: SkillService,
-    private readonly visualizationService: VisualizationService,
     private readonly contextStore: ContextStoreService,
     private readonly llmAdapter: LLMAdapterService,
   ) {}
@@ -31,12 +29,8 @@ export class ActionDispatcherService {
       switch (result.type) {
         case 'data_mention':
           return await this.handleDataMention(sessionId, result);
-        case 'chart_request':
-          return await this.handleChartRequest(sessionId, result);
         case 'skill_request':
           return await this.handleSkillRequest(sessionId, result);
-        case 'visualization_request':
-          return await this.handleVisualizationRequest(sessionId, result);
         case 'off_topic':
           return await this.handleOffTopic(sessionId, result);
         case 'redundancy':
@@ -51,69 +45,6 @@ export class ActionDispatcherService {
       this.logger.error(`Action dispatch failed for ${result.type}: ${error}`);
       return null;
     }
-  }
-
-  /**
-   * 处理用户图表请求 - 用户明确要求生成图表
-   */
-  private async handleChartRequest(
-    sessionId: string,
-    result: AnalysisResult,
-  ): Promise<AgentInsight> {
-    const chartType = result.metadata?.chartType || 'bar';
-    this.logger.log(`Handling chart request for session ${sessionId}, chartType: ${chartType}`);
-
-    // 获取最近的上下文用于生成图表
-    const recentText = this.contextStore.getRecentText(sessionId, 2); // 最近2分钟
-
-    // 调用视觉化服务生成图表
-    let visualization: AgentInsight['visualization'];
-    try {
-      const visResult = await this.visualizationService.generateVisualization({
-        sessionId,
-        type: 'chart',
-        chartType: chartType as 'radar' | 'flowchart' | 'architecture' | 'bar',
-      });
-
-      if (visResult.imageUrl || visResult.imageBase64) {
-        visualization = {
-          type: 'chart',
-          imageUrl: visResult.imageUrl,
-          imageBase64: visResult.imageBase64,
-        };
-        this.logger.log(`Chart generated successfully for session ${sessionId}`);
-      }
-    } catch (error) {
-      this.logger.error(`Chart generation failed for chart request: ${error}`);
-    }
-
-    // 生成摘要
-    let summary = '已根据您的请求生成数据图表';
-    if (recentText && recentText.length > 20) {
-      try {
-        summary = await this.llmAdapter.chatWithPrompt(
-          '你是数据可视化专家，擅长简洁描述图表内容。',
-          `用户请求生成图表，以下是相关对话内容：\n\n${recentText.substring(0, 800)}\n\n请用一句话（不超过40字）描述这个图表展示的内容。直接返回描述，不要有引号。`,
-        );
-      } catch (error) {
-        this.logger.warn(`Summary generation failed: ${error}`);
-      }
-    }
-
-    return {
-      id: `agent-chart-${Date.now()}`,
-      sessionId,
-      type: 'chart_generated',
-      triggerSegmentIds: result.triggerSegmentIds,
-      content: {
-        title: '📊 数据图表',
-        summary: summary?.trim() || '已根据您的请求生成数据图表',
-        chartType,
-      },
-      visualization,
-      createdAt: new Date(),
-      isAuto: true,
-    };
   }
 
   /**
@@ -191,89 +122,13 @@ export class ActionDispatcherService {
   }
 
   /**
-   * 处理视觉化请求 - 用户请求创意图像或逻辑海报
-   */
-  private async handleVisualizationRequest(
-    sessionId: string,
-    result: AnalysisResult,
-  ): Promise<AgentInsight> {
-    const visualizationType = result.metadata?.visualizationType || 'creative';
-    this.logger.log(`Handling visualization request for session ${sessionId}, type: ${visualizationType}`);
-
-    let visualization: AgentInsight['visualization'];
-    let title = '🎨 视觉化';
-    let summary = '';
-
-    try {
-      const visResult = await this.visualizationService.generateVisualization({
-        sessionId,
-        type: visualizationType as 'creative' | 'poster',
-      });
-
-      if (visResult.imageUrl || visResult.imageBase64) {
-        visualization = {
-          type: visualizationType as 'creative' | 'poster',
-          imageUrl: visResult.imageUrl,
-          imageBase64: visResult.imageBase64,
-        };
-
-        if (visualizationType === 'creative') {
-          title = '🎨 创意图像';
-          summary = '已根据会议内容生成创意图像';
-        } else if (visualizationType === 'poster') {
-          title = '📋 逻辑海报';
-          summary = '已根据会议内容生成逻辑海报';
-        }
-
-        this.logger.log(`Visualization generated successfully for session ${sessionId}`);
-      }
-    } catch (error) {
-      this.logger.error(`Visualization generation failed: ${error}`);
-      summary = '视觉化生成失败，请稍后重试';
-    }
-
-    // 如果有上下文，尝试生成更好的描述
-    if (visualization) {
-      try {
-        const recentText = this.contextStore.getRecentText(sessionId, 2);
-        if (recentText && recentText.length > 20) {
-          const desc = await this.llmAdapter.chatWithPrompt(
-            '你是视觉化专家，擅长简洁描述图像内容。',
-            `用户请求生成${visualizationType === 'creative' ? '创意图像' : '逻辑海报'}，以下是相关对话内容：\n\n${recentText.substring(0, 500)}\n\n请用一句话（不超过30字）描述这个${visualizationType === 'creative' ? '图像' : '海报'}展示的内容。直接返回描述。`,
-          );
-          if (desc) {
-            summary = desc.trim();
-          }
-        }
-      } catch (error) {
-        this.logger.warn(`Summary generation failed: ${error}`);
-      }
-    }
-
-    return {
-      id: `agent-vis-${Date.now()}`,
-      sessionId,
-      type: 'visualization_generated',
-      triggerSegmentIds: result.triggerSegmentIds,
-      content: {
-        title,
-        summary: summary || `已生成${visualizationType === 'creative' ? '创意图像' : '逻辑海报'}`,
-        visualizationType,
-      },
-      visualization,
-      createdAt: new Date(),
-      isAuto: true,
-    };
-  }
-
-  /**
-   * 处理数据提及 - 只生成文字洞察，不生成图表（图表太贵）
+   * 处理数据提及 - 只生成文字洞察
    */
   private async handleDataMention(
     sessionId: string,
     result: AnalysisResult,
   ): Promise<AgentInsight> {
-    // 生成数据摘要（纯文字，不调用图表生成）
+    // 生成数据摘要（纯文字）
     const summary = await this.generateDataSummary(
       result.context,
       result.metadata?.matches || [],
@@ -282,14 +137,13 @@ export class ActionDispatcherService {
     return {
       id: `agent-data-${Date.now()}`,
       sessionId,
-      type: 'data_chart',
+      type: 'focus_reminder',
       triggerSegmentIds: result.triggerSegmentIds,
       content: {
         title: '📊 数据洞察',
         summary,
         dataPoints: result.metadata?.matches,
       },
-      // 不生成图表，节省成本
       createdAt: new Date(),
       isAuto: true,
     };
@@ -297,7 +151,6 @@ export class ActionDispatcherService {
 
   /**
    * 处理跑题 - 调用现有的 stop_talking 技能
-   * 关键：复用 SkillService.triggerSkill
    */
   private async handleOffTopic(
     sessionId: string,
@@ -311,7 +164,6 @@ export class ActionDispatcherService {
         sessionId,
         'stop_talking',
       );
-      // SkillResult.content 对于 stop_talking 是 StopTalkingResult 对象
       if (skillResult.content) {
         skillContent = skillResult.content;
       }
@@ -386,10 +238,10 @@ export class ActionDispatcherService {
   }
 
   /**
-   * 周期性总结（每30秒）
+   * 周期性总结
    */
   async dispatchPeriodicSummary(sessionId: string): Promise<AgentInsight | null> {
-    const recentText = this.contextStore.getRecentText(sessionId, 1); // 最近1分钟
+    const recentText = this.contextStore.getRecentText(sessionId, 1);
 
     this.logger.log(`Periodic summary check: sessionId=${sessionId}, textLength=${recentText?.length || 0}`);
 

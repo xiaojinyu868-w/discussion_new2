@@ -39,26 +39,68 @@ export class DatabaseService implements OnModuleInit {
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
-        password_hash TEXT NOT NULL,
+        password_hash TEXT,
+        openid TEXT UNIQUE,
+        unionid TEXT,
+        nickname TEXT,
+        avatar_url TEXT,
+        login_type TEXT DEFAULT 'password',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
+    
+    // 添加微信登录相关字段（如果表已存在）
+    try {
+      this.db.exec(`ALTER TABLE users ADD COLUMN openid TEXT UNIQUE`);
+    } catch (e) { /* 字段已存在 */ }
+    try {
+      this.db.exec(`ALTER TABLE users ADD COLUMN unionid TEXT`);
+    } catch (e) { /* 字段已存在 */ }
+    try {
+      this.db.exec(`ALTER TABLE users ADD COLUMN nickname TEXT`);
+    } catch (e) { /* 字段已存在 */ }
+    try {
+      this.db.exec(`ALTER TABLE users ADD COLUMN avatar_url TEXT`);
+    } catch (e) { /* 字段已存在 */ }
+    try {
+      this.db.exec(`ALTER TABLE users ADD COLUMN login_type TEXT DEFAULT 'password'`);
+    } catch (e) { /* 字段已存在 */ }
 
-    // 配额表
+    // 配额表 - 免费用户默认配额
+    // 生图很贵(0.3元/张)，免费用户只给2张；AI洞察和问答相对便宜
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS quotas (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER UNIQUE REFERENCES users(id),
-        daily_insight_limit INTEGER DEFAULT 50,
+        daily_insight_limit INTEGER DEFAULT 20,
         daily_insight_used INTEGER DEFAULT 0,
-        daily_qa_limit INTEGER DEFAULT 100,
+        daily_qa_limit INTEGER DEFAULT 30,
         daily_qa_used INTEGER DEFAULT 0,
-        monthly_image_limit INTEGER DEFAULT 30,
+        monthly_image_limit INTEGER DEFAULT 2,
         monthly_image_used INTEGER DEFAULT 0,
+        daily_transcribe_limit INTEGER DEFAULT 60,
+        daily_transcribe_used INTEGER DEFAULT 0,
+        balance REAL DEFAULT 0,
         daily_reset_at DATETIME,
         monthly_reset_at DATETIME
       )
     `);
+    
+    // 添加新字段（如果表已存在）
+    try {
+      this.db.exec(`ALTER TABLE quotas ADD COLUMN daily_transcribe_limit INTEGER DEFAULT 60`);
+    } catch (e) { /* 字段已存在 */ }
+    try {
+      this.db.exec(`ALTER TABLE quotas ADD COLUMN daily_transcribe_used INTEGER DEFAULT 0`);
+    } catch (e) { /* 字段已存在 */ }
+    try {
+      this.db.exec(`ALTER TABLE quotas ADD COLUMN balance REAL DEFAULT 0`);
+    } catch (e) { /* 字段已存在 */ }
+    
+    // 更新现有用户的图片配额为2（如果之前是30）
+    try {
+      this.db.exec(`UPDATE quotas SET monthly_image_limit = 2 WHERE monthly_image_limit = 30`);
+    } catch (e) { /* 忽略 */ }
 
     // 会议表
     this.db.exec(`

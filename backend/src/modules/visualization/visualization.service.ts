@@ -6,25 +6,43 @@ import {
   ImageGenerationOptions,
 } from "../image-gen/image-generation-adapter.service";
 
-export type VisualizationType = "chart" | "creative" | "poster";
+// 只保留逻辑海报类型
+export type VisualizationType = "poster";
+
+// 预设风格类型
+export type PosterStyle = "chiikawa" | "minimal-business";
+
+// 风格配置
+export const POSTER_STYLES: Record<PosterStyle, { name: string; description: string; keywords: string }> = {
+  "chiikawa": {
+    name: "Chiikawa",
+    description: "可爱治愈风格",
+    keywords: "可爱、治愈、软萌、Chiikawa风格、圆润的线条、柔和的配色、萌系角色形象"
+  },
+  "minimal-business": {
+    name: "极简商务",
+    description: "简洁专业风格",
+    keywords: "极简、商务、专业、简洁大气、干净的线条、现代感、高级灰配色"
+  }
+};
 
 export interface VisualizationRequest {
   sessionId: string;
   type: VisualizationType;
-  chartType?: "radar" | "flowchart" | "architecture" | "bar" | "line"; // 仅当type='chart'时使用
+  style?: PosterStyle; // 海报风格
 }
 
 export interface VisualizationResult {
   id: string;
   sessionId: string;
   type: VisualizationType;
+  style?: PosterStyle; // 使用的风格
   imageUrl?: string; // 图像URL（如果API返回URL）
   imageBase64?: string; // Base64图像数据（如果返回Base64）
   prompt: string; // 使用的生成提示词
   metadata: {
-    chartType?: string; // 图表类型（如果是图表）
-    dataStructure?: any; // 提取的结构化数据（如果是图表）
-    description?: string; // 创意描述（如果是创意图像）
+    styleName?: string; // 风格名称
+    description?: string; // 海报描述
   };
   createdAt: Date;
 }
@@ -51,46 +69,31 @@ export class VisualizationService {
       );
     }
 
-    // 2. 根据类型生成提示词
-    let prompt: string;
-    let metadata: any;
+    // 2. 获取风格配置
+    const style = request.style || "chiikawa";
+    const styleConfig = POSTER_STYLES[style];
 
-    if (request.type === "chart") {
-      if (!request.chartType) {
-        throw new Error("chartType is required when type is 'chart'");
-      }
-      // 提取结构化数据
-      const data = await this.dataExtractionService.extractChartData(
-        context,
-        request.chartType
-      );
-      // 转换为绘图指令
-      prompt = this.dataExtractionService.toChartPrompt(
-        data,
-        request.chartType
-      );
-      metadata = { chartType: request.chartType, dataStructure: data };
-    } else if (request.type === "creative") {
-      // 生成创意图像描述
-      prompt = await this.dataExtractionService.generateCreativePrompt(context);
-      metadata = { description: prompt };
-    } else {
-      // 生成逻辑海报描述
-      prompt = await this.dataExtractionService.generatePosterPrompt(context);
-      metadata = { description: prompt };
-    }
+    // 3. 生成逻辑海报提示词（带风格）
+    const prompt = await this.dataExtractionService.generatePosterPrompt(
+      context,
+      styleConfig.keywords
+    );
+    const metadata = {
+      description: prompt,
+      styleName: styleConfig.name,
+    };
 
-    // 3. 调用图像生成
+    // 4. 调用图像生成
     const imageResult = await this.imageGenAdapter.generate(prompt, {
-      type: request.type,
-      chartType: request.chartType,
+      type: "poster",
     });
 
-    // 4. 保存结果
+    // 5. 保存结果
     const result: VisualizationResult = {
       id: `vis-${Date.now()}`,
       sessionId: request.sessionId,
-      type: request.type,
+      type: "poster",
+      style,
       imageUrl: imageResult.url,
       imageBase64: imageResult.base64,
       prompt,
@@ -101,13 +104,13 @@ export class VisualizationService {
       createdAt: new Date(),
     };
 
-    // 5. 保存到内存存储
+    // 6. 保存到内存存储
     if (!this.visualizations.has(request.sessionId)) {
       this.visualizations.set(request.sessionId, []);
     }
     this.visualizations.get(request.sessionId)!.push(result);
 
-    // 6. 保存到消息流
+    // 7. 保存到消息流
     this.contextStore.appendMessage(request.sessionId, {
       id: result.id,
       type: "visualization",
@@ -116,7 +119,7 @@ export class VisualizationService {
     });
 
     this.logger.log(
-      `Visualization generated: ${result.id} for session ${request.sessionId}`
+      `Poster generated: ${result.id} for session ${request.sessionId} with style ${style}`
     );
 
     return result;
