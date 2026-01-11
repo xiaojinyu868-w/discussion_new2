@@ -24,6 +24,9 @@ export interface ScenarioConfig {
   description: string
   color: string
   bgGradient: string
+  // 认知对齐相关
+  alignmentTarget?: string  // 对齐目标：老师 / 参会者
+  alignmentGoal?: string    // 对齐目标描述
   skills: SkillConfig[]
   insightTypes: Record<string, InsightTypeConfig>
   features: {

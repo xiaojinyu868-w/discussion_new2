@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Eye, EyeOff, Loader2, Sparkles, Mic, Waves, Zap, Shield } from 'lucide-react'
+import { Eye, EyeOff, Loader2, Waves, Brain, MessageSquare, Shield, Link2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function LoginPage() {
@@ -33,9 +33,9 @@ export default function LoginPage() {
   }
 
   const features = [
-    { icon: Mic, label: '实时转写', color: 'text-cyan-400' },
-    { icon: Sparkles, label: 'AI 洞察', color: 'text-violet-400' },
-    { icon: Zap, label: '智能总结', color: 'text-amber-400' },
+    { icon: Link2, label: '认知对齐', color: 'text-cyan-400' },
+    { icon: Brain, label: '深度理解', color: 'text-violet-400' },
+    { icon: MessageSquare, label: '智能问答', color: 'text-emerald-400' },
   ]
 
   return (
@@ -85,20 +85,21 @@ export default function LoginPage() {
               </div>
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">MeetMind</h1>
-              <p className="text-white/50">AI 智能会议助手</p>
+              <h1 className="text-3xl font-bold text-white">MeetMind · 视界</h1>
+              <p className="text-white/50">认知对齐工具</p>
             </div>
           </div>
 
           {/* Tagline */}
           <h2 className="text-5xl font-bold text-white leading-tight mb-6">
-            让每一场会议
+            不只是记录
             <br />
-            <span className="text-gradient">更加高效</span>
+            <span className="text-gradient">而是真正理解</span>
           </h2>
           <p className="text-xl text-white/50 mb-12 leading-relaxed">
-            实时语音转写、AI 智能分析、自动生成会议纪要，
-            让您专注于会议本身，其他交给 AI。
+            帮你与老师、与他人保持认知同步。
+            <br />
+            消除「听了但没懂」的信息损耗。
           </p>
 
           {/* Features */}
@@ -127,8 +128,8 @@ export default function LoginPage() {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-2xl shadow-violet-500/30 mb-4">
               <Waves className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-white">MeetMind</h1>
-            <p className="text-white/50 mt-1">AI 智能会议助手</p>
+            <h1 className="text-3xl font-bold text-white">MeetMind · 视界</h1>
+            <p className="text-white/50 mt-1">认知对齐工具</p>
           </div>
 
           {/* Login card */}

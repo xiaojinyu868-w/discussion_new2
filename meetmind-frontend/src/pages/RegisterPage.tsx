@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Eye, EyeOff, Loader2, UserPlus, Brain, CheckCircle2 } from 'lucide-react'
+import { Eye, EyeOff, Loader2, UserPlus, CheckCircle2, Link2 } from 'lucide-react'
 
 export default function RegisterPage() {
   const [name, setName] = useState('')
@@ -81,11 +81,12 @@ export default function RegisterPage() {
         {/* Logo */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-600 shadow-2xl shadow-purple-500/30 mb-4">
-            <Brain className="w-8 h-8 text-white" />
+            <Link2 className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-purple-200 to-fuchsia-200 bg-clip-text text-transparent">
-            加入 MeetMind
+            加入 MeetMind · 视界
           </h1>
+          <p className="text-slate-400 mt-2">认知对齐工具</p>
         </div>
 
         {/* Register card */}
@@ -95,7 +96,7 @@ export default function RegisterPage() {
               创建新账户
             </CardTitle>
             <CardDescription className="text-slate-400 text-center">
-              开启您的智能会议之旅
+              与老师、与他人保持认知同步
             </CardDescription>
           </CardHeader>
           <CardContent>

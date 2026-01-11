@@ -1,40 +1,51 @@
 import type { ScenarioConfig, ScenarioType } from '@/types'
 
+/**
+ * MeetMind 场景配置
+ * 
+ * 核心理念：认知对齐
+ * - 教育场景：帮助学生与老师的思维对齐
+ * - 会议场景：帮助参会者与他人的想法对齐
+ */
+
 export const SCENARIO_CONFIGS: Record<ScenarioType, ScenarioConfig> = {
   classroom: {
     id: 'classroom',
     name: '课堂模式',
     icon: '🎓',
-    description: '专为课堂学习设计，帮助你捕捉老师的言外之意，拓展知识边界',
+    description: '与老师认知对齐 — 像有个学霸同桌，实时帮你翻译老师的深层意图',
     color: '#F59E0B',
     bgGradient: 'from-amber-500/20 via-orange-500/10 to-yellow-500/20',
+    // 对齐目标
+    alignmentTarget: '老师',
+    alignmentGoal: '理解老师真正想传达的知识',
     skills: [
       {
         id: 'inner_os',
-        name: '老师言外之意',
-        icon: '🎓',
-        description: '解读老师话语背后的深层含义和教学意图',
+        name: '对齐老师思维',
+        icon: '🎯',
+        description: '捕捉老师话语中的认知密度最高点，翻译教学意图',
       },
       {
         id: 'brainstorm',
-        name: '知识拓展',
+        name: '拓展认知边界',
         icon: '🌟',
-        description: '基于当前内容进行知识延伸和拓展',
+        description: '建立知识连接，与更广阔的知识体系对齐',
       },
       {
         id: 'stop_talking',
-        name: '重点回顾',
+        name: '对齐学习目标',
         icon: '📝',
-        description: '回顾本节课的重点内容和知识点',
+        description: '梳理核心知识点，确保与课程目标保持同步',
       },
     ],
     insightTypes: {
       data_chart: { icon: '📊', title: '关键数据', color: '#F59E0B' },
-      focus_reminder: { icon: '🎯', title: '学习提醒', color: '#10B981' },
-      redundancy_hint: { icon: '💡', title: '知识盲点', color: '#8B5CF6' },
+      focus_reminder: { icon: '🎯', title: '对齐提醒', color: '#10B981' },
+      redundancy_hint: { icon: '💡', title: '认知盲点', color: '#8B5CF6' },
       decision_record: { icon: '✅', title: '重要结论', color: '#3B82F6' },
-      periodic_summary: { icon: '📋', title: '课堂小结', color: '#EC4899' },
-      skill_result: { icon: '🎭', title: 'AI技能', color: '#6366F1' },
+      periodic_summary: { icon: '📋', title: '阶段对齐', color: '#EC4899' },
+      skill_result: { icon: '🧠', title: '认知对齐', color: '#6366F1' },
     },
     features: {
       impliedMeaning: true,
@@ -48,36 +59,39 @@ export const SCENARIO_CONFIGS: Record<ScenarioType, ScenarioConfig> = {
     id: 'meeting',
     name: '会议模式',
     icon: '💼',
-    description: '专为商务会议设计，追踪决策、待办事项，洞察潜台词',
+    description: '与他人认知对齐 — 像有个读心高手，帮你解读每个人话语背后的真实意图',
     color: '#3B82F6',
     bgGradient: 'from-blue-500/20 via-indigo-500/10 to-purple-500/20',
+    // 对齐目标
+    alignmentTarget: '参会者',
+    alignmentGoal: '理解他人话语背后的真实意图',
     skills: [
       {
         id: 'inner_os',
-        name: '潜台词分析',
+        name: '对齐他人意图',
         icon: '🎭',
-        description: '分析发言者话语背后的真实意图',
+        description: '解码话语背后的真实诉求，识别潜台词和立场',
       },
       {
         id: 'brainstorm',
-        name: '破局灵感',
+        name: '破局新视角',
         icon: '💡',
-        description: '针对当前讨论提供创新思路',
+        description: '跳出思维定式，与更高维度的解决方案对齐',
       },
       {
         id: 'stop_talking',
-        name: '议程守护',
+        name: '对齐会议目标',
         icon: '⏰',
-        description: '提醒会议偏离主题或超时',
+        description: '守护会议主线，确保团队与目标保持同步',
       },
     ],
     insightTypes: {
       data_chart: { icon: '📊', title: '数据洞察', color: '#3B82F6' },
-      focus_reminder: { icon: '🎯', title: '聚焦提醒', color: '#10B981' },
-      redundancy_hint: { icon: '🔄', title: '冗余提示', color: '#F59E0B' },
-      decision_record: { icon: '✅', title: '决策记录', color: '#8B5CF6' },
-      periodic_summary: { icon: '📋', title: '阶段总结', color: '#EC4899' },
-      skill_result: { icon: '🎭', title: 'AI技能', color: '#6366F1' },
+      focus_reminder: { icon: '🎯', title: '对齐提醒', color: '#10B981' },
+      redundancy_hint: { icon: '🔄', title: '认知偏差', color: '#F59E0B' },
+      decision_record: { icon: '✅', title: '共识记录', color: '#8B5CF6' },
+      periodic_summary: { icon: '📋', title: '阶段对齐', color: '#EC4899' },
+      skill_result: { icon: '🧠', title: '认知对齐', color: '#6366F1' },
     },
     features: {
       impliedMeaning: true,
@@ -99,4 +113,12 @@ export function getScenarioColor(scenario: ScenarioType): string {
 
 export function getScenarioName(scenario: ScenarioType): string {
   return SCENARIO_CONFIGS[scenario].name
+}
+
+export function getAlignmentTarget(scenario: ScenarioType): string {
+  return SCENARIO_CONFIGS[scenario].alignmentTarget || (scenario === 'classroom' ? '老师' : '参会者')
+}
+
+export function getAlignmentGoal(scenario: ScenarioType): string {
+  return SCENARIO_CONFIGS[scenario].alignmentGoal || ''
 }

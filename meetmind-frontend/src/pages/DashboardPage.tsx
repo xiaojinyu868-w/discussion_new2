@@ -1,32 +1,26 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '@/contexts/AppContext'
-import { useAuth } from '@/contexts/AuthContext'
 import { SCENARIO_CONFIGS } from '@/config/scenarios'
 import type { ScenarioType } from '@/types'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import {
   Mic,
-  History,
-  Sparkles,
-  ArrowRight,
   GraduationCap,
   Briefcase,
   Brain,
-  Clock,
-  TrendingUp,
-  Zap,
-  Waves,
-  ChevronRight,
-  Calendar,
-  BarChart3,
+  Target,
+  Users,
+  ArrowRight,
+  Play,
+  Sparkles,
+  Link2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function DashboardPage() {
   const [showScenarioDialog, setShowScenarioDialog] = useState(false)
-  const { user } = useAuth()
   const { setScenario } = useApp()
   const navigate = useNavigate()
 
@@ -40,251 +34,306 @@ export default function DashboardPage() {
     navigate('/recorder')
   }
 
-  const getGreeting = () => {
-    const hour = new Date().getHours()
-    if (hour < 6) return '夜深了'
-    if (hour < 12) return '早上好'
-    if (hour < 14) return '中午好'
-    if (hour < 18) return '下午好'
-    return '晚上好'
+  // 认知对齐核心理念
+  const alignmentConcept = {
+    title: '认知对齐',
+    subtitle: '不只是记录，而是真正理解',
+    description: '传统工具解决的是「记不住」，我们解决的是「听不懂」',
+    scenarios: [
+      {
+        type: 'classroom' as ScenarioType,
+        target: '老师',
+        icon: GraduationCap,
+        color: '#F59E0B',
+        pain: '跟不上老师思路，漏掉言外之意',
+        solution: '像学霸同桌一样，实时翻译老师的深层意图',
+      },
+      {
+        type: 'meeting' as ScenarioType,
+        target: '他人',
+        icon: Briefcase,
+        color: '#3B82F6',
+        pain: '听不懂潜台词，错过关键信号',
+        solution: '像读心高手一样，解读每个人话语背后的想法',
+      },
+    ],
   }
 
-  const stats = [
-    { 
-      label: '本周会议', 
-      value: '12', 
-      unit: '场',
-      icon: Calendar, 
-      gradient: 'from-blue-500 to-cyan-400',
-      glow: 'rgba(59, 130, 246, 0.3)',
-    },
-    { 
-      label: '转写时长', 
-      value: '8.5', 
-      unit: '小时',
-      icon: Clock, 
-      gradient: 'from-violet-500 to-purple-400',
-      glow: 'rgba(139, 92, 246, 0.3)',
-    },
-    { 
-      label: 'AI 洞察', 
-      value: '47', 
-      unit: '条',
-      icon: Sparkles, 
-      gradient: 'from-amber-500 to-orange-400',
-      glow: 'rgba(245, 158, 11, 0.3)',
-    },
-    { 
-      label: '效率提升', 
-      value: '32', 
-      unit: '%',
-      icon: TrendingUp, 
-      gradient: 'from-emerald-500 to-teal-400',
-      glow: 'rgba(16, 185, 129, 0.3)',
-    },
-  ]
-
-  const quickActions = [
+  // 对齐能力三层
+  const alignmentLayers = [
     {
-      title: '历史记录',
-      description: '查看所有会议记录和 AI 洞察',
-      icon: History,
-      gradient: 'from-blue-500/20 to-cyan-500/20',
-      iconColor: 'text-blue-400',
-      path: '/history',
+      name: '被动对齐',
+      desc: 'AI 发现你可能「没听懂」时，主动轻推提醒',
+      icon: Sparkles,
+      color: '#00d4ff',
     },
     {
-      title: 'AI 设置',
-      description: '自定义 AI 行为和偏好',
+      name: '主动对齐',
+      desc: '感到困惑时，一键触发认知技能获取洞察',
+      icon: Target,
+      color: '#a855f7',
+    },
+    {
+      name: '深度对齐',
+      desc: '随时提问，AI 基于全量上下文帮你「补课」',
       icon: Brain,
-      gradient: 'from-violet-500/20 to-purple-500/20',
-      iconColor: 'text-violet-400',
-      path: '/settings',
+      color: '#00ffc8',
     },
   ]
 
   return (
-    <div className="min-h-screen p-8">
-      {/* Greeting section */}
-      <div className="mb-10 animate-slide-up">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 animate-pulse" />
-          <span className="text-white/50 text-sm font-medium tracking-wide uppercase">
-            {new Date().toLocaleDateString('zh-CN', { weekday: 'long', month: 'long', day: 'numeric' })}
-          </span>
-        </div>
-        <h1 className="text-5xl font-bold text-white mb-3">
-          {getGreeting()}，
-          <span className="text-gradient">{user?.name || '用户'}</span>
-        </h1>
-        <p className="text-white/50 text-xl">准备好开启今天的智能会议了吗？</p>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* 极光背景 */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950" />
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-violet-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-amber-500/5 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: '2s' }} />
+        {/* 网格纹理 */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+            backgroundSize: '50px 50px',
+          }}
+        />
       </div>
 
-      {/* Main action card */}
-      <div 
-        className="mb-10 glass-card rounded-3xl overflow-hidden group cursor-pointer hover-lift animate-slide-up stagger-1"
-        onClick={handleStartRecording}
-      >
-        {/* Animated gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 via-fuchsia-600/20 to-cyan-600/20 animate-gradient opacity-50" />
-        
-        {/* Content */}
-        <div className="relative p-10 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            {/* Animated icon */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-80 transition-opacity duration-500" />
-              <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-500">
-                <Mic className="w-12 h-12 text-white" />
-                
-                {/* Sound wave animation */}
-                <div className="absolute -right-2 top-1/2 -translate-y-1/2 flex gap-0.5">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="w-1 bg-white/60 rounded-full animate-wave"
-                      style={{
-                        height: `${12 + i * 4}px`,
-                        animationDelay: `${i * 0.15}s`,
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <h2 className="text-3xl font-bold text-white mb-2">开始新的录音</h2>
-              <p className="text-white/60 text-lg">选择场景，开启智能转写与 AI 洞察</p>
-            </div>
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-8">
+        {/* Hero Section - 认知对齐核心理念 */}
+        <div className="text-center mb-16 pt-8">
+          {/* Logo & Tagline */}
+          <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
+            <Link2 className="w-4 h-4 text-cyan-400" />
+            <span className="text-white/60 text-sm font-medium tracking-wide">认知对齐工具</span>
           </div>
+
+          <h1 className="text-6xl font-bold mb-6 tracking-tight">
+            <span className="text-white">MeetMind</span>
+            <span className="mx-3 text-white/20">·</span>
+            <span className="bg-gradient-to-r from-cyan-400 via-violet-400 to-amber-400 bg-clip-text text-transparent">视界</span>
+          </h1>
           
-          <Button
-            size="lg"
-            className={cn(
-              'bg-white text-slate-900 hover:bg-white/90 font-bold px-10 h-16 text-lg',
-              'shadow-2xl hover:shadow-white/20 transition-all duration-300',
-              'group-hover:scale-105 rounded-2xl'
-            )}
-          >
-            立即开始
-            <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          <p className="text-2xl text-white/50 mb-4 font-light">
+            {alignmentConcept.subtitle}
+          </p>
+          <p className="text-lg text-white/40 max-w-2xl mx-auto">
+            {alignmentConcept.description}
+          </p>
+
+          {/* CTA Button */}
+          <div className="mt-10">
+            <Button
+              onClick={handleStartRecording}
+              size="lg"
+              className={cn(
+                'relative h-16 px-10 text-lg font-semibold rounded-2xl',
+                'bg-gradient-to-r from-cyan-500 via-violet-500 to-fuchsia-500',
+                'hover:from-cyan-400 hover:via-violet-400 hover:to-fuchsia-400',
+                'text-white shadow-2xl shadow-violet-500/25',
+                'transition-all duration-500 hover:scale-105 hover:shadow-violet-500/40',
+                'group overflow-hidden'
+              )}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Mic className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
+              <span>开始认知对齐</span>
+              <Play className="w-5 h-5 ml-3 opacity-60 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </div>
         </div>
-      </div>
 
-      {/* Stats grid */}
-      <div className="grid grid-cols-4 gap-5 mb-10">
-        {stats.map((stat, index) => (
-          <div 
-            key={stat.label} 
-            className="glass-card rounded-2xl p-6 hover-lift animate-slide-up"
-            style={{ 
-              animationDelay: `${0.2 + index * 0.1}s`,
-              boxShadow: `0 8px 32px ${stat.glow}`,
-            }}
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div 
-                className={cn(
-                  'w-14 h-14 rounded-xl flex items-center justify-center',
-                  `bg-gradient-to-br ${stat.gradient}`
-                )}
-              >
-                <stat.icon className="w-7 h-7 text-white" />
-              </div>
-              <BarChart3 className="w-5 h-5 text-white/20" />
-            </div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-bold text-white font-mono">{stat.value}</span>
-              <span className="text-lg text-white/50">{stat.unit}</span>
-            </div>
-            <p className="text-white/40 text-sm mt-1">{stat.label}</p>
+        {/* 两大场景对比 */}
+        <div className="mb-16">
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <Users className="w-5 h-5 text-cyan-400" />
+            <h2 className="text-xl font-semibold text-white/80">你要对齐谁？</h2>
           </div>
-        ))}
-      </div>
 
-      {/* Quick actions */}
-      <div className="grid grid-cols-2 gap-6">
-        {quickActions.map((action, index) => (
-          <div
-            key={action.title}
-            onClick={() => navigate(action.path)}
-            className={cn(
-              'glass-card rounded-2xl p-8 cursor-pointer group hover-lift animate-slide-up',
-              'transition-all duration-300'
-            )}
-            style={{ animationDelay: `${0.5 + index * 0.1}s` }}
-          >
-            <div className="flex items-start justify-between mb-6">
-              <div 
-                className={cn(
-                  'w-16 h-16 rounded-2xl flex items-center justify-center',
-                  `bg-gradient-to-br ${action.gradient}`,
-                  'group-hover:scale-110 transition-transform duration-300'
-                )}
-              >
-                <action.icon className={cn('w-8 h-8', action.iconColor)} />
-              </div>
-              <ChevronRight className="w-6 h-6 text-white/20 group-hover:text-white/50 group-hover:translate-x-1 transition-all" />
-            </div>
-            <h3 className="text-2xl font-bold text-white mb-2">{action.title}</h3>
-            <p className="text-white/50">{action.description}</p>
+          <div className="grid grid-cols-2 gap-6">
+            {alignmentConcept.scenarios.map((scenario) => {
+              const config = SCENARIO_CONFIGS[scenario.type]
+              return (
+                <button
+                  key={scenario.type}
+                  onClick={() => handleSelectScenario(scenario.type)}
+                  className={cn(
+                    'relative p-8 rounded-2xl text-left transition-all duration-500',
+                    'bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm',
+                    'hover:bg-white/[0.06] hover:border-white/10 hover:-translate-y-1',
+                    'hover:shadow-2xl group'
+                  )}
+                  style={{ boxShadow: `0 0 60px ${scenario.color}10` }}
+                >
+                  {/* Glow on hover */}
+                  <div 
+                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ boxShadow: `inset 0 0 40px ${scenario.color}15, 0 0 60px ${scenario.color}10` }}
+                  />
+                  
+                  <div className="relative">
+                    {/* 对齐目标标签 */}
+                    <div 
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-6"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${scenario.color}20, ${scenario.color}10)`,
+                        color: scenario.color,
+                      }}
+                    >
+                      <Link2 className="w-4 h-4" />
+                      <span>对齐{scenario.target}</span>
+                    </div>
+
+                    {/* Icon */}
+                    <div 
+                      className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
+                      style={{ background: `${scenario.color}20` }}
+                    >
+                      <scenario.icon className="w-8 h-8" style={{ color: scenario.color }} />
+                    </div>
+
+                    {/* 场景名称 */}
+                    <h3 className="text-2xl font-bold text-white mb-3 flex items-center gap-2">
+                      {config.icon} {config.name}
+                    </h3>
+
+                    {/* 痛点 */}
+                    <div className="mb-4">
+                      <span className="text-white/40 text-sm">痛点：</span>
+                      <p className="text-white/60 text-sm mt-1">{scenario.pain}</p>
+                    </div>
+
+                    {/* 解决方案 */}
+                    <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                      <span className="text-xs font-medium" style={{ color: scenario.color }}>AI 帮你</span>
+                      <p className="text-white/80 text-sm mt-1">{scenario.solution}</p>
+                    </div>
+
+                    {/* 技能预览 */}
+                    <div className="flex flex-wrap gap-2 mt-6">
+                      {config.skills.map((skill) => (
+                        <span
+                          key={skill.id}
+                          className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/10 text-white/70"
+                        >
+                          {skill.icon} {skill.name}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Arrow indicator */}
+                    <div className="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowRight className="w-5 h-5 text-white/60" />
+                    </div>
+                  </div>
+                </button>
+              )
+            })}
           </div>
-        ))}
+        </div>
+
+        {/* 对齐能力三层 */}
+        <div className="mb-16">
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <Brain className="w-5 h-5 text-violet-400" />
+            <h2 className="text-xl font-semibold text-white/80">三层对齐能力</h2>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            {alignmentLayers.map((layer, index) => (
+              <div
+                key={layer.name}
+                className={cn(
+                  'relative p-6 rounded-2xl transition-all duration-500',
+                  'bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm',
+                  'hover:bg-white/[0.06] hover:border-white/10'
+                )}
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div 
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                  style={{ background: `${layer.color}20` }}
+                >
+                  <layer.icon className="w-6 h-6" style={{ color: layer.color }} />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">{layer.name}</h3>
+                <p className="text-sm text-white/50 leading-relaxed">{layer.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 底部信息 */}
+        <div className="text-center text-white/30 text-sm pb-8">
+          <p>MeetMind · 视界 — 认知对齐，让理解没有偏差</p>
+        </div>
       </div>
 
       {/* Scenario selection dialog */}
       <Dialog open={showScenarioDialog} onOpenChange={setShowScenarioDialog}>
-        <DialogContent className="sm:max-w-2xl glass-strong border-white/10 rounded-3xl p-0 overflow-hidden">
+        <DialogContent className="sm:max-w-2xl bg-slate-900/95 backdrop-blur-xl border-white/10 rounded-3xl p-0 overflow-hidden">
           {/* Header */}
-          <div className="p-8 pb-6 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center mx-auto mb-4">
-              <Waves className="w-8 h-8 text-white" />
+          <div className="p-8 pb-6 text-center relative">
+            <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 to-transparent" />
+            <div className="relative">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-500 flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-cyan-500/20">
+                <Link2 className="w-8 h-8 text-white" />
+              </div>
+              <DialogTitle className="text-2xl font-bold text-white mb-2">你要对齐谁？</DialogTitle>
+              <p className="text-white/50">选择场景，AI 将针对性地帮你理解对方</p>
             </div>
-            <DialogTitle className="text-3xl font-bold text-white mb-2">选择使用场景</DialogTitle>
-            <p className="text-white/50">不同场景将启用针对性的 AI 功能</p>
           </div>
           
           {/* Scenario cards */}
           <div className="px-8 pb-8 grid grid-cols-2 gap-4">
-            {Object.values(SCENARIO_CONFIGS).map((config) => {
-              const Icon = config.id === 'classroom' ? GraduationCap : Briefcase
+            {alignmentConcept.scenarios.map((scenario) => {
+              const config = SCENARIO_CONFIGS[scenario.type]
+              
               return (
                 <button
-                  key={config.id}
-                  onClick={() => handleSelectScenario(config.id)}
+                  key={scenario.type}
+                  onClick={() => handleSelectScenario(scenario.type)}
                   className={cn(
                     'relative p-6 rounded-2xl text-left transition-all duration-300',
-                    'border-2 border-transparent hover:border-white/20',
-                    'hover:scale-[1.02] hover-lift group overflow-hidden'
+                    'border border-white/10 hover:border-white/20',
+                    'hover:scale-[1.02] group overflow-hidden',
+                    'bg-white/[0.02] hover:bg-white/[0.05]'
                   )}
-                  style={{
-                    background: `linear-gradient(135deg, ${config.color}15, ${config.color}05)`,
-                  }}
                 >
                   {/* Hover glow */}
                   <div 
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                     style={{
-                      background: `radial-gradient(circle at 50% 50%, ${config.color}20, transparent 70%)`,
+                      background: `radial-gradient(circle at 50% 50%, ${scenario.color}15, transparent 70%)`,
                     }}
                   />
                   
                   <div className="relative">
+                    {/* 对齐目标 */}
                     <div
-                      className="w-16 h-16 rounded-xl flex items-center justify-center mb-4"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold mb-4"
                       style={{ 
-                        background: `linear-gradient(135deg, ${config.color}30, ${config.color}10)`,
+                        background: `${scenario.color}20`,
+                        color: scenario.color,
                       }}
                     >
-                      <Icon className="w-8 h-8" style={{ color: config.color }} />
+                      <Link2 className="w-3 h-3" />
+                      对齐{scenario.target}
+                    </div>
+
+                    <div
+                      className="w-14 h-14 rounded-xl flex items-center justify-center mb-4"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${scenario.color}30, ${scenario.color}10)`,
+                      }}
+                    >
+                      <scenario.icon className="w-7 h-7" style={{ color: scenario.color }} />
                     </div>
                     
                     <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
                       {config.icon} {config.name}
                     </h3>
-                    <p className="text-white/50 text-sm leading-relaxed mb-4">{config.description}</p>
+                    <p className="text-white/50 text-sm leading-relaxed mb-4">{scenario.solution}</p>
                     
                     {/* Skills preview */}
                     <div className="flex flex-wrap gap-2">
@@ -296,6 +345,11 @@ export default function DashboardPage() {
                           {skill.icon} {skill.name}
                         </span>
                       ))}
+                    </div>
+                    
+                    {/* Arrow indicator */}
+                    <div className="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowRight className="w-4 h-4 text-white/60" />
                     </div>
                   </div>
                 </button>

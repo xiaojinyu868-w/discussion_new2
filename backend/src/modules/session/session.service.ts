@@ -386,21 +386,28 @@ ${preview}
       type: "qa",
     });
 
-    // 根据场景选择提示词
+    // 根据场景选择提示词 - 体现「对齐」核心理念
     const isClassroom = scenario === 'classroom';
     const contentType = isClassroom ? '课堂内容' : '会议内容';
     const roleDesc = isClassroom 
-      ? '你是一个耐心的学习助手，帮助学生理解课堂内容。用通俗易懂的方式解答问题，必要时举例说明。'
-      : '你是一个专业的会议助手，帮助用户理解和分析会议内容。';
+      ? '你是学生的「认知对齐助手」，帮助学生与老师的思维保持同步。用通俗易懂的方式解答问题，帮助学生真正理解老师想传达的知识。'
+      : '你是参会者的「认知对齐助手」，帮助用户与其他参会者的想法保持同步。分析会议内容，帮助用户理解他人话语背后的意图。';
     
-    const prompt = `你是一个专业的${isClassroom ? '学习' : '会议'}助手。基于以下${contentType}回答用户的问题。
+    const prompt = `你是一个专业的认知对齐助手。基于以下${contentType}回答用户的问题。
 
-${contentType}：
+## 你的使命
+帮助用户与${isClassroom ? '老师' : '其他参会者'}的认知保持同步，消除理解上的偏差。
+
+## ${contentType}
 ${context}
 
-用户问题：${question}
+## 用户问题
+${question}
 
-请简洁、准确地回答问题。${isClassroom ? '如果问题涉及课堂外的知识，可以适当拓展但要标明。' : '如果问题与会议内容无关，请礼貌地说明。'}`;
+## 回答要求
+- 简洁、准确地回答问题
+- ${isClassroom ? '如果问题涉及课堂外的知识，可以适当拓展但要标明' : '如果问题与会议内容无关，请礼貌地说明'}
+- 始终服务于「帮助用户更好地理解」这一目标`;
 
     try {
       const answer = await this.llmAdapter.chatWithPrompt(

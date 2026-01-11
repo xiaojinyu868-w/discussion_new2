@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useApp } from '@/contexts/AppContext'
 import { useRecorder } from '@/hooks/useRecorder'
 import { useToast } from '@/hooks/use-toast'
-import { getScenarioConfig } from '@/config/scenarios'
+import { getScenarioConfig, getAlignmentTarget } from '@/config/scenarios'
 import { sessionApi, skillApi } from '@/services/api'
 import { formatDuration, generateId, cn } from '@/lib/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -28,7 +28,11 @@ import {
   Zap,
   ChevronDown,
   Volume2,
-  Radio
+  Radio,
+  Brain,
+  Lightbulb,
+  Target,
+  Link2,
 } from 'lucide-react'
 
 export default function RecorderPage() {
@@ -43,12 +47,14 @@ export default function RecorderPage() {
   const [isChatLoading, setIsChatLoading] = useState(false)
   const [chatInput, setChatInput] = useState('')
   const [showSkillMenu, setShowSkillMenu] = useState(false)
+  const [activeLayer, setActiveLayer] = useState<'L1' | 'L2' | 'L3' | 'L4'>('L1')
   
   const transcriptScrollRef = useRef<HTMLDivElement>(null)
   const insightScrollRef = useRef<HTMLDivElement>(null)
   const chatScrollRef = useRef<HTMLDivElement>(null)
 
   const scenarioConfig = getScenarioConfig(scenario)
+  const alignmentTarget = getAlignmentTarget(scenario)
   const ScenarioIcon = scenario === 'classroom' ? GraduationCap : Briefcase
 
   // Handle new transcription segments from backend
@@ -111,8 +117,8 @@ export default function RecorderPage() {
         // Pass sessionId directly to startRecording to avoid timing issues
         await startRecording(data.sessionId)
         toast({
-          title: '🎙️ 录音已开始',
-          description: `${scenarioConfig.name}模式已激活`,
+          title: '🎯 认知对齐已启动',
+          description: `${scenarioConfig.name} · 正在对齐${alignmentTarget}`,
         })
       }
     } catch (error) {
@@ -131,7 +137,7 @@ export default function RecorderPage() {
       try {
         await sessionApi.end(sessionId)
         toast({
-          title: '✅ 录音已结束',
+          title: '✅ 会议记录完成',
           description: `录音时长: ${formatDuration(duration)}`,
         })
       } catch (error) {
@@ -140,88 +146,81 @@ export default function RecorderPage() {
     }
   }, [stopRecording, sessionId, duration, toast])
 
-  // Trigger AI skill
   const handleTriggerSkill = useCallback(async (skillId: string) => {
-    if (!sessionId) return
+    if (!sessionId || loadingSkill) return
     
     setLoadingSkill(skillId)
     setShowSkillMenu(false)
+    
     try {
       const response = await skillApi.trigger(sessionId, skillId, scenario)
-      const data = response.data as unknown as { cards?: Array<{ type: string; content: unknown }> }
+      const data = response.data as unknown as { cards?: unknown[] }
       
-      if (data.cards && data.cards.length > 0) {
-        data.cards.forEach((card) => {
-          const insight: Insight = {
+      if (data.cards && Array.isArray(data.cards)) {
+        data.cards.forEach((card: unknown) => {
+          const cardData = card as { title?: string; content?: string; type?: string }
+          addInsight({
             id: generateId(),
-            type: card.type,
-            content: card.content as Record<string, unknown>,
-            createdAt: new Date().toISOString(),
-            sessionId,
-          }
-          addInsight(insight)
-        })
-        toast({
-          title: '✨ AI 分析完成',
+            type: skillId,
+            title: cardData.title || '洞察',
+            content: cardData.content || '',
+            timestamp: new Date(),
+          })
         })
       }
-    } catch (error) {
-      console.error('Skill trigger failed:', error)
+      
       toast({
-        title: '分析失败',
-        description: '请稍后重试',
+        title: '✨ 认知对齐技能已触发',
+        description: `${scenarioConfig.skills.find(s => s.id === skillId)?.name || skillId}`,
+      })
+    } catch (error) {
+      console.error('Failed to trigger skill:', error)
+      toast({
+        title: '技能触发失败',
         variant: 'destructive',
       })
+    } finally {
+      setLoadingSkill(null)
     }
-    setLoadingSkill(null)
-  }, [sessionId, scenario, addInsight, toast])
+  }, [sessionId, loadingSkill, scenario, scenarioConfig.skills, addInsight, toast])
 
-  // Send chat message
-  const handleSendMessage = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSendMessage = useCallback(async () => {
     if (!sessionId || !chatInput.trim() || isChatLoading) return
-
-    const content = chatInput.trim()
-    setChatInput('')
-
+    
     const userMessage: ChatMessage = {
       id: generateId(),
       role: 'user',
-      content,
-      timestamp: new Date().toISOString(),
+      content: chatInput.trim(),
+      timestamp: new Date(),
     }
+    
     setChatMessages(prev => [...prev, userMessage])
-
-    const assistantMessage: ChatMessage = {
-      id: generateId(),
-      role: 'assistant',
-      content: '',
-      timestamp: new Date().toISOString(),
-      isLoading: true,
-    }
-    setChatMessages(prev => [...prev, assistantMessage])
+    setChatInput('')
     setIsChatLoading(true)
-
+    
     try {
-      const response = await sessionApi.askQuestion(sessionId, content, scenario)
+      const response = await sessionApi.askQuestion(sessionId, userMessage.content, scenario)
       const data = response.data as unknown as { answer?: string }
       
-      setChatMessages(prev =>
-        prev.map(msg =>
-          msg.id === assistantMessage.id
-            ? { ...msg, content: data.answer || '抱歉，无法获取回答', isLoading: false }
-            : msg
-        )
-      )
+      const assistantMessage: ChatMessage = {
+        id: generateId(),
+        role: 'assistant',
+        content: data.answer || '抱歉，我无法回答这个问题。',
+        timestamp: new Date(),
+      }
+      
+      setChatMessages(prev => [...prev, assistantMessage])
     } catch (error) {
-      setChatMessages(prev =>
-        prev.map(msg =>
-          msg.id === assistantMessage.id
-            ? { ...msg, content: '抱歉，处理问题时出错了', isLoading: false }
-            : msg
-        )
-      )
+      console.error('Failed to send message:', error)
+      const errorMessage: ChatMessage = {
+        id: generateId(),
+        role: 'assistant',
+        content: '抱歉，发生了错误，请稍后重试。',
+        timestamp: new Date(),
+      }
+      setChatMessages(prev => [...prev, errorMessage])
     }
+    
     setIsChatLoading(false)
   }, [sessionId, chatInput, isChatLoading, scenario])
 
@@ -232,347 +231,430 @@ export default function RecorderPage() {
     return isActive
   })
 
+  // 认知对齐层级配置
+  const alignmentLayers = [
+    { id: 'L1', name: '信息采集', subtitle: '全息记录', icon: Radio, color: '#00d4ff' },
+    { id: 'L2', name: '认知对齐', subtitle: `对齐${alignmentTarget}`, icon: Link2, color: '#a855f7' },
+    { id: 'L3', name: '深度理解', subtitle: '洞察意图', icon: Brain, color: '#f59e0b' },
+    { id: 'L4', name: '行动建议', subtitle: '决策支撑', icon: Lightbulb, color: '#00ffc8' },
+  ]
+
+  // 获取洞察类型的图标和颜色 - 体现对齐理念
+  const getInsightStyle = (type: string) => {
+    switch (type) {
+      case 'inner_os':
+        return { icon: Link2, color: '#00d4ff', label: `对齐${alignmentTarget}` }
+      case 'brainstorm':
+        return { icon: Lightbulb, color: '#f59e0b', label: '拓展视角' }
+      case 'stop_talking':
+        return { icon: Target, color: '#ff6b9d', label: '目标守护' }
+      default:
+        return { icon: Sparkles, color: '#00d4ff', label: '认知洞察' }
+    }
+  }
+
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      {/* Compact Header with Recording Controls */}
-      <header className="flex-shrink-0 px-4 py-3 border-b border-white/5 bg-black/20 backdrop-blur-xl">
-        <div className="flex items-center justify-between">
-          {/* Left: Back & Scenario */}
-          <div className="flex items-center gap-3">
-            <button
+    <div className="h-screen flex flex-col bg-slate-950 overflow-hidden">
+      {/* 极光背景 */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet-500/5 rounded-full blur-[80px]" />
+        {isRecording && !isPaused && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] animate-pulse" />
+        )}
+      </div>
+
+      {/* 顶部控制栏 */}
+      <div className="relative z-20 flex-shrink-0 border-b border-white/[0.06] bg-slate-900/80 backdrop-blur-xl">
+        <div className="flex items-center justify-between px-6 py-4">
+          {/* 左侧：返回 + 场景信息 */}
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => navigate('/dashboard')}
-              className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all"
+              className="text-white/60 hover:text-white hover:bg-white/10 rounded-xl"
             >
-              <ArrowLeft className="w-4 h-4" />
-            </button>
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
             
-            <div className="flex items-center gap-2">
-              <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center"
-                style={{ backgroundColor: `${scenarioConfig.color}30` }}
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: `${scenarioConfig.color}20` }}
               >
-                <ScenarioIcon className="w-4 h-4" style={{ color: scenarioConfig.color }} />
+                <ScenarioIcon className="w-5 h-5" style={{ color: scenarioConfig.color }} />
               </div>
-              <span className="font-semibold text-white">{scenarioConfig.name}</span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-white">{scenarioConfig.name}模式</span>
+                  {isRecording && (
+                    <span className={cn(
+                      'px-2 py-0.5 rounded-full text-xs font-medium',
+                      isPaused 
+                        ? 'bg-amber-500/20 text-amber-400' 
+                        : 'bg-red-500/20 text-red-400'
+                    )}>
+                      {isPaused ? '已暂停' : '录音中'}
+                    </span>
+                  )}
+                </div>
+                <span className="text-sm text-white/40">认知对齐 · 对齐{alignmentTarget}</span>
+              </div>
             </div>
           </div>
 
-          {/* Center: Recording Controls */}
-          <div className="flex items-center gap-3">
-            {/* Audio Level Indicator */}
-            <div className="flex items-center gap-0.5 h-6 px-2">
-              {levelBars.map((isActive, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    'w-1 rounded-full transition-all duration-75',
-                    isActive ? 'bg-green-400' : 'bg-white/10'
-                  )}
-                  style={{
-                    height: `${Math.min(24, 8 + i * 1.5)}px`,
-                    opacity: isActive ? 1 : 0.3,
-                  }}
-                />
-              ))}
-            </div>
-
-            {/* Main Recording Button */}
-            {!isRecording ? (
-              <button
-                onClick={handleStartRecording}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-400 hover:to-rose-400 text-white font-medium shadow-lg shadow-red-500/25 transition-all hover:scale-105"
-              >
-                <Mic className="w-4 h-4" />
-                <span>开始录音</span>
-              </button>
-            ) : (
-              <div className="flex items-center gap-2">
-                {isPaused ? (
-                  <button
-                    onClick={resumeRecording}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500 hover:bg-green-400 text-white font-medium transition-all"
-                  >
-                    <Play className="w-4 h-4" />
-                    <span>继续</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={pauseRecording}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-white font-medium transition-all"
-                  >
-                    <Pause className="w-4 h-4" />
-                    <span>暂停</span>
-                  </button>
-                )}
-                <button
-                  onClick={handleStopRecording}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium transition-all"
-                >
-                  <Square className="w-4 h-4" />
-                  <span>结束</span>
-                </button>
+          {/* 中间：录音控制 */}
+          <div className="flex items-center gap-4">
+            {/* 音量指示器 */}
+            {isRecording && (
+              <div className="flex items-center gap-1 px-3 py-2 rounded-xl bg-white/5">
+                <Volume2 className="w-4 h-4 text-white/40 mr-1" />
+                {levelBars.map((active, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      'w-1 rounded-full transition-all duration-75',
+                      active ? 'bg-cyan-400' : 'bg-white/10'
+                    )}
+                    style={{ height: `${8 + i * 2}px` }}
+                  />
+                ))}
               </div>
             )}
 
-            {/* Duration */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5">
-              <Clock className="w-4 h-4 text-violet-400" />
-              <span className="font-mono text-white tabular-nums">
-                {formatDuration(duration)}
-              </span>
+            {/* 时长 */}
+            {isRecording && (
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5">
+                <Clock className="w-4 h-4 text-white/40" />
+                <span className="font-mono text-white/80 text-lg">{formatDuration(duration)}</span>
+              </div>
+            )}
+
+            {/* 录音按钮组 */}
+            <div className="flex items-center gap-2">
+              {!isRecording ? (
+                <Button
+                  onClick={handleStartRecording}
+                  className={cn(
+                    'h-12 px-6 rounded-xl font-semibold',
+                    'bg-gradient-to-r from-cyan-500 to-violet-500',
+                    'hover:from-cyan-400 hover:to-violet-400',
+                    'text-white shadow-lg shadow-cyan-500/20'
+                  )}
+                >
+                  <Mic className="w-5 h-5 mr-2" />
+                  开始录音
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={isPaused ? resumeRecording : pauseRecording}
+                    className="w-12 h-12 rounded-xl bg-white/5 hover:bg-white/10 text-white/80"
+                  >
+                    {isPaused ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
+                  </Button>
+                  <Button
+                    onClick={handleStopRecording}
+                    className="h-12 px-6 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 font-semibold"
+                  >
+                    <Square className="w-4 h-4 mr-2" />
+                    结束录音
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Right: Recording Status & AI Skills */}
+          {/* 右侧：AI 技能 */}
           <div className="flex items-center gap-3">
-            {/* AI Skills Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setShowSkillMenu(!showSkillMenu)}
                 disabled={!sessionId}
                 className={cn(
-                  'flex items-center gap-2 px-3 py-2 rounded-lg transition-all',
+                  'flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all',
                   sessionId 
                     ? 'bg-violet-500/20 hover:bg-violet-500/30 text-violet-300' 
                     : 'bg-white/5 text-white/30 cursor-not-allowed'
                 )}
               >
-                <Zap className="w-4 h-4" />
-                <span className="text-sm font-medium">AI 技能</span>
+                <Link2 className="w-4 h-4" />
+                <span className="text-sm font-medium">对齐技能</span>
                 <ChevronDown className={cn('w-4 h-4 transition-transform', showSkillMenu && 'rotate-180')} />
               </button>
               
               {showSkillMenu && sessionId && (
-                <div className="absolute top-full right-0 mt-2 w-48 py-2 rounded-xl bg-slate-800 border border-white/10 shadow-xl z-50">
+                <div className="absolute top-full right-0 mt-2 w-56 py-2 rounded-xl bg-slate-800/95 backdrop-blur-xl border border-white/10 shadow-2xl z-50">
+                  <div className="px-3 py-2 border-b border-white/10">
+                    <span className="text-xs text-white/40 font-medium">选择对齐技能</span>
+                  </div>
                   {scenarioConfig.skills.map((skill) => (
                     <button
                       key={skill.id}
                       onClick={() => handleTriggerSkill(skill.id)}
                       disabled={loadingSkill === skill.id}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 text-left transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 text-left transition-colors"
                     >
-                      <span className="text-lg">{skill.icon}</span>
-                      <span className="text-sm text-white/80">{skill.name}</span>
+                      <span className="text-xl">{skill.icon}</span>
+                      <div className="flex-1">
+                        <span className="text-sm text-white/90 font-medium">{skill.name}</span>
+                        <p className="text-xs text-white/40">{skill.description}</p>
+                      </div>
                       {loadingSkill === skill.id && (
-                        <Loader2 className="w-4 h-4 animate-spin ml-auto text-violet-400" />
+                        <Loader2 className="w-4 h-4 animate-spin text-violet-400" />
                       )}
                     </button>
                   ))}
                 </div>
               )}
             </div>
+          </div>
+        </div>
 
-            {/* Recording Status Indicator */}
-            {isRecording && (
-              <div className={cn(
-                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
-                isPaused ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'
-              )}>
-                <Radio className={cn('w-3.5 h-3.5', !isPaused && 'animate-pulse')} />
-                <span>{isPaused ? '已暂停' : '录音中'}</span>
+        {/* 认知对齐层级标签 */}
+        <div className="flex items-center gap-1 px-6 pb-3">
+          {alignmentLayers.map((layer) => (
+            <button
+              key={layer.id}
+              onClick={() => setActiveLayer(layer.id as 'L1' | 'L2' | 'L3' | 'L4')}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-lg transition-all',
+                activeLayer === layer.id 
+                  ? 'bg-white/10 text-white' 
+                  : 'text-white/40 hover:text-white/60 hover:bg-white/5'
+              )}
+            >
+              <layer.icon className="w-4 h-4" style={{ color: activeLayer === layer.id ? layer.color : undefined }} />
+              <span className="text-sm font-medium">{layer.name}</span>
+              <span className="text-xs opacity-60">· {layer.subtitle}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 主内容区 - 三栏布局 */}
+      <div className="relative z-10 flex-1 flex overflow-hidden">
+        {/* 左栏：实时转写 (L1 信息层) */}
+        <div className="w-[35%] border-r border-white/[0.06] flex flex-col bg-slate-900/30">
+          <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
+            <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+              <Radio className="w-4 h-4 text-cyan-400" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-white text-sm">L1 · 全息记录</h3>
+              <p className="text-xs text-white/40">实时语音转写</p>
+            </div>
+            {isRecording && !isPaused && (
+              <div className="ml-auto flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="text-xs text-cyan-400">转写中</span>
               </div>
             )}
           </div>
-        </div>
-      </header>
-
-      {/* Main Content - Three Column Layout */}
-      <div className="flex-1 flex gap-4 p-4 overflow-hidden">
-        {/* Column 1: Transcription */}
-        <div className="flex-1 flex flex-col min-w-0 rounded-2xl bg-white/[0.02] border border-white/5 overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-white/[0.02]">
-            <FileText className="w-4 h-4 text-blue-400" />
-            <span className="font-medium text-white">实时转写</span>
-            {isRecording && !isPaused && (
-              <span className="flex items-center gap-1 ml-auto text-xs text-green-400">
-                <Volume2 className="w-3 h-3 animate-pulse" />
-                转写中
-              </span>
-            )}
-          </div>
           
-          <ScrollArea className="flex-1">
-            <div ref={transcriptScrollRef} className="p-4 space-y-3">
+          <ScrollArea className="flex-1" ref={transcriptScrollRef}>
+            <div className="p-4 space-y-3">
               {transcriptions.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-white/30">
-                  <FileText className="w-10 h-10 mb-3 opacity-50" />
-                  <p className="text-sm">开始录音后显示转写内容</p>
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 flex items-center justify-center mb-4">
+                    <FileText className="w-8 h-8 text-cyan-500/40" />
+                  </div>
+                  <p className="text-white/40 text-sm">开始录音后</p>
+                  <p className="text-white/40 text-sm">转写内容将在这里显示</p>
                 </div>
               ) : (
-                transcriptions.map((segment, index) => (
-                  <div
-                    key={segment.id}
-                    className={cn(
-                      'p-3 rounded-xl bg-white/[0.03] border-l-2 transition-all',
-                      index === transcriptions.length - 1 ? 'border-blue-400 bg-blue-500/5' : 'border-transparent'
-                    )}
+                transcriptions.map((seg) => (
+                  <div 
+                    key={seg.id} 
+                    className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] transition-colors"
                   >
-                    {segment.speaker && (
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <div className="w-5 h-5 rounded-full bg-blue-500/30 flex items-center justify-center text-[10px] font-medium text-blue-300">
-                          {segment.speaker.charAt(0)}
-                        </div>
-                        <span className="text-xs font-medium text-white/60">{segment.speaker}</span>
-                        <span className="text-xs text-white/30">
-                          {Math.floor(segment.startTime / 60)}:{String(Math.floor(segment.startTime % 60)).padStart(2, '0')}
-                        </span>
-                      </div>
-                    )}
-                    <p className="text-sm text-white/80 leading-relaxed">{segment.text}</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs font-medium text-cyan-400">{seg.speaker}</span>
+                      <span className="text-xs text-white/30">
+                        {formatDuration(seg.startTime)}
+                      </span>
+                    </div>
+                    <p className="text-white/80 text-sm leading-relaxed">{seg.text}</p>
                   </div>
                 ))
-              )}
-              
-              {isRecording && !isPaused && (
-                <div className="flex items-center gap-2 px-3 py-2 text-white/40">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  <span className="text-xs">正在转写...</span>
-                </div>
               )}
             </div>
           </ScrollArea>
         </div>
 
-        {/* Column 2: AI Insights */}
-        <div className="flex-1 flex flex-col min-w-0 rounded-2xl bg-white/[0.02] border border-white/5 overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-white/[0.02]">
-            <Sparkles className="w-4 h-4 text-violet-400" />
-            <span className="font-medium text-white">AI 洞察</span>
+        {/* 中栏：AI 洞察 (L2-L4 认知/视觉/战略层) */}
+        <div className="w-[35%] border-r border-white/[0.06] flex flex-col bg-slate-900/20">
+          <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
+            <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
+              <Link2 className="w-4 h-4 text-violet-400" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-white text-sm">认知对齐</h3>
+              <p className="text-xs text-white/40">对齐{alignmentTarget} · 洞察意图</p>
+            </div>
             {insights.length > 0 && (
-              <span className="ml-auto px-2 py-0.5 rounded-full bg-violet-500/20 text-xs font-medium text-violet-300">
+              <span className="ml-auto px-2 py-0.5 rounded-full text-xs bg-violet-500/20 text-violet-300">
                 {insights.length}
               </span>
             )}
           </div>
           
-          <ScrollArea className="flex-1">
-            <div ref={insightScrollRef} className="p-4 space-y-3">
+          <ScrollArea className="flex-1" ref={insightScrollRef}>
+            <div className="p-4 space-y-3">
               {insights.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-white/30">
-                  <Sparkles className="w-10 h-10 mb-3 opacity-50" />
-                  <p className="text-sm text-center">
-                    点击「AI 技能」生成洞察
-                  </p>
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-violet-500/10 flex items-center justify-center mb-4">
+                    <Link2 className="w-8 h-8 text-violet-500/40" />
+                  </div>
+                  <p className="text-white/40 text-sm">触发对齐技能后</p>
+                  <p className="text-white/40 text-sm">认知洞察将在这里显示</p>
                 </div>
               ) : (
-                insights.map((insight) => (
-                  <div
-                    key={insight.id}
-                    className="p-4 rounded-xl bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20"
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="px-2 py-0.5 rounded-md bg-violet-500/20 text-xs font-medium text-violet-300">
-                        {insight.type}
-                      </span>
-                      <span className="text-xs text-white/30">
-                        {new Date(insight.createdAt).toLocaleTimeString()}
-                      </span>
+                insights.map((insight) => {
+                  const style = getInsightStyle(insight.type)
+                  return (
+                    <div 
+                      key={insight.id} 
+                      className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] transition-colors"
+                      style={{ borderLeftColor: style.color, borderLeftWidth: 3 }}
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        <div 
+                          className="w-6 h-6 rounded-md flex items-center justify-center"
+                          style={{ background: `${style.color}20` }}
+                        >
+                          <style.icon className="w-3.5 h-3.5" style={{ color: style.color }} />
+                        </div>
+                        <span className="text-xs font-medium" style={{ color: style.color }}>{style.label}</span>
+                        <span className="text-xs text-white/30 ml-auto">
+                          {insight.timestamp.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <h4 className="font-semibold text-white text-sm mb-2">{insight.title}</h4>
+                      <p className="text-white/60 text-sm leading-relaxed whitespace-pre-wrap">{insight.content}</p>
                     </div>
-                    <div className="text-sm text-white/80">
-                      {typeof insight.content === 'string' 
-                        ? insight.content 
-                        : JSON.stringify(insight.content, null, 2)}
-                    </div>
-                  </div>
-                ))
-              )}
-              
-              {loadingSkill && (
-                <div className="flex items-center justify-center gap-2 py-4 text-violet-400">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="text-sm">AI 正在分析...</span>
-                </div>
+                  )
+                })
               )}
             </div>
           </ScrollArea>
         </div>
 
-        {/* Column 3: Chat */}
-        <div className="flex-1 flex flex-col min-w-0 rounded-2xl bg-white/[0.02] border border-white/5 overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-white/[0.02]">
-            <MessageCircle className="w-4 h-4 text-emerald-400" />
-            <span className="font-medium text-white">智能问答</span>
+        {/* 右栏：记忆盒子 (上下文问答) */}
+        <div className="flex-1 flex flex-col bg-slate-900/10">
+          <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+              <MessageCircle className="w-4 h-4 text-emerald-400" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-white text-sm">深度对齐</h3>
+              <p className="text-xs text-white/40">基于全量上下文的智能问答</p>
+            </div>
           </div>
           
-          <ScrollArea className="flex-1">
-            <div ref={chatScrollRef} className="p-4 space-y-4">
+          <ScrollArea className="flex-1" ref={chatScrollRef}>
+            <div className="p-4 space-y-4">
               {chatMessages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-white/30">
-                  <MessageCircle className="w-10 h-10 mb-3 opacity-50" />
-                  <p className="text-sm text-center">
-                    {scenario === 'classroom'
-                      ? '询问关于课堂内容的问题'
-                      : '询问关于会议内容的问题'}
-                  </p>
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-4">
+                    <MessageCircle className="w-8 h-8 text-emerald-500/40" />
+                  </div>
+                  <p className="text-white/40 text-sm mb-4">随时提问，帮你深度对齐{alignmentTarget}</p>
+                  <div className="space-y-2">
+                    {['"刚才谁提到了预算？"', '"核心结论是什么？"'].map((q) => (
+                      <button
+                        key={q}
+                        onClick={() => setChatInput(q.replace(/"/g, ''))}
+                        disabled={!sessionId}
+                        className="px-4 py-2 rounded-full text-xs bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/70 transition-colors disabled:opacity-50"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               ) : (
-                chatMessages.map((message) => (
+                chatMessages.map((msg) => (
                   <div
-                    key={message.id}
+                    key={msg.id}
                     className={cn(
-                      'flex gap-2',
-                      message.role === 'user' ? 'flex-row-reverse' : 'flex-row'
+                      'flex gap-3',
+                      msg.role === 'user' ? 'flex-row-reverse' : ''
                     )}
                   >
-                    <div
+                    <div 
                       className={cn(
-                        'w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0',
-                        message.role === 'user' ? 'bg-emerald-500' : 'bg-slate-700'
+                        'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
+                        msg.role === 'user' 
+                          ? 'bg-violet-500/20' 
+                          : 'bg-emerald-500/20'
                       )}
                     >
-                      {message.role === 'user' ? (
-                        <User className="w-3.5 h-3.5 text-white" />
-                      ) : (
-                        <Bot className="w-3.5 h-3.5 text-slate-300" />
-                      )}
+                      {msg.role === 'user' 
+                        ? <User className="w-4 h-4 text-violet-400" />
+                        : <Bot className="w-4 h-4 text-emerald-400" />
+                      }
                     </div>
-                    <div
+                    <div 
                       className={cn(
-                        'max-w-[85%] px-3 py-2 rounded-xl text-sm',
-                        message.role === 'user'
-                          ? 'bg-emerald-500 text-white'
-                          : 'bg-white/5 text-white/80'
+                        'max-w-[80%] p-4 rounded-2xl',
+                        msg.role === 'user'
+                          ? 'bg-violet-500/20 text-white rounded-tr-sm'
+                          : 'bg-white/[0.05] text-white/80 rounded-tl-sm'
                       )}
                     >
-                      {message.isLoading ? (
-                        <div className="flex items-center gap-2">
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                          <span className="text-xs">思考中...</span>
-                        </div>
-                      ) : (
-                        <p className="whitespace-pre-wrap">{message.content}</p>
-                      )}
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                     </div>
                   </div>
                 ))
               )}
+              {isChatLoading && (
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                    <Bot className="w-4 h-4 text-emerald-400" />
+                  </div>
+                  <div className="p-4 rounded-2xl rounded-tl-sm bg-white/[0.05]">
+                    <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
+                  </div>
+                </div>
+              )}
             </div>
           </ScrollArea>
-
-          {/* Chat Input */}
-          <form onSubmit={handleSendMessage} className="p-3 border-t border-white/5">
-            <div className="flex gap-2">
+          
+          {/* 输入框 */}
+          <div className="p-4 border-t border-white/[0.06]">
+            <div className="flex gap-3">
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder={scenario === 'classroom' ? '问问课堂内容...' : '问问会议内容...'}
-                disabled={!sessionId || isChatLoading}
-                className="flex-1 h-10 px-3 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-emerald-500/50 transition-all disabled:opacity-50"
+                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+                placeholder={sessionId ? "基于会议内容提问..." : "开始录音后可以提问"}
+                disabled={!sessionId}
+                className={cn(
+                  'flex-1 px-4 py-3 rounded-xl text-sm',
+                  'bg-white/5 border border-white/10 text-white placeholder-white/30',
+                  'focus:outline-none focus:border-emerald-500/50 focus:bg-white/[0.07]',
+                  'disabled:opacity-50 disabled:cursor-not-allowed',
+                  'transition-all'
+                )}
               />
               <Button
-                type="submit"
-                disabled={!chatInput.trim() || !sessionId || isChatLoading}
-                className="h-10 w-10 rounded-xl bg-emerald-500 hover:bg-emerald-400 p-0"
-              >
-                {isChatLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Send className="w-4 h-4" />
+                onClick={handleSendMessage}
+                disabled={!sessionId || !chatInput.trim() || isChatLoading}
+                className={cn(
+                  'px-4 rounded-xl',
+                  'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400',
+                  'disabled:opacity-50 disabled:cursor-not-allowed'
                 )}
+              >
+                <Send className="w-5 h-5" />
               </Button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
